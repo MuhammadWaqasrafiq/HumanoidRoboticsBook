@@ -1,0 +1,183 @@
+/**
+ * Custom CSS for Embodied AI: The Future of Robotics
+ * A clean white/light gray default theme and a dark gray dark mode theme.
+ */
+
+:root {
+  /* Light Theme Colors (Default) */
+  --ifm-color-primary: #2196F3; /* Blue */
+  --ifm-color-primary-dark: #1976D2;
+  --ifm-color-primary-darker: #1565C0;
+  --ifm-color-primary-darkest: #0D47A1;
+  --ifm-color-primary-light: #64B5F6;
+  --ifm-color-primary-lighter: #90CAF9;
+  --ifm-color-primary-lightest: #BBDEFB;
+
+  --ifm-background-color: #f5f5f5; /* Light Gray */
+  --ifm-background-surface-color: #ffffff; /* White */
+
+  --ifm-font-color-base: #333333; /* Dark Gray */
+  --ifm-font-color-secondary: #666666; /* Medium Gray */
+
+  --ifm-link-color: #2196F3; /* Blue */
+  --ifm-link-hover-color: #1976D2; /* Darker Blue */
+
+  --ifm-navbar-background-color: #ffffff; /* White */
+  --ifm-navbar-link-color: #333333; /* Dark Gray */
+  --ifm-navbar-link-hover-color: #2196F3; /* Blue */
+
+  --ifm-footer-background-color: #e0e0e0; /* Lighter Gray */
+  --ifm-footer-color: #333333; /* Dark Gray */
+  --ifm-footer-link-color: #2196F3; /* Blue */
+  --ifm-footer-link-hover-color: #1976D2; /* Darker Blue */
+
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.05); /* Light highlight for light theme */
+}
+
+[data-theme='dark'] {
+  /* Dark Theme Colors */
+  --ifm-color-primary: #90CAF9; /* Light Blue */
+  --ifm-color-primary-dark: #64B5F6;
+  --ifm-color-primary-darker: #42A5F5;
+  --ifm-color-primary-darkest: #2196F3;
+  --ifm-color-primary-light: #BBDEFB;
+  --ifm-color-primary-lighter: #E3F2FD;
+  --ifm-color-primary-lightest: #F5F8FA;
+
+  --ifm-background-color: #303030; /* Dark Gray */
+  --ifm-background-surface-color: #424242; /* Slightly Lighter Dark Gray */
+
+  --ifm-font-color-base: #E0E0E0; /* Light Gray */
+  --ifm-font-color-secondary: #B0B0B0; /* Medium Light Gray */
+
+  --ifm-link-color: #90CAF9; /* Light Blue */
+  --ifm-link-hover-color: #64B5F6; /* Slightly Darker Light Blue */
+
+  --ifm-navbar-background-color: #212121; /* Very Dark Gray */
+  --ifm-navbar-link-color: #E0E0E0; /* Light Gray */
+  --ifm-navbar-link-hover-color: #90CAF9; /* Light Blue */
+
+  --ifm-footer-background-color: #212121; /* Very Dark Gray */
+  --ifm-footer-color: #B0B0B0; /* Medium Light Gray */
+  --ifm-footer-link-color: #90CAF9; /* Light Blue */
+  --ifm-footer-link-hover-color: #64B5F6; /* Slightly Darker Light Blue */
+
+  --docusaurus-highlighted-code-line-bg: rgba(255, 255, 255, 0.1); /* Light highlight for dark theme */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--ifm-color-primary);
+}
+
+/* --- HERO SECTION --- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero.hero--primary {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://www.thedailyupside.com/wp-content/uploads/2025/02/cio_humanoid-robot_02-10-25_iStock-iLexx-1536x864.png');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  min-height: 85vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  overflow: hidden;
+}
+.hero.hero--primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.hero .container {
+  position: relative;
+  z-index: 2;
+}
+
+.hero__title {
+  font-size: 3.5rem;
+  font-weight: 700;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.hero__subtitle {
+  font-size: 1.5rem;
+  font-weight: 300;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
+  animation: fadeInUp 0.8s ease-out 0.2s;
+  animation-fill-mode: both; /* Keeps it in the final state */
+}
+
+.hero .buttons {
+  animation: fadeInUp 0.8s ease-out 0.4s;
+  animation-fill-mode: both;
+}
+
+
+/* --- FEATURE CARDS SECTION --- */
+.features {
+  padding: 4rem 0;
+  background-color: #f9f9f9;
+}
+
+.featureCard > div {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
+}
+
+.featureCard > div:hover {
+  transform: scale(1.05) translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+}
+
+.featureImage {
+  height: 64px; /* Maintain similar height to previous SVG icons */
+  width: auto; /* Allow width to adjust proportionally */
+  max-width: 100%; /* Ensure images don't overflow */
+  margin-bottom: 1rem;
+  object-fit: contain; /* Ensure image content is fully visible */
+}
+
+
+/* --- GENERIC SCROLL ANIMATION --- */
+.animated-section {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.animated-section.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered animation for children of an animated section */
+.animated-section.is-visible .animated-item-1 {
+  transition-delay: 0.1s;
+}
+.animated-section.is-visible .animated-item-2 {
+  transition-delay: 0.2s;
+}
+.animated-section.is-visible .animated-item-3 {
+  transition-delay: 0.3s;
+}

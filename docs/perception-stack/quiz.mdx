@@ -1,0 +1,782 @@
+---
+id: quiz
+title: Chapter 07 Quiz - Perception Stack
+sidebar_position: 99
+description: Test your understanding of perception systems, RGB-D cameras, VSLAM, object detection, and sensor fusion
+---
+
+# Chapter 07 Quiz: Perception Stack
+
+Test your mastery of humanoid robot perception systems!
+
+:::info Quiz Instructions
+- 8 questions covering perception fundamentals through advanced integration
+- Each question has detailed explanations
+- Score 80% or higher to demonstrate mastery
+- Review relevant sections if you score below 80%
+:::
+
+---
+
+## Question 1: RGB-D Camera Selection
+
+**You're building a humanoid for indoor household tasks (navigation, manipulation). Which RGB-D camera is BEST for this application?**
+
+<details>
+<summary>A) Microsoft Azure Kinect DK (3840x2160, 0.5-5.46m depth range)</summary>
+
+❌ **Suboptimal - Discontinued Product**
+
+While Azure Kinect has excellent specifications, it's discontinued by Microsoft (2024).
+
+**Problems:**
+- No longer manufactured
+- Limited spare parts availability
+- Uncertain long-term SDK support
+
+**Better choice:** Intel RealSense D455 (active product, strong ecosystem).
+</details>
+
+<details>
+<summary>B) Intel RealSense D455 (1280x720, 0.6-6m depth range)</summary>
+
+✅ **Correct - Best Choice!**
+
+**Intel RealSense D455 is optimal for indoor humanoids:**
+
+**Key advantages:**
+1. **Depth range:** 0.6-6m covers typical indoor spaces (rooms, hallways)
+2. **ROS 2 support:** Native `realsense2_camera` package
+3. **Price:** $329 (best value)
+4. **Ecosystem:** Large community, extensive documentation
+5. **IMU included:** Built-in 9-DoF IMU for sensor fusion
+6. **Frame rate:** 90 FPS (smooth motion)
+
+**Real-world validation:**
+- Used in research humanoids (Berkeley, Stanford projects)
+- Proven reliability (millions deployed)
+- Active development (Intel continues updates)
+
+**Alternative:** Stereolabs ZED 2i for outdoor use (0.2-20m range) but more expensive ($449).
+</details>
+
+<details>
+<summary>C) Orbbec Astra Pro (640x480, 0.6-8m depth range)</summary>
+
+❌ **Budget Option but Limited**
+
+**Limitations:**
+- Low resolution (640x480 vs 1280x720)
+- Lower frame rate (30 FPS)
+- Community ROS support (not official)
+- Less accurate depth (compared to RealSense)
+
+**When to use:** Prototyping on tight budget (&lt;$200).
+
+**For production humanoids:** RealSense D455 is worth the extra $180.
+</details>
+
+<details>
+<summary>D) Stereolabs ZED 2i (4416x1242, 0.2-20m depth range)</summary>
+
+✅ **Excellent but Overkill for Indoor Use**
+
+**ZED 2i strengths:**
+- 20m depth range (outdoor robotics)
+- 4K resolution
+- 120 FPS
+- Better in sunlight (stereo vs infrared)
+
+**Why not optimal for indoor humanoids:**
+- **Price:** $449 vs $329 (RealSense)
+- **Overkill range:** Indoor scenes rarely &gt;6m
+- **Higher compute:** 4K processing requires more GPU
+
+**When to use ZED 2i:**
+- Outdoor humanoids
+- Long-range navigation
+- Bright sunlight environments
+
+**For indoor household tasks:** RealSense D455 is sufficient and cheaper.
+</details>
+
+---
+
+## Question 2: Point Cloud Processing
+
+**Your point cloud has 921,600 raw points from 1280x720 depth image. After voxel downsampling (1cm voxels) and outlier removal, how many points should remain for real-time processing?**
+
+<details>
+<summary>A) 500,000-700,000 points (minimal reduction)</summary>
+
+❌ **Too Many - Will Cause Latency**
+
+**Problem:** 500K+ points are too dense for real-time humanoid control.
+
+**Expected latency with 500K points:**
+- Point cloud processing: 80-120ms
+- Collision checking: 40-60ms
+- Total: &gt;100ms (violates real-time requirement)
+
+**Target:** 50,000-100,000 points for &lt;30ms processing.
+</details>
+
+<details>
+<summary>B) 50,000-100,000 points (90%+ reduction)</summary>
+
+✅ **Correct!**
+
+**50K-100K points is optimal for real-time humanoid perception.**
+
+**Why this range:**
+1. **Sufficient detail:** 1cm voxels preserve object geometry
+2. **Real-time processing:** 20-30ms on RTX 4070 Ti
+3. **Memory efficient:** ~2-4 MB (fits in GPU cache)
+4. **Standard practice:** ORB-SLAM3, navigation stacks use similar density
+
+**Voxel downsampling example:**
+```python
+import open3d as o3d
+
+pcd = o3d.geometry.PointCloud()
+pcd.points = o3d.utility.Vector3dVector(points)  # 921K points
+
+# Downsample with 1cm voxels
+pcd_downsampled = pcd.voxel_down_sample(voxel_size=0.01)
+print(f"Points after downsampling: {len(pcd_downsampled.points)}")
+# Output: ~70,000 points
+
+# Outlier removal
+pcd_filtered, _ = pcd_downsampled.remove_statistical_outlier(
+    nb_neighbors=20,
+    std_ratio=2.0
+)
+print(f"Points after filtering: {len(pcd_filtered.points)}")
+# Output: ~55,000 points (final)
+```
+
+**Performance:**
+- Latency: 25ms
+- Memory: 2.6 MB
+- Perfect for VLA integration (&lt;100ms total perception latency)
+</details>
+
+<details>
+<summary>C) 5,000-10,000 points (99% reduction)</summary>
+
+❌ **Too Sparse - Loss of Detail**
+
+**Problem:** &lt;10K points lose important geometric detail.
+
+**Issues:**
+- Thin objects disappear (cups, bottles, utensils)
+- Surface normals inaccurate
+- Grasping failures (poor contact estimation)
+
+**When to use sparse clouds:** Coarse navigation (not manipulation).
+</details>
+
+<details>
+<summary>D) Keep all 921,600 points (no downsampling)</summary>
+
+❌ **Unacceptable for Real-Time**
+
+**Latency with full-resolution cloud:**
+- Point cloud generation: 60ms
+- Collision checking: 120ms
+- VLA processing timeout
+
+**Always downsample** for humanoid control.
+</details>
+
+---
+
+## Question 3: VSLAM Tracking Lost
+
+**Your ORB-SLAM3 loses tracking and outputs "LOST" state. The robot was moving at 0.8 m/s. What's the MOST LIKELY cause?**
+
+<details>
+<summary>A) Camera lens is dirty</summary>
+
+❌ **Possible but Unlikely**
+
+Dirty lens causes blurry images but rarely complete tracking loss unless extremely dirty.
+
+**Check:** Clean lens and retry. If problem persists, it's motion blur.
+</details>
+
+<details>
+<summary>B) Motion blur from fast movement exceeding VSLAM limits</summary>
+
+✅ **Correct - Most Likely Cause!**
+
+**ORB-SLAM3 fails at high speeds due to motion blur.**
+
+**Why motion blur breaks VSLAM:**
+1. **Feature matching fails:** ORB features can't track between frames
+2. **Pose estimation error:** RANSAC can't find consistent matches
+3. **Tracking lost:** System declares LOST state
+
+**Typical speed limits for ORB-SLAM3:**
+- **Walking:** 0.3-0.5 m/s (safe)
+- **Fast walking:** 0.6-0.8 m/s (marginal)
+- **Running:** &gt;0.8 m/s (tracking loss likely)
+
+**Solutions:**
+1. **Reduce robot speed** to &lt;0.5 m/s during navigation
+2. **Increase camera frame rate** (30 FPS → 60 FPS)
+3. **Use global shutter camera** (avoid rolling shutter artifacts)
+4. **Switch to VINS-Fusion** (better at high-speed motion with IMU fusion)
+
+**Implementation:**
+```python
+# Velocity controller with SLAM-aware speed limits
+class SafeNavigationController:
+    def __init__(self):
+        self.max_velocity = 0.5  # m/s (VSLAM-safe speed)
+        self.slam_tracking_state = 2  # OK
+
+    def slam_callback(self, msg):
+        self.slam_tracking_state = msg.tracking_state
+        # tracking_state: 0=NOT_INIT, 1=UNSTABLE, 2=OK, 3=LOST
+
+    def compute_velocity(self, target_velocity):
+        if self.slam_tracking_state != 2:  # Not OK
+            return 0.1  # Slow down to regain tracking
+
+        # Clip to SLAM-safe speed
+        return min(target_velocity, self.max_velocity)
+```
+</details>
+
+<details>
+<summary>C) Low-texture environment (white walls)</summary>
+
+❌ **Possible but Speed is More Likely**
+
+Low-texture scenes cause gradual tracking degradation, not sudden LOST at 0.8 m/s.
+
+**If low texture:** Add visual markers (AprilTags, posters).
+</details>
+
+<details>
+<summary>D) RealSense D455 incompatible with ORB-SLAM3</summary>
+
+❌ **Incorrect - Fully Compatible**
+
+RealSense D455 is widely used with ORB-SLAM3. Not a compatibility issue.
+</details>
+
+---
+
+## Question 4: YOLOv8 Model Selection
+
+**You need real-time object detection (60+ FPS) with maximum accuracy on a single RTX 4070 Ti (12GB VRAM). Which YOLOv8 model should you deploy?**
+
+<details>
+<summary>A) YOLOv8n (3.2M params, 37.3% mAP, 150 FPS)</summary>
+
+❌ **Too Fast, Not Accurate Enough**
+
+**YOLOv8n (nano) is too small:**
+- **Accuracy:** 37.3% mAP (low for manipulation tasks)
+- **Speed:** 150 FPS (overkill - 60 FPS is sufficient)
+
+**Use case for YOLOv8n:** Edge devices (Jetson Nano), prototyping.
+
+**For humanoids:** Need higher accuracy.
+</details>
+
+<details>
+<summary>B) YOLOv8s (11.2M params, 44.9% mAP, 120 FPS)</summary>
+
+❌ **Better but Still Suboptimal**
+
+**YOLOv8s (small) is middle ground:**
+- **Accuracy:** 44.9% mAP (mediocre)
+- **Speed:** 120 FPS (faster than needed)
+
+**Problem:** You have 12 GB VRAM budget - use it for better model!
+</details>
+
+<details>
+<summary>C) YOLOv8l (43.7M params, 52.9% mAP, 60 FPS)</summary>
+
+✅ **Correct - Optimal Balance!**
+
+**YOLOv8l (large) is perfect for RTX 4070 Ti:**
+
+**Why this is optimal:**
+1. **Accuracy:** 52.9% mAP (+15.6% vs YOLOv8n)
+2. **Speed:** 60 FPS (meets real-time requirement)
+3. **VRAM:** 6.5 GB (fits comfortably in 12 GB)
+4. **Headroom:** 5.5 GB free for other modules (SAM 2, VLA)
+
+**Performance breakdown:**
+- **Inference:** 16ms per frame
+- **FPS:** 62 FPS
+- **Batch size:** 1 (real-time streaming)
+- **Accuracy:** Excellent for household objects (cups, bottles, etc.)
+
+**Real-world deployment:**
+```python
+from ultralytics import YOLO
+
+model = YOLO('yolov8l.pt')  # Load YOLOv8-Large
+
+# Run inference
+results = model(
+    rgb_image,
+    conf=0.5,      # Confidence threshold
+    device='cuda',  # GPU acceleration
+    verbose=False
+)
+
+# Expected performance on RTX 4070 Ti:
+# - Latency: 15-17ms
+# - FPS: 58-62
+# - VRAM: 6.5 GB
+# - Accuracy: 52.9% mAP
+```
+</details>
+
+<details>
+<summary>D) YOLOv8x (68.2M params, 53.9% mAP, 40 FPS)</summary>
+
+❌ **Too Slow for Real-Time**
+
+**YOLOv8x (extra-large) is overkill:**
+- **Accuracy:** 53.9% mAP (+1.0% vs YOLOv8l - marginal gain)
+- **Speed:** 40 FPS (violates 60 FPS requirement)
+- **VRAM:** 9.5 GB (leaves only 2.5 GB for other modules)
+
+**When to use YOLOv8x:** Offline analysis, accuracy-critical research (not real-time humanoids).
+</details>
+
+---
+
+## Question 5: Sensor Fusion with EKF
+
+**In visual-inertial odometry fusion, the IMU runs at 200 Hz and camera at 30 Hz. What's the correct fusion strategy?**
+
+<details>
+<summary>A) Downsample IMU to 30 Hz to match camera frequency</summary>
+
+❌ **Wrong - Loses High-Frequency Information**
+
+**Problem:** IMU provides critical high-frequency motion information.
+
+**Why you need 200 Hz IMU:**
+- Detect fast rotations (turning head)
+- Capture vibrations, impacts
+- Smooth pose estimation between camera frames
+
+**Never downsample IMU!**
+</details>
+
+<details>
+<summary>B) Use IMU for prediction (200 Hz) and camera for correction (30 Hz) in EKF</summary>
+
+✅ **Correct - Standard EKF Fusion!**
+
+**This is the correct visual-inertial fusion strategy:**
+
+**How it works:**
+1. **Prediction step (200 Hz):** IMU provides high-frequency pose estimates
+   - Accelerometer: Linear acceleration
+   - Gyroscope: Angular velocity
+   - Integrate to get position, orientation
+
+2. **Update step (30 Hz):** Camera corrects accumulated IMU drift
+   - Visual features: True position from scene matching
+   - Corrects IMU bias, drift errors
+
+**EKF state:**
+```
+State (16D):
+- Position: x, y, z
+- Velocity: vx, vy, vz
+- Orientation: qw, qx, qy, qz (quaternion)
+- IMU biases: ba_x, ba_y, ba_z, bg_x, bg_y, bg_z
+```
+
+**Benefits:**
+- **Smooth trajectory:** 200 Hz output (not jerky 30 Hz)
+- **Drift-free:** Camera prevents long-term IMU drift
+- **Robust:** Works during camera occlusion (IMU carries pose)
+- **Low-latency:** Instant IMU response, periodic camera corrections
+
+**ROS 2 implementation:**
+```yaml
+# robot_localization EKF config
+ekf_filter_node:
+  ros__parameters:
+    frequency: 200.0  # Output frequency (IMU rate)
+
+    # IMU: High-frequency predictions
+    imu0: /camera/imu
+    imu0_config: [false, false, false,    # x, y, z (position)
+                  true, true, true,        # roll, pitch, yaw (orientation)
+                  false, false, false,     # vx, vy, vz
+                  true, true, true,        # angular velocities
+                  true, true, true]        # linear accelerations
+
+    # Camera odometry: Low-frequency corrections
+    odom0: /orbslam3/odom
+    odom0_config: [true, true, true,      # x, y, z (position)
+                   false, false, false,   # roll, pitch, yaw
+                   false, false, false,   # velocities
+                   false, false, false,   # angular velocities
+                   false, false, false]   # accelerations
+```
+
+**Result:** Best of both sensors - IMU frequency, camera accuracy.
+</details>
+
+<details>
+<summary>C) Use camera for position, IMU for orientation (separate estimates)</summary>
+
+❌ **Suboptimal - No Fusion**
+
+**Problem:** Not actually fusing sensors - just using them separately.
+
+**Issues:**
+- No drift correction
+- Jumps when switching between sources
+- No uncertainty quantification
+
+**Use EKF to properly fuse!**
+</details>
+
+<details>
+<summary>D) Upsample camera to 200 Hz using interpolation</summary>
+
+❌ **Wrong - Creates Artificial Data**
+
+**Problem:** Interpolation doesn't add real information.
+
+**Result:** Smooth but inaccurate pose between camera frames.
+
+**Better:** Use IMU prediction for real high-frequency estimates.
+</details>
+
+---
+
+## Question 6: Grounding DINO vs YOLOv8
+
+**You need to detect "the red cup on the left" (not just any cup). Which model should you use?**
+
+<details>
+<summary>A) YOLOv8 with custom fine-tuning on red cups</summary>
+
+❌ **Overkill and Limited**
+
+**Problems:**
+- Need training data (100+ red cup images)
+- Can't handle "on the left" (spatial reasoning)
+- Separate model per color (red cup, blue cup, green cup...)
+
+**Better:** Use open-vocabulary detection.
+</details>
+
+<details>
+<summary>B) Grounding DINO with text prompt "red cup on the left"</summary>
+
+✅ **Correct - Best for Fine-Grained Queries!**
+
+**Grounding DINO excels at fine-grained, compositional queries:**
+
+**Why this works:**
+1. **Open-vocabulary:** Detects ANY object from text description
+2. **Color understanding:** "red cup" vs "blue cup" (no training needed)
+3. **Spatial reasoning:** "on the left" narrows candidates
+
+**Implementation:**
+```python
+from groundingdino.util.inference import Model
+
+model = Model(
+    model_config_path="GroundingDINO_SwinT_OGC.py",
+    model_checkpoint_path="groundingdino_swint_ogc.pth"
+)
+
+# Fine-grained query
+TEXT_PROMPT = "red cup on the left"
+
+detections = model.predict_with_classes(
+    image=rgb_image,
+    classes=[TEXT_PROMPT],
+    box_threshold=0.35,
+    text_threshold=0.25
+)
+
+# Returns: Bounding boxes for red cups in left half of image
+```
+
+**Advantages over YOLOv8:**
+- No training data required
+- Handles novel objects ("smartphone with cracked screen")
+- Compositional reasoning ("red cup next to blue bottle")
+
+**Trade-off:**
+- **Speed:** 150ms (vs 16ms for YOLOv8)
+- **Use case:** Fine-grained queries, not real-time tracking
+
+**Hybrid approach:**
+1. **YOLOv8:** Fast general detection (60 FPS)
+2. **Grounding DINO:** Refine detections when needed (specific color, location)
+</details>
+
+<details>
+<summary>C) YOLOv8 + color filtering in post-processing</summary>
+
+✅ **Workable Alternative**
+
+**Approach:**
+1. YOLOv8 detects all cups
+2. Post-process: Filter by red HSV range
+3. Select leftmost red cup
+
+**Pros:**
+- Faster than Grounding DINO
+- No additional models
+
+**Cons:**
+- Brittle to lighting changes
+- Hard to handle complex queries ("metallic cup")
+
+**When to use:** Simple color filtering, speed-critical applications.
+</details>
+
+<details>
+<summary>D) SAM 2 for segmentation, then color analysis</summary>
+
+❌ **Wrong Tool**
+
+**SAM 2 segments but doesn't detect:**
+- Needs bounding box prompt (from YOLO or Grounding DINO first)
+- Can't understand "red" without external color analysis
+
+**Use SAM 2 after detection, not for detection.**
+</details>
+
+---
+
+## Question 7: Perception Latency Budget
+
+**Your VLA model requires perception results within 100ms. You have YOLOv8 (16ms), depth processing (25ms), and point cloud filtering (18ms). What's the maximum allowed latency for camera capture + preprocessing?**
+
+<details>
+<summary>A) 41ms (100 - 16 - 25 - 18)</summary>
+
+✅ **Correct!**
+
+**Latency breakdown:**
+
+```
+Total budget:     100ms (VLA requirement)
+
+Perception pipeline:
+- Camera capture: <5ms (hardware)
+- Preprocessing:  X ms (solve for this)
+- YOLOv8:        16ms (given)
+- Depth proc:    25ms (given)
+- Point cloud:   18ms (given)
+- Overhead:      ~10ms (ROS messaging, scheduling)
+
+Total: 5 + X + 16 + 25 + 18 + 10 = 74 + X ≤ 100
+
+Solution: X ≤ 26ms
+
+Answer: 41ms margin total (preprocessing + buffer)
+```
+
+**Preprocessing tasks (&lt;20ms target):**
+- Image rectification: 3-5ms
+- Depth alignment: 4-6ms
+- Noise filtering: 2-3ms
+- Format conversion: 1-2ms
+
+**Total preprocessing: ~15ms** (well within budget)
+
+**Practical allocation:**
+- Camera: 5ms
+- Preprocessing: 15ms
+- YOLOv8: 16ms
+- Depth: 25ms
+- Point cloud: 18ms
+- Overhead: 10ms
+- **Total: 89ms** (11ms safety margin)
+</details>
+
+<details>
+<summary>B) 100ms (no other constraints)</summary>
+
+❌ **Incorrect - Ignores Other Modules**
+
+**You can't use all 100ms for one component!**
+
+Must account for all pipeline stages + overhead.
+</details>
+
+<details>
+<summary>C) 59ms (100 - 16 - 25)</summary>
+
+❌ **Forgot Point Cloud Filtering**
+
+**Missing:** 18ms for point cloud filtering.
+
+**Correct:** 100 - 16 - 25 - 18 = 41ms
+</details>
+
+<details>
+<summary>D) 20ms (assume 20% of total budget)</summary>
+
+❌ **Arbitrary Allocation**
+
+**Don't use percentages** - measure actual component latencies and allocate precisely.
+</details>
+
+---
+
+## Question 8: Production Deployment Optimization
+
+**You're deploying perception on a physical humanoid with RTX 4070 Ti. Current performance: YOLOv8l runs at 38 FPS (target: 60 FPS). What's the BEST optimization?**
+
+<details>
+<summary>A) Switch to YOLOv8m (smaller model)</summary>
+
+❌ **Loses Accuracy Unnecessarily**
+
+**YOLOv8m trade-off:**
+- **Speed:** 80 FPS (good)
+- **Accuracy:** 50.2% mAP (-2.7% vs YOLOv8l)
+
+**Problem:** You have GPU headroom - optimize before sacrificing accuracy.
+</details>
+
+<details>
+<summary>B) Export YOLOv8l to TensorRT engine</summary>
+
+✅ **Correct - Best Optimization!**
+
+**TensorRT provides 2-3x speedup with zero accuracy loss:**
+
+**How it works:**
+- Fuses layers (conv + batch norm + activation)
+- Optimizes CUDA kernels for RTX GPU
+- Reduces memory bandwidth
+- Enables FP16 precision (optional)
+
+**Implementation:**
+```python
+from ultralytics import YOLO
+
+# Export to TensorRT (one-time)
+model = YOLO('yolov8l.pt')
+model.export(format='engine')  # Creates yolov8l.engine
+
+# Load TensorRT model for inference
+trt_model = YOLO('yolov8l.engine')
+
+# Inference (2-3x faster)
+results = trt_model(rgb_image)
+```
+
+**Performance gains on RTX 4070 Ti:**
+- **Before (PyTorch):** 38 FPS (26ms latency)
+- **After (TensorRT):** 95 FPS (10.5ms latency)
+- **Speedup:** 2.5x
+- **Accuracy:** Identical (52.9% mAP)
+
+**Why this is optimal:**
+- No accuracy loss
+- Maximum performance from available GPU
+- One-time export (5 minutes)
+- Standard practice for production deployment
+
+**Other TensorRT benefits:**
+- Lower power consumption (important for battery-powered robots)
+- Reduced thermal throttling
+- Better multi-stream performance
+</details>
+
+<details>
+<summary>C) Reduce input resolution from 640x640 to 416x416</summary>
+
+✅ **Also Effective but Trades Accuracy**
+
+**Lower resolution trade-off:**
+- **Speed:** 65-75 FPS (faster)
+- **Accuracy:** 48-49% mAP (-4% for small objects)
+
+**When to use:**
+- After TensorRT optimization (if still not fast enough)
+- Objects are large (no small object detection needed)
+
+**Better:** Try TensorRT first (zero accuracy cost).
+</details>
+
+<details>
+<summary>D) Run YOLOv8 on CPU to free GPU for VLA</summary>
+
+❌ **Terrible Performance**
+
+**CPU inference:**
+- **Speed:** 2-5 FPS (vs 38 FPS GPU)
+- **Unusable** for real-time control
+
+**Never run perception on CPU** if GPU is available!
+</details>
+
+---
+
+## Score Interpretation
+
+**Calculate your score:**
+- 8/8 correct: **Expert** - Ready for production perception deployment
+- 6-7/8 correct: **Proficient** - Strong understanding, minor gaps
+- 4-5/8 correct: **Developing** - Review key perception sections
+- 0-3/8 correct: **Needs Review** - Re-read Chapter 07
+
+---
+
+## Key Takeaways
+
+If you struggled with specific topics, review these sections:
+
+| Question | Topic | Review Section |
+|----------|-------|----------------|
+| Q1 | Camera Selection | RGB-D Camera Setup |
+| Q2 | Point Cloud Processing | Depth Processing and Point Clouds |
+| Q3 | VSLAM Debugging | Visual SLAM (VSLAM) + Debugging |
+| Q4 | Model Selection | Object Detection and Segmentation |
+| Q5 | Sensor Fusion | Sensor Fusion + EKF |
+| Q6 | Detection Methods | Grounding DINO vs YOLOv8 |
+| Q7 | Latency Budgets | Performance Optimization |
+| Q8 | Production Optimization | Performance Optimization |
+
+---
+
+## Next Steps
+
+After completing this quiz:
+
+1. **Score &gt;= 80%:** Proceed to Chapter 08 (Bipedal Locomotion)
+2. **Score &lt; 80%:** Review Chapter 07 sections and retry quiz
+3. **Hands-on:** Set up RealSense D455 and run perception stack
+4. **Advanced:** Integrate perception with VLA for end-to-end pipeline
+
+:::tip Practice Challenge
+**Build complete perception system:**
+1. Set up Intel RealSense D455 on ROS 2
+2. Run ORB-SLAM3 for localization
+3. Deploy YOLOv8l for object detection (&gt;85% accuracy)
+4. Generate point clouds with voxel downsampling
+5. Measure total perception latency (&lt;100ms target)
+6. Visualize all outputs in RViz2
+
+**Time budget:** 3-4 hours
+**Difficulty:** Intermediate-Advanced
+**Hardware:** RealSense D455, RTX 4070 Ti, Ubuntu 22.04
+:::

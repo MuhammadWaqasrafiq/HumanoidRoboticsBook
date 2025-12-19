@@ -1,0 +1,457 @@
+---
+id: quiz
+title: Chapter 03 Quiz
+sidebar_position: 5
+description: Test your knowledge of ROS 2 fundamentals
+keywords: [ros2-quiz, assessment, learning-check]
+---
+
+# Chapter 03: ROS 2 Fundamentals Quiz
+
+Test your understanding of ROS 2 nodes, topics, services, actions, parameters, and debugging tools.
+
+:::tip Passing Score
+Aim for at least 7 out of 10 correct answers (70%) to demonstrate proficiency.
+:::
+
+---
+
+## Section 1: Nodes & Topics
+
+### Question 1: Node Lifecycle
+
+What is the correct order of operations for a ROS 2 node's lifecycle?
+
+<details>
+<summary>Show Answer</summary>
+
+**Correct Answer**: `rclpy.init()` → Create node instance → `rclpy.spin()` → `destroy_node()` → `rclpy.shutdown()`
+
+**Explanation**:
+1. `rclpy.init()` initializes the ROS 2 context
+2. Node instance is created (inherits from `Node` class)
+3. `rclpy.spin()` processes callbacks and keeps node running
+4. `destroy_node()` cleans up node resources
+5. `rclpy.shutdown()` shuts down ROS 2 context
+
+**Reference**: See `nodes-topics.mdx:45-49` for node lifecycle details.
+</details>
+
+---
+
+### Question 2: Topic Communication
+
+A publisher publishes to `/cmd_vel` at 10 Hz. A subscriber subscribes to `/cmd_Vel` (capital V). What happens?
+
+A) Subscriber receives all messages
+B) Subscriber receives no messages
+C) Subscriber receives messages but with delay
+D) ROS 2 throws a compilation error
+
+<details>
+<summary>Show Answer</summary>
+
+**Correct Answer**: B) Subscriber receives no messages
+
+**Explanation**: Topic names are **case-sensitive** in ROS 2. `/cmd_vel` and `/cmd_Vel` are two different topics. The subscriber won't receive any messages because it's listening to a different topic than the publisher is sending to.
+
+**Common Pitfall**: This is one of the most frequent debugging issues. Always use `ros2 topic list` and `rqt_graph` to verify topic names match exactly.
+
+**Reference**: See `nodes-topics.mdx:453-475` for common pitfalls.
+</details>
+
+---
+
+### Question 3: Quality of Service (QoS)
+
+Which QoS setting is best for high-frequency sensor data where occasional packet loss is acceptable?
+
+A) RELIABLE reliability + TRANSIENT_LOCAL durability
+B) BEST_EFFORT reliability + VOLATILE durability
+C) RELIABLE reliability + VOLATILE durability
+D) BEST_EFFORT reliability + TRANSIENT_LOCAL durability
+
+<details>
+<summary>Show Answer</summary>
+
+**Correct Answer**: B) BEST_EFFORT reliability + VOLATILE durability
+
+**Explanation**:
+- **BEST_EFFORT**: No retransmission of lost packets = lower latency (good for sensor data at 30 Hz, 60 Hz, etc.)
+- **VOLATILE**: Late subscribers only get new messages (no need to cache old sensor readings)
+
+Use RELIABLE for critical commands (e.g., emergency stop), but BEST_EFFORT for continuous streams where the next reading makes the previous one obsolete.
+
+**Reference**: See `nodes-topics.mdx:327-366` for QoS profiles.
+</details>
+
+---
+
+## Section 2: Services & Actions
+
+### Question 4: Service vs Action
+
+Which communication pattern should you use for a robot task that takes 30 seconds and needs progress updates every 2 seconds?
+
+A) Topic (pub-sub)
+B) Service (request-response)
+C) Action (goal-feedback-result)
+D) Parameter
+
+<details>
+<summary>Show Answer</summary>
+
+**Correct Answer**: C) Action (goal-feedback-result)
+
+**Explanation**: Use actions for long-running tasks (>1 second) that need:
+- **Feedback**: Progress updates during execution
+- **Cancellation**: Ability to abort mid-execution
+- **Result**: Final outcome when complete
+
+Services are for quick operations (under 1 second) with no feedback. Topics are for continuous streams, not request-based tasks.
+
+**Example**: Navigation to a waypoint, grasping an object, executing a trajectory.
+
+**Reference**: See `services-actions.mdx:272-302` for action vs service comparison.
+</details>
+
+---
+
+### Question 5: Service Definition
+
+Given this service definition:
+```
+int64 a
+int64 b
+---
+int64 sum
+```
+
+What does the `---` separator indicate?
+
+A) Comments in the file
+B) Separates request (above) from response (below)
+C) Separates imports from definitions
+D) Marks the end of the file
+
+<details>
+<summary>Show Answer</summary>
+
+**Correct Answer**: B) Separates request (above) from response (below)
+
+**Explanation**: In ROS 2 service definitions (`.srv` files):
+- **Above `---`**: Request fields (what the client sends)
+- **Below `---`**: Response fields (what the server returns)
+
+For actions (`.action` files), there are **two** `---` separators:
+1. Goal (top)
+2. Result (middle)
+3. Feedback (bottom)
+
+**Reference**: See `services-actions.mdx:256-268` for service introspection.
+</details>
+
+---
+
+## Section 3: Parameters & Launch Files
+
+### Question 6: Parameter Declaration
+
+What happens if you call `self.get_parameter('speed')` without first calling `declare_parameter('speed', default_value)`?
+
+A) Returns None
+B) Returns 0
+C) Throws `ParameterNotDeclaredException`
+D) Uses a random default value
+
+<details>
+<summary>Show Answer</summary>
+
+**Correct Answer**: C) Throws `ParameterNotDeclaredException`
+
+**Explanation**: ROS 2 requires explicit parameter declaration before use. This prevents typos and ensures all parameters are documented with defaults.
+
+**Correct pattern**:
+```python
+# Declare first
+self.declare_parameter('speed', 1.0)
+
+# Then get
+speed = self.get_parameter('speed').value
+```
+
+**Common mistake**: Forgetting to declare parameters in `__init__()`.
+
+**Reference**: See `parameters-launch.mdx:636-650` for parameter pitfalls.
+</details>
+
+---
+
+### Question 7: YAML Parameter File Structure
+
+Which YAML structure is **correct** for ROS 2 parameter files?
+
+**Option A**:
+```yaml
+my_node:
+  speed: 1.0
+  topic: /cmd_vel
+```
+
+**Option B**:
+```yaml
+my_node:
+  ros__parameters:
+    speed: 1.0
+    topic: /cmd_vel
+```
+
+<details>
+<summary>Show Answer</summary>
+
+**Correct Answer**: Option B
+
+**Explanation**: ROS 2 parameter files require the `ros__parameters` key (with **double underscore**):
+
+```yaml
+node_name:
+  ros__parameters:    # Required!
+    param1: value1
+    param2: value2
+```
+
+Without `ros__parameters`, the parameters won't be loaded, and the node will use default values.
+
+**Reference**: See `parameters-launch.mdx:177-201` for YAML structure and `parameters-launch.mdx:672-688` for troubleshooting.
+</details>
+
+---
+
+### Question 8: Launch File Namespaces
+
+You launch two nodes with `namespace='robot1'`. What topics do they create?
+
+**Original topics**: `/cmd_vel`, `/scan`
+
+A) `/cmd_vel`, `/scan` (unchanged)
+B) `/robot1/cmd_vel`, `/robot1/scan`
+C) `/robot1_cmd_vel`, `/robot1_scan`
+D) `/cmd_vel/robot1`, `/scan/robot1`
+
+<details>
+<summary>Show Answer</summary>
+
+**Correct Answer**: B) `/robot1/cmd_vel`, `/robot1/scan`
+
+**Explanation**: Namespaces in ROS 2 prefix all node names and topic names with the namespace:
+
+```python
+Node(
+    package='my_package',
+    executable='controller',
+    namespace='robot1',  # Topics become /robot1/*
+)
+```
+
+This enables multi-robot systems where each robot operates in its own namespace, preventing topic name collisions.
+
+**Use case**: Running 3 identical robots on the same network with namespaces `robot1`, `robot2`, `robot3`.
+
+**Reference**: See `parameters-launch.mdx:713-767` for multi-robot example.
+</details>
+
+---
+
+## Section 4: Debugging Tools
+
+### Question 9: Debugging Pub-Sub Issues
+
+A subscriber isn't receiving messages. You run `ros2 topic echo /chatter` and **do** see messages. What does this tell you?
+
+A) The publisher is broken
+B) The topic name is wrong
+C) The subscriber code has a bug
+D) QoS settings are incompatible
+
+<details>
+<summary>Show Answer</summary>
+
+**Correct Answer**: C) The subscriber code has a bug
+
+**Explanation**: If `ros2 topic echo` can receive messages, it proves:
+- ✅ Publisher is working
+- ✅ Topic name is correct
+- ✅ Messages are being sent
+- ✅ QoS is compatible (echo uses default settings)
+
+The problem must be in the **subscriber code**:
+- Callback function not registered correctly
+- Subscriber not being spun (`rclpy.spin()` missing)
+- Exception in callback silently failing
+
+**Debug next**: Add logging to subscriber's `__init__()` and callback to see if they execute.
+
+**Reference**: See `debugging-tools.mdx:571-614` for pub-sub debugging workflow.
+</details>
+
+---
+
+### Question 10: ROS 2 Bag Files
+
+You record a bag file with `ros2 bag record /cmd_vel /scan`. What can you do with this bag file?
+
+A) Replay the recorded data to test algorithms offline
+B) Inspect the data to debug past issues
+C) Share the data with team members
+D) All of the above
+
+<details>
+<summary>Show Answer</summary>
+
+**Correct Answer**: D) All of the above
+
+**Explanation**: ROS 2 bag files are incredibly versatile:
+
+1. **Replay for testing**: `ros2 bag play my_bag` - Test your algorithm on real data without the robot
+2. **Debugging**: `ros2 bag info my_bag` - See exactly what data was recorded when the bug occurred
+3. **Collaboration**: Share bag files with team members for reproducible testing
+4. **Dataset creation**: Record training data for machine learning
+
+**Advanced usage**:
+- Replay at different speeds: `ros2 bag play -r 2.0` (2x speed)
+- Replay in loop: `ros2 bag play -l`
+- Replay specific topics: `ros2 bag play my_bag --topics /cmd_vel`
+
+**Reference**: See `debugging-tools.mdx:205-241` for bag file commands.
+</details>
+
+---
+
+## Bonus Question: Integration
+
+### Bonus: Complete System Design
+
+Design a system with these requirements:
+- 2 robots operating simultaneously
+- Each robot has a lidar sensor publishing at 10 Hz
+- Each robot has a velocity controller
+- All robots use the same code but different parameters
+
+What ROS 2 concepts would you use? (Select all that apply)
+
+A) Namespaces to separate robots
+B) Parameters to configure each robot differently
+C) Launch file to start all nodes together
+D) Topics for sensor data and commands
+E) Services for sensor configuration
+
+<details>
+<summary>Show Answer</summary>
+
+**Correct Answers**: A, B, C, D (not E - services aren't needed for this design)
+
+**Explanation**:
+
+**Architecture**:
+```python
+# Launch file structure
+for robot in ['robot1', 'robot2']:
+    # Lidar node (publishes /scan at 10 Hz)
+    Node(
+        package='sensors',
+        executable='lidar',
+        namespace=robot,  # A: Namespace
+        parameters=[{     # B: Parameters
+            'publish_rate': 10.0,
+            'frame_id': f'{robot}/lidar_link'
+        }]
+    )
+
+    # Velocity controller
+    Node(
+        package='control',
+        executable='controller',
+        namespace=robot,
+        parameters=[{
+            'max_speed': 0.5 if robot == 'robot1' else 1.0
+        }],
+        remappings=[
+            ('/cmd_vel', '/mobile_base/cmd_vel')
+        ]
+    )
+```
+
+**Topics created**:
+- `/robot1/scan` (lidar data) - D: Topic
+- `/robot1/mobile_base/cmd_vel` (velocity commands) - D: Topic
+- `/robot2/scan`
+- `/robot2/mobile_base/cmd_vel`
+
+**Launch**: C: Single launch file starts all 4 nodes
+
+**Not needed**: E: Services aren't required for continuous sensor data or periodic configuration (parameters handle that).
+
+**Reference**: See `parameters-launch.mdx:713-767` for multi-robot system example.
+</details>
+
+---
+
+## Quiz Results Interpretation
+
+### 9-10 Correct: Excellent! 🎉
+You have a strong grasp of ROS 2 fundamentals. You're ready to move on to Chapter 04 (URDF Modeling).
+
+**Next steps**:
+- Build a custom URDF humanoid model
+- Integrate with Isaac Sim simulator
+- Implement advanced ROS 2 patterns
+
+### 7-8 Correct: Good! 👍
+You understand the core concepts but may benefit from reviewing specific sections.
+
+**Review**:
+- Section 1 if you missed Q1-Q3 (topics and QoS)
+- Section 2 if you missed Q4-Q5 (services vs actions)
+- Section 3 if you missed Q6-Q8 (parameters and launch files)
+- Section 4 if you missed Q9-Q10 (debugging)
+
+### 5-6 Correct: Needs Improvement 📚
+Review the chapter sections you struggled with before continuing.
+
+**Action plan**:
+1. Re-read sections where you missed questions
+2. Complete the exercises at the end of each section
+3. Run the code examples hands-on
+4. Retake the quiz
+
+### 0-4 Correct: Review Required ⚠️
+Revisit the entire chapter with hands-on practice.
+
+**Recommended approach**:
+1. Read each section carefully
+2. Type and run every code example
+3. Use `ros2 topic`, `ros2 node`, `rqt_graph` to explore
+4. Complete all exercises
+5. Retake quiz after practice
+
+---
+
+## Next Steps
+
+Ready to continue? Proceed to **[Chapter 04: URDF & Digital Twins](../urdf-digital-twins)** to learn robot modeling and simulation.
+
+**What you'll learn**:
+- URDF XML format for robot description
+- Links, joints, and kinematic chains
+- Visual vs collision geometry
+- TF (transform) tree
+- Integration with rviz2 and simulators
+
+---
+
+## Review Resources
+
+- **Hands-on practice**: Run all code examples in `code-examples/ros2/`
+- **ROS 2 Tutorials**: https://docs.ros.org/en/jazzy/Tutorials.html
+- **Community**: https://discourse.ros.org/ (ask questions)
+- **Troubleshooting**: Revisit Section 4 (Debugging Tools) when stuck

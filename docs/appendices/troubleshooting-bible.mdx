@@ -1,0 +1,906 @@
+---
+id: troubleshooting-bible
+title: Appendix B - Troubleshooting Bible
+sidebar_position: 15
+description: 100 most common errors and solutions for Physical AI development
+keywords: [troubleshooting, error-solutions, debugging, common-errors]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Appendix B: Troubleshooting Bible
+
+This appendix is your guide to resolving the most common errors encountered while working through this book. It is a living document that will be expanded as we cover more topics.
+
+## Phase 4: ROS 2 & URDF Errors
+
+### 1. `colcon build` Fails with Missing Dependency
+
+**Symptom**:
+You run `colcon build` in your workspace, and it fails with an error message like:
+```bash
+--- stderr: your_package_name
+CMake Error at CMakeLists.txt:21 (find_package):
+  Could not find a package configuration file provided by "another_package"
+  with any of the following names:
+
+    another_packageConfig.cmake
+    another_package-config.cmake
+```
+
+**Root Cause**:
+This is one of the most common ROS 2 errors. It means your current workspace or your base ROS 2 installation does not know where to find the dependency package (`another_package`) that your code needs. This can happen for a few reasons:
+1.  You haven't sourced your ROS 2 environment.
+2.  You have sourced your main ROS 2 environment, but the dependency is in another custom workspace that you haven't sourced.
+3.  The dependency is a system package that you haven't installed yet.
+
+**Solution**:
+Follow these steps in order:
+
+1.  **Source your main ROS 2 installation**: Make sure you have sourced your ROS 2 distro's setup file.
+    ```bash
+    source /opt/ros/jazzy/setup.bash
+    ```
+    It's best practice to have this in your `~/.bashrc` file.
+
+2.  **Install the missing package**: If it's a public ROS package, you likely need to install it via `rosdep` or `apt`.
+    ```bash
+    # First, update rosdep
+    rosdep update
+    # Then, install dependencies for all packages in your src directory
+    rosdep install -i --from-path src --rosdistro jazzy -y
+    ```
+    If `rosdep` doesn't find it, you may need to install it directly:
+    ```bash
+    sudo apt-get install ros-jazzy-another-package
+    ```
+
+3.  **Source overlay workspaces**: If `another_package` is in a different local workspace (e.g., `~/ros2_ws`), you must source that workspace's `install/setup.bash` *before* building your new package. This is called "overlaying".
+    ```bash
+    source ~/ros2_ws/install/setup.bash
+    cd ~/my_new_ws/
+    colcon build
+    ```
+
+### 2. `ros2 topic echo` Shows No Messages
+
+**Symptom**:
+You have a publisher node running and it reports that it's publishing messages. However, when you run `ros2 topic echo /my_topic`, you see no output.
+
+**Root Cause**:
+This is a classic ROS 2 networking or configuration issue.
+1.  **DDS Mismatch**: Different nodes are using incompatible DDS (Data Distribution Service) implementations.
+2.  **QoS Incompatibility**: The publisher and subscriber have incompatible Quality of Service (QoS) settings. For example, a reliable publisher cannot connect to a best-effort subscriber.
+3.  **Network Issues**: The nodes are on different network interfaces or a firewall is blocking communication.
+4.  **Wrong Topic Name**: A simple typo in the topic name.
+
+**Solution**:
+
+1.  **Check Topic Name**: Use `ros2 topic list` to see the exact topic name being published. Check for typos.
+
+2.  **Check QoS Settings**: Use the `-v` flag with `ros2 topic info` to see the QoS settings for publishers and subscribers on that topic.
+    ```bash
+    ros2 topic info /my_topic -v
+    ```
+    If they differ, adjust the QoS profile in your C++ or Python code to be compatible.
+
+3.  **Standardize DDS**: The most reliable fix is to force all terminals and nodes to use the same DDS implementation. CycloneDDS is a good default.
+    ```bash
+    export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+    ```
+    Add this to your `~/.bashrc` to make it permanent. You must restart your nodes and any new terminals for this to take effect.
+
+### 3. `ros2 launch` Command Not Found
+
+**Symptom**:
+You try to launch a file using `ros2 launch my_package my_launch.py` and you get `Command 'ros2 launch' not found`.
+
+**Root Cause**:
+Your environment is not properly sourced. The `ros2` command is the entry point, but the `launch` verb and others are provided by different ROS 2 packages. If the environment isn't sourced, the `ros2` command can't find its extensions.
+
+**Solution**:
+
+1.  **Source ROS 2**: You have forgotten to source the main ROS 2 setup file.
+    ```bash
+    source /opt/ros/jazzy/setup.bash
+    ```
+2.  **Source Workspace**: If the launch file is in your own workspace, you must source that workspace's `install` directory.
+    ```bash
+    source ~/ros2_ws/install/setup.bash
+    ```
+    A common mistake is to only source the main ROS 2 distro, which doesn't know about your local packages.
+
+### 4. RQt Graph Does Not Show All Nodes/Topics
+
+**Symptom**:
+You run `rqt_graph` to visualize your system, but some running nodes or topics are missing from the graph.
+
+**Root Cause**:
+This is often related to the same DDS or network issues as the `ros2 topic echo` problem. RQt itself is a ROS 2 node, and if it can't discover the other nodes, it can't display them. Another reason can be that nodes are configured to not be discoverable.
+
+**Solution**:
+
+1.  **Set DDS Implementation**: Ensure your terminal running `rqt_graph` is using the same DDS implementation as your other nodes.
+    ```bash
+    export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+    rqt_graph
+    ```
+2.  **Check for Hidden Nodes**: Some nodes are intentionally hidden (e.g., nodes starting with an underscore). Check the "Debug" options in RQt Graph to show all nodes.
+
+### 5. Failed to Create Node: Name Resolution Failed
+
+**Symptom**:
+A ROS 2 node fails to start with an error like:
+`[ERROR] [launch]: Failed to create node or executor: Failed to resolve node name`
+
+**Root Cause**:
+The node name you've provided is invalid. This often happens in launch files. Node names must not contain spaces or certain special characters like `/` unless they are part of a namespace.
+
+**Solution**:
+Check your launch file or C++/Python code where the node is defined. Ensure the `name='...'` parameter is a single valid string, e.g., `my_node` instead of `my node` or `/my_node`.
+
+### 6. URDF Model Does Not Appear in RViz2
+
+**Symptom**:
+You launch RViz2 and add a `RobotModel` display, but your robot model does not appear, and you see a "No transform" error in the status.
+
+**Root Cause**:
+RViz2 requires a `robot_description` topic and a valid TF (Transform) tree to display a model.
+1.  **Missing `robot_state_publisher`**: This node is responsible for reading the `/robot_description` topic and publishing the TF transforms based on the URDF's joint states.
+2.  **Missing `joint_state_publisher`**: For non-fixed joints, something needs to publish their state (e.g., position). The `joint_state_publisher_gui` is often used for this.
+3.  **Incorrect Fixed Frame**: The "Fixed Frame" in RViz2's Global Options is set to a frame that doesn't exist in your TF tree (e.g., `map`), but your robot's root is `base_link`.
+
+**Solution**:
+A minimal launch file for displaying a URDF should include:
+1.  A node that loads your URDF file content into the `/robot_description` parameter.
+2.  The `robot_state_publisher` node.
+3.  The `joint_state_publisher` node (or `joint_state_publisher_gui`).
+4.  An RViz2 instance with a config file.
+
+In RViz2, set the **Fixed Frame** to the root link of your URDF (e.g., `base_link`).
+
+### 7. URDF Model Collapses in Simulation
+
+**Symptom**:
+You load your humanoid URDF into Isaac Sim or Gazebo, and the moment physics is enabled, the robot collapses into a pile of links on the floor.
+
+**Root Cause**:
+This almost always means your URDF is missing `<inertia>` tags for one or more links. While RViz2 only cares about visual and collision tags, a physics simulator *requires* inertial properties (mass, center of mass, moments of inertia) to calculate forces. Without them, links are often treated as having zero mass and do not behave correctly under gravity.
+
+**Solution**:
+For every `<link>` in your URDF, you must add a valid `<inertial>` tag.
+```xml
+<link name="my_link">
+  <visual>
+    ...
+  </visual>
+  <collision>
+    ...
+  </collision>
+  <inertial>
+    <origin xyz="0 0 0.5" rpy="0 0 0"/>
+    <mass value="1.0"/>
+    <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/>
+  </inertial>
+</link>
+```
+You don't need perfect values to start, but you do need the tags to be present.
+
+### 8. `check_urdf` Reports "has no inertia"
+
+**Symptom**:
+You use the `check_urdf` tool to validate your model, and it outputs `Error: link [link_name] has no inertia!`.
+
+**Root Cause**:
+This is a direct confirmation of the problem described in the previous point. The link named `link_name` is missing its `<inertial>` tag.
+
+**Solution**:
+Run `check_urdf my_robot.urdf` and methodically add a valid `<inertial>` block to every link that the tool flags as missing one.
+
+### 9. Xacro Parsing Error
+
+**Symptom**:
+You try to launch a file that uses a `.xacro` file and get an error like: `invalid expression`, `property not found`, or `unknown macro`.
+
+**Root Cause**:
+Xacro is a macro language for URDF. These errors are syntax errors in your `.xacro` file.
+- **Invalid expression**: A math expression inside `${...}` is incorrect.
+- **Property not found**: You are trying to use a variable (`<xacro:property name="my_var" ... />`) before it was defined or with a typo in the name.
+- **Unknown macro**: You are calling a macro that wasn't defined or imported.
+
+**Solution**:
+1.  **Check Order**: Ensure properties are defined before they are used.
+2.  **Check Includes**: If you are using macros from another file, make sure you've included it, e.g., `<xacro:include filename="$(find my_pkg)/urdf/common.xacro" />`.
+3.  **Debug with `xacro` command**: Manually convert your xacro to a URDF to get more specific error messages.
+    ```bash
+    ros2 run xacro xacro my_robot.xacro > out.urdf
+    ```
+
+### 10. TF Tree is Disconnected in RViz2
+
+**Symptom**:
+In RViz2, you get status errors for some links saying `No transform from [link_a] to [base_link]`. Viewing the TF tree shows multiple separate trees instead of one connected graph.
+
+**Root Cause**:
+Your URDF's `<joint>` definitions are incorrect, resulting in a broken kinematic chain.
+1.  **Wrong Parent/Child**: A `<joint>` tag has the wrong `<parent link="..."/>` or `<child link="..."/>`.
+2.  **Mismatched Names**: The link name in a `<parent>` or `<child>` tag has a typo and doesn't match any existing `<link name="..."/>`.
+3.  **Missing Joint**: You have defined two links that should be connected, but have forgotten to define the `<joint>` that connects them.
+
+**Solution**:
+1.  Use `rqt_tf_tree` to visualize the TF tree and identify exactly where the break is.
+2.  Carefully review your URDF file. Go joint by joint, and for each one, confirm that the parent link exists and is the correct parent for that child.
+3.  A good strategy is to start from the root link (`base_link`) and trace the chain of children down to the leaves of your kinematic tree, ensuring every link is correctly parented.
+
+---
+
+## Phase 5: VLA and Voice Pipeline Errors
+
+### 11. VLA Model Fails with CUDA Out of Memory
+
+**Symptom**:
+When you try to load or run inference with a VLA model (like OpenVLA), your program crashes with `torch.cuda.OutOfMemoryError: CUDA out of memory`.
+
+**Root Cause**:
+VLAs are massive models and consume a large amount of GPU VRAM. An RTX 4070 Ti with 12GB is the recommended minimum, but even that can be tight.
+1.  You are loading the model in full precision (float32).
+2.  Other applications (like Isaac Sim, or even your desktop environment) are consuming a significant portion of VRAM.
+3.  The input image resolution is too high.
+
+**Solution**:
+1.  **Load in a Lower Precision**: Use 8-bit or 4-bit quantization to dramatically reduce VRAM usage.
+    ```python
+    # Example for a Hugging Face model
+    from transformers import BitsAndBytesConfig
+
+    quantization_config = BitsAndBytesConfig(load_in_8bit=True)
+    model = AutoModelForVision2Seq.from_pretrained(
+        "openvla/openvla-7b",
+        quantization_config=quantization_config
+    )
+    ```
+2.  **Close Other GPU-Intensive Applications**: Shut down Isaac Sim, Gazebo, and any other 3D applications before running VLA inference if you are just testing the model in isolation.
+3.  **Reduce Image Resolution**: Downsample input camera images to the resolution the model was trained on (e.g., 224x224 or 512x512).
+
+### 12. VLA Inference is Very Slow
+
+**Symptom**:
+The time between sending an image/prompt to the model and receiving an action is several seconds, making real-time control impossible.
+
+**Root Cause**:
+1.  **Model is too large for the GPU**: Running a 55B parameter model on a consumer GPU will be slow.
+2.  **Inefficient code**: You may be moving data between CPU and GPU unnecessarily in your inference loop.
+3.  **Full precision**: Running in float32 is slower than lower precisions like float16 or int8.
+
+**Solution**:
+1.  **Use a Smaller Model**: Choose a model designed for real-time inference, like `π0-FAST` or a quantized version of `OpenVLA`.
+2.  **Use Float16**: If you have the VRAM, running in float16 (half-precision) is much faster than float32.
+    ```python
+    model = AutoModelForVision2Seq.from_pretrained(
+        "openvla/openvla-7b",
+        torch_dtype=torch.float16
+    ).to("cuda")
+    ```
+3.  **Optimize Your Loop**: Ensure all tensors (images, prompts) are moved to the GPU *once* and stay there during the inference process.
+
+### 13. VLA Output Actions are Erratic
+
+**Symptom**:
+The model outputs actions that are nonsensical, jerky, or cause the robot to collide with objects.
+
+**Root Cause**:
+1.  **Prompt Engineering**: Your text prompt is ambiguous or poorly formatted.
+2.  **Observation Mismatch**: The input image from your robot's camera is significantly different from the data the model was trained on (different lighting, camera angle, etc.).
+3.  **Action Space Mismatch**: The model's output action format (e.g., 7-DoF end-effector velocity) does not match what your robot controller expects.
+
+**Solution**:
+1.  **Improve Your Prompt**: Be very specific. Instead of "pick up cup", use "grasp the red mug by its handle and lift it up".
+2.  **Image Preprocessing**: Normalize your input images to match the model's training data. Check the model's documentation for normalization parameters (mean, std dev).
+3.  **Action Transformation**: Write a utility function to transform the model's output into the correct format and scale for your robot's controller. You may need to clip action values to prevent jerky movements.
+
+### 14. `safetensors` Deserialization Error
+
+**Symptom**:
+When loading a model from Hugging Face, you get an error: `safetensors_rust.SafetensorError: Error while deserializing header`.
+
+**Root Cause**:
+The model file you downloaded is corrupted or incomplete. This often happens due to an interrupted internet connection during the download.
+
+**Solution**:
+1.  **Clear Hugging Face Cache**: The corrupted file is stored locally. You need to delete it to force a re-download. The cache is usually located at `~/.cache/huggingface/hub/`.
+    ```bash
+    # Be careful with this command!
+    # It will remove all your cached models.
+    rm -rf ~/.cache/huggingface/hub/
+    ```
+2.  **Retry**: Run your script again. It will re-download the model files from scratch.
+
+### 15. `ConnectionError` When Downloading Model
+
+**Symptom**:
+Your script fails with a `ConnectionError` or `HTTPError` when trying to download a model from the Hugging Face Hub.
+
+**Root Cause**:
+1.  **No Internet**: Your machine has lost internet connectivity.
+2.  **Firewall/Proxy**: A firewall or corporate proxy is blocking access to `huggingface.co`.
+3.  **Hugging Face Outage**: The Hub itself may be temporarily down.
+
+**Solution**:
+1.  **Check Connectivity**: `ping google.com` to check your internet.
+2.  **Configure Proxy**: If you are behind a proxy, set the `HTTP_PROXY` and `HTTPS_PROXY` environment variables.
+3.  **Check Status Page**: Visit `status.huggingface.co` to see if the service is operational.
+
+### 16. Whisper Transcription is Inaccurate
+
+**Symptom**:
+Your voice commands are consistently misinterpreted by the Whisper model (e.g., "pick up the can" becomes "pick up the cat").
+
+**Root Cause**:
+1.  **Noisy Audio**: Background noise is confusing the model.
+2.  **Wrong Model Size**: You are using a smaller, less accurate Whisper model (like `tiny` or `base`).
+3.  **Microphone Quality**: Your microphone is low quality or too far away.
+
+**Solution**:
+1.  **Use a Better Microphone**: A headset or a dedicated USB microphone will provide a much cleaner signal.
+2.  **Use a Larger Model**: Switch to `whisper-medium` or `whisper-large`. They are much more accurate, though they require more resources.
+3.  **Pre-process Audio**: Use a library like `webrtcvad` to implement Voice Activity Detection (VAD) and only transcribe audio when someone is actually speaking.
+
+### 17. LLM Fails to Parse Intent Correctly
+
+**Symptom**:
+Whisper transcribes the command perfectly, but the LLM (e.g., Gemma, Llama) fails to extract the correct action and target (e.g., from "bring me the blue block", it extracts action: "bring" and target: "block", missing the color).
+
+**Root Cause**:
+The prompt you are using to instruct the LLM is not constrained enough. A general-purpose prompt is not reliable for structured output.
+
+**Solution**:
+**Use Function Calling / Tool Use**: Modern LLMs can be constrained to output a specific JSON format.
+- Instruct the LLM that it has access to a "tool" called `execute_robot_action` which takes parameters `action` and `target`.
+- Provide a JSON schema for the tool's parameters.
+- The LLM will then be forced to output a JSON object like `{"action": "bring", "target": "blue block"}`, which is much easier and more reliable to parse.
+
+### 18. High End-to-End Voice Pipeline Latency
+
+**Symptom**:
+From the time you finish speaking a command to the time the robot starts moving, there is a delay of more than 3-4 seconds.
+
+**Root Cause**:
+The latency is the sum of all parts of the pipeline:
+1.  **Audio Buffering**: Waiting for silence before starting transcription.
+2.  **Whisper Inference**: Can be slow for larger models.
+3.  **LLM Inference**: API calls to cloud LLMs add network latency.
+4.  **VLA Inference**: Can be slow depending on the model and GPU.
+
+**Solution**:
+1.  **Use a local LLM**: For intent parsing, a small, local LLM (like `Gemma-2B`) is much faster than a cloud API.
+2.  **Optimize Whisper**: Use a faster implementation like `whisper.cpp` or a distilled version of Whisper.
+3.  **Overlap Processes**: Start VLA inference on the camera image *while* Whisper and the LLM are processing the voice command. The processes can run in parallel until the final action needs to be chosen.
+
+### 19. Microphone Not Detected
+
+**Symptom**:
+Your Python script using `sounddevice` or a similar library crashes with an error like `PortAudioError: No such device`.
+
+**Root Cause**:
+Your system cannot find any audio input devices, or the user running the script does not have permission.
+
+**Solution**:
+1.  **Check Hardware**: Make sure your microphone is physically connected.
+2.  **Check System Settings**: In your OS (Ubuntu), go to Sound settings and ensure the correct microphone is selected as the default input device.
+3.  **Permissions**: On Linux, you may need to add your user to the `audio` group.
+    ```bash
+    sudo usermod -aG audio $USER
+    ```
+    You will need to log out and log back in for this to take effect.
+
+### 20. `ImportError: No module named 'sounddevice'`
+
+**Symptom**:
+Your voice pipeline script fails immediately with an `ImportError`.
+
+**Root Cause**:
+You have not installed the required Python library for audio input.
+
+**Solution**:
+Install the necessary packages. `sounddevice` is a common choice.
+```bash
+pip install sounddevice
+# You might also need soundfile for saving audio
+pip install soundfile
+```
+On Linux, you may also need to install the PortAudio development libraries at the system level.
+```bash
+sudo apt-get install libportaudio2 libportaudiocpp0 portaudio19-dev
+
+---
+
+## Phase 6: Locomotion and Manipulation Errors
+
+### 21. Robot is Unstable and Falls Over
+
+**Symptom**:
+As soon as you enable physics in the simulation, or command the real robot to stand, it immediately becomes unstable and falls.
+
+**Root Cause**:
+1.  **Incorrect Center of Mass (CoM)**: The inertial properties in your URDF are inaccurate, placing the robot's overall CoM too high or too far from the center of its support polygon.
+2.  **Controller Gains Too High/Low**: The PID gains for your joint controllers (especially ankle and hip joints) are poorly tuned. High gains cause oscillations, while low gains provide insufficient force to counteract falling.
+3.  **Foot Contact Geometry**: The `<collision>` geometry for the feet is too small, a sphere, or a complex mesh that provides an unstable contact point.
+
+**Solution**:
+1.  **Verify Inertia**: Use a tool like `meshlab` to estimate the center of mass for your link meshes and update the `<origin>` tag within the `<inertial>` block of your URDF. Ensure the mass distribution is realistic.
+2.  **Tune PID Gains**: Start with low P, I, and D values and increase them incrementally. Start with the ankle joints, then hips, then knees. The goal is to make it stiff enough to resist gravity without oscillating.
+3.  **Use Simple Foot Collision**: For the foot links, use a simple, flat box shape for the `<collision>` geometry. This provides a stable, predictable contact patch with the ground.
+
+### 22. Robot's Feet Slide on the Ground ("Skating")
+
+**Symptom**:
+In simulation, when the robot walks, its feet do not stay planted firmly on the ground during the stance phase. They slide or slip, especially when turning.
+
+**Root Cause**:
+The friction coefficients between the robot's feet and the ground plane are too low. Physics simulators model friction using coefficients of static and dynamic friction.
+
+**Solution**:
+In your URDF or SDF file, find the `<collision>` element for the foot links and add friction parameters to the `<surface>` tag. Values between 0.7 and 1.2 are a good starting point for rubber on a typical floor.
+3.  **Perform Camera-Robot Calibration**: Use a calibration pattern (like a checkerboard) to precisely determine the transform between your camera's optical frame and the robot's base frame.
+
+---
+
+## Phase 7: Sim-to-Real Errors
+
+### 31. Policy Works in Sim, Fails Completely in Real
+
+**Symptom**:
+Your robot policy achieves high success rates in Isaac Sim, but when deployed to the real robot, it immediately fails, crashes, or doesn't move at all.
+
+**Root Cause**:
+This is the quintessential reality gap. It often points to a fundamental mismatch that domain randomization hasn't covered.
+1.  **Undermodeled Physics**: Key physical properties are missing or severely inaccurate in simulation (e.g., severe friction differences, unmodeled compliance).
+2.  **Sensor Discrepancies**: Real-world sensors provide data vastly different from simulated ones (e.g., camera exposure, white balance, IMU bias).
+3.  **Actuator Mismatch**: The robot's real actuators behave significantly differently from their simulated models (e.g., higher latency, different torque curves).
+
+**Solution**:
+1.  **System Identification**: Conduct experiments on the real robot to identify actual physical parameters (mass, friction, motor constants). Update your simulation models.
+2.  **Sensor Calibration & Noise Modeling**: Calibrate real sensors and characterize their noise. Add realistic noise models to your simulated sensors.
+3.  **Basic Control Validation**: Verify low-level control loops (e.g., joint position/velocity control) on the real robot independently. If they are unstable, your policy has no chance.
+4.  **Aggressive Domain Randomization**: Increase the range and diversity of your domain randomization parameters (especially physics and sensor noise).
+
+### 32. Robot Drifts or Accumulates Errors Over Time in Real World
+
+**Symptom**:
+The robot starts off correctly but its position or orientation gradually deviates from the desired path over a longer task (e.g., navigating a corridor).
+
+**Root Cause**:
+This is a classic state estimation problem. Small errors in sensor readings (odometry, IMU) or in the robot's kinematic/dynamic model accumulate over time, leading to drift.
+1.  **Odometry Errors**: Wheel encoders or IMU provide slightly inaccurate velocity/position estimates.
+2.  **Unmodeled Slippage**: Feet or wheels slip more than expected in the real world, especially on certain surfaces.
+3.  **Gravity Vector Errors**: IMU provides a slightly biased or noisy estimate of gravity, affecting pose estimation.
+
+**Solution**:
+1.  **Implement Sensor Fusion**: Use an Extended Kalman Filter (EKF) or Complementary Filter to fuse data from multiple sensors (odometry, IMU, LiDAR) for more robust state estimation.
+2.  **Improve Odometry Calibration**: Calibrate your wheel/foot odometry to account for wheel diameter errors or slippage.
+3.  **Relocalization**: Integrate a relocalization mechanism (e.g., using vision or LiDAR against a map) to periodically correct accumulated errors.
+4.  **Randomize Odometry Noise**: Add realistic odometry and IMU noise to your simulation to train policies robust to drift.
+
+### 33. Sensor Readings in Real-World Differ Significantly from Simulation
+
+**Symptom**:
+When visualizing real-world sensor data (e.g., camera images, LiDAR scans), they look very different from what you see in simulation. This can include different pixel intensities, depth values, or point cloud densities.
+
+**Root Cause**:
+1.  **Visual Discrepancies**: Lighting conditions, material properties, and textures are not adequately randomized in simulation.
+2.  **Sensor Model Inaccuracy**: The camera model (intrinsics, lens distortion) or LiDAR model (beam characteristics, noise) in simulation is too simplistic.
+3.  **Environmental Differences**: Real-world environments have unique characteristics (e.g., specific reflections, dust) not present in sim.
+
+**Solution**:
+1.  **Aggressive Visual DR**: Randomize all visual parameters (textures, lighting, object colors, exposure, gamma correction) in Isaac Sim.
+2.  **Detailed Sensor Modeling**: Use high-fidelity sensor models in simulation that accurately replicate noise, distortion, and measurement uncertainties of real sensors.
+3.  **Domain Adaptation**: Consider using Unsupervised Domain Adaptation (UDA) techniques, which involve training a model to become invariant to the domain shift without labeled real-world data.
+
+### 34. Visual Appearance Mismatch Impacts Perception
+
+**Symptom**:
+An object detector or segmentation network trained in simulation fails to detect objects in real-world camera images, even if the objects are visually similar.
+
+**Root Cause**:
+This is a direct consequence of visual discrepancies. The feature extractors of your perception network are learning features specific to the simulated visual domain, which do not generalize to the real world.
+1.  **Insufficient Visual Randomization**: The range of randomized visual properties in sim is too narrow.
+2.  **Photorealism Bias**: The simulated environment might be too "clean" or "perfect," lacking real-world imperfections.
+3.  **Dataset Bias**: The synthetic dataset used for training doesn't cover the full diversity of the real-world environment.
+
+**Solution**:
+1.  **Expand Visual DR**: Use a wider range of textures, lighting, backgrounds, and object variants.
+2.  **Introduce Imperfections**: Add simulated dust, scratches, reflections, and motion blur to synthetic images.
+3.  **Real-World Data Augmentation**: Augment a small amount of real-world data with domain randomization techniques to expose the network to the real domain.
+4.  **Style Transfer**: Apply style transfer techniques during training to make simulated images look more like real ones.
+
+### 35. Domain Randomization Does Not Improve Real-World Performance
+
+**Symptom**:
+You have implemented extensive domain randomization, but your policy's real-world performance is still poor.
+
+**Root Cause**:
+1.  **Randomization is "Off-Distribution"**: The range of randomized parameters in sim does not actually encompass the variations present in the real world.
+2.  **"Curse of Dimensionality"**: Too many parameters are being randomized independently, creating an exponentially large and sparse domain, making it hard for the policy to learn.
+3.  **Fundamental Model Errors**: The underlying robot model (kinematics, dynamics) is fundamentally flawed, and DR cannot compensate for it.
+
+**Solution**:
+1.  **Analyze Real-World Data**: Collect real-world data (sensor readings, trajectories) and analyze their statistics. Ensure your randomization ranges overlap with these real-world statistics.
+2.  **Structured Randomization**: Instead of randomizing everything independently, randomize parameters in a structured way. For example, randomize `mu` and `mu2` together, or link mass and inertia together.
+3.  **Simplify the Task**: Start with a simpler task with fewer environmental variables. Once robust, gradually increase complexity.
+4.  **Verify Robot Model**: Double-check your URDF/SDF against the real robot for any inaccuracies.
+
+### 36. Policy Becomes Overly Aggressive or Unstable in Real Hardware
+
+**Symptom**:
+A policy that was smooth and stable in simulation becomes jerky, oscillatory, or even self-damaging on the real robot.
+
+**Root Cause**:
+This is often a result of control loop delays or unmodeled actuator dynamics.
+1.  **Higher Latency**: The control loop latency is higher in the real world than in simulation.
+2.  **Unmodeled Compliance/Backlash**: Real joints might have more compliance or backlash than simulated ones, leading to overshoots.
+3.  **Sensor Noise Amplification**: High-frequency sensor noise is being amplified by the controller.
+
+**Solution**:
+1.  **Measure Real-World Latency**: Accurately measure end-to-end control loop latency on the real robot. Introduce similar latency into your simulation.
+2.  **Randomize Actuator Delays**: Add randomization for actuator delays and non-linearities in your simulation.
+3.  **Tune Controller Gains**: Lower the controller gains (especially P and D) on the real robot if oscillations persist.
+4.  **Introduce Damping**: Add more damping to simulated joints, or implement a low-pass filter on sensor readings to smooth out noise.
+
+### 37. Exported Policy Runs Slowly on Edge Device (Jetson)
+
+**Symptom**:
+An ONNX or TensorRT model exported from your training framework runs significantly slower on your Jetson or other edge device than expected, leading to high inference latency.
+
+**Root Cause**:
+1.  **Suboptimal Export**: The model was not exported with full optimization flags for the target hardware.
+2.  **Quantization Issues**: Incorrect quantization (e.g., to INT8) can lead to accuracy loss and sometimes performance degradation if not handled correctly.
+3.  **Resource Contention**: Other processes on the Jetson are consuming CPU/GPU resources.
+
+**Solution**:
+1.  **TensorRT Optimization**: Ensure you are using `trtexec` or the TensorRT Python API to convert your ONNX model to a TensorRT engine with full precision (FP16 or INT8) optimization.
+2.  **Profile on Device**: Use NVIDIA's `nvprof` or `NVIDIA Nsight Systems` to profile your model's execution on the Jetson to identify bottlenecks.
+3.  **Clean Environment**: Shut down unnecessary services and applications on the Jetson to free up resources.
+4.  **Batching**: If possible, batch multiple inference requests together to fully utilize the GPU.
+
+### 38. `ros2_control` Commands in Real Robot are Jerky or Delayed
+
+**Symptom**:
+When sending commands to `ros2_control` on the real robot, joint movements are not smooth, exhibit sudden changes, or have noticeable delays.
+
+**Root Cause**:
+1.  **Hardware Interface Latency**: The communication between `ros2_control` and your robot's low-level hardware (e.g., motor drivers) introduces delays.
+2.  **Controller Update Rate**: The update rate of your `ros2_control` controllers is too low, leading to discrete, jerky commands.
+3.  **Network Jitter**: Unstable network communication between your control computer and the robot causes variable delays.
+
+**Solution**:
+1.  **Optimize Hardware Interface**: Ensure your hardware interface for `ros2_control` is optimized for low-latency communication (e.g., using RT-preempt kernel, direct memory access).
+2.  **Increase Controller Frequency**: Increase the update rate of your `ros2_control` controllers (e.g., to 100Hz or higher) in your controller YAML configuration.
+3.  **Stable Network**: Use wired Ethernet or a dedicated, high-quality Wi-Fi link with minimal interference.
+4.  **Trajectory Smoothing**: Implement trajectory smoothing in your high-level planners to generate continuous, differentiable joint commands.
+
+### 39. Robot Cannot Recover from Minor Disturbances in Real World
+
+**Symptom**:
+The robot maintains its balance in simulation but falls or fails to recover when subjected to a minor push or uneven terrain in the real world.
+
+**Root Cause**:
+1.  **Insufficient Disturbance Randomization**: Your simulation did not expose the policy to a wide enough range of external forces or ground irregularities.
+2.  **Poor State Estimation**: The robot's real-world state estimator is not robust enough to accurately sense the disturbance and provide correct state feedback to the policy.
+3.  **Control Authority Mismatch**: The real robot's joint torque limits or velocity limits are lower than those modeled in simulation, preventing it from applying enough force to recover.
+
+**Solution**:
+1.  **Expand Disturbance DR**: Randomize the magnitude, duration, and application point of external forces in simulation. Introduce random ground unevenness.
+2.  **Robust State Estimation**: Improve your sensor fusion (EKF, Complementary Filter) to accurately estimate the robot's state even under disturbances.
+3.  **Verify Actuator Limits**: Ensure your simulated actuator limits (torque, velocity) accurately reflect the real robot's capabilities.
+4.  **Retrain with More Difficult Disturbances**: Gradually increase the intensity of simulated disturbances to force the policy to learn more aggressive recovery strategies.
+
+### 40. Sim-Trained Policy Fails to Generalize to New Objects/Environments in Real
+
+**Symptom**:
+Your policy, trained to grasp any object in simulation, can only grasp familiar objects or fails in a slightly different room in the real world.
+
+**Root Cause**:
+The policy has overfit to the specifics of the simulated environment, failing to extract generalizable features.
+1.  **Limited Object/Environment Diversity**: The variety of objects, textures, and scene layouts in simulation was too narrow.
+2.  **Lack of Semantic Randomization**: Only low-level visual features were randomized, not high-level semantic variations (e.g., different types of cups).
+3.  **Unmodeled Real-World Features**: The real environment has features (e.g., reflections, transparency, complex lighting) that were not present or randomized in simulation.
+
+**Solution**:
+1.  **Massive Object/Environment Randomization**: Use large, diverse datasets of 3D models and environments. Randomize object properties (shape, size, color, texture) extensively.
+2.  **Semantic Randomization**: Randomize high-level features, like the "type" of object (e.g., different types of cups, bottles, blocks).
+3.  **Real-World Data Augmentation**: Fine-tune the policy with a small dataset of real-world images and corresponding randomized simulated images.
+4.  **Pre-training on Diverse Real Data**: Pre-train your perception modules on large, diverse real-world datasets (e.g., ImageNet, Open Images) before training with synthetic data.
+
+---
+
+## Phase 8: Capstone Integration Errors
+
+### 41. Launch File Fails to Start All Nodes
+
+**Symptom**:
+When you run your main `butler_launch.py`, some expected ROS 2 nodes do not start, or they start and immediately crash.
+
+**Root Cause**:
+1.  **Missing Dependencies**: A package required by a node is not installed or not found in the ROS 2 environment.
+2.  **Incorrect Executable Path**: The `executable` field in the launch file refers to a file that does not exist or is not executable.
+3.  **Node Configuration Error**: A node has an error in its `main` function or `rclpy.init()` call that causes it to crash on startup.
+4.  **Resource Contention**: Multiple nodes are trying to access the same hardware resource (e.g., camera) without proper arbitration.
+
+**Solution**:
+1.  **Check `colcon build`**: Ensure your workspace builds without errors and all packages are correctly installed (`colcon build --symlink-install`).
+2.  **Verify Executables**: Check that `executable='voice_handler_node'` corresponds to an actual Python script or C++ binary in your package's `install/capstone_voice_handler/lib` or `bin` directory.
+3.  **Inspect Node Logs**: Remove `output='screen'` from the launch file (or set to `'log'`) and check the individual node logs for more detailed error messages. Use `ros2 log` for full details.
+4.  **Isolated Launch**: Comment out most nodes in your launch file and launch them one by one to isolate the crashing node.
+
+### 42. Nodes Fail to Communicate (No Data Flow)
+
+**Symptom**:
+Nodes are running, but data is not flowing as expected (e.g., Perception publishes `object_detections`, but World Model doesn't receive them). `ros2 topic echo` shows no messages.
+
+**Root Cause**:
+This often points to a mismatch in ROS 2 communication settings.
+1.  **DDS Mismatch**: Different nodes using incompatible DDS implementations.
+2.  **QoS Incompatibility**: Publisher and subscriber have incompatible Quality of Service settings.
+3.  **Incorrect Topic Names/Types**: A typo in the topic name or a mismatch in the message type.
+4.  **Insufficient `colcon build`**: Sometimes a `colcon build` isn't enough, and a clean build is needed.
+
+**Solution**:
+1.  **Standardize DDS**: Ensure `export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp` is set in all terminals before launching nodes.
+2.  **Check `ros2 topic info`**: Use `ros2 topic info /your_topic -v` to verify topic name, message type, and QoS profiles of both publisher and subscriber. Ensure they are compatible.
+3.  **Check `ros2 graph`**: Use `rqt_graph` or `ros2 graph` to visualize connections. If a connection is missing, investigate QoS or DDS.
+4.  **Clean Build**: `rm -rf build install log` followed by `colcon build`.
+
+### 43. Robot Actions Are Not Coordinated
+
+**Symptom**:
+The robot tries to perform multiple actions simultaneously that should be sequential (e.g., navigating to a table while trying to grasp an object on it).
+
+**Root Cause**:
+The Task Planner is not properly managing the state transitions and dependencies between different action modules.
+1.  **Missing Action Server Feedback**: The Task Planner is not waiting for a `SUCCEEDED` or `ABORTED` result from an Action Server before issuing the next command.
+2.  **Race Conditions**: Multiple command sequences are triggered without proper synchronization.
+3.  **Inadequate State Management**: The Task Planner's internal state machine is not robust enough to handle concurrent actions.
+
+**Solution**:
+1.  **Implement Robust Action Clients**: Ensure the Task Planner uses ROS 2 Action Clients that actively wait for results.
+2.  **Sequential Execution**: Enforce strict sequential execution for dependent actions. A state machine or a behavior tree can help organize this.
+3.  **Resource Arbitration**: Implement a central resource manager that grants exclusive access to resources (e.g., the robot arm) to only one module at a time.
+
+### 44. Task Planner Gets Stuck in a Loop
+
+**Symptom**:
+The robot repeatedly attempts the same action, or transitions between two states without making progress (e.g., constantly trying to navigate to an unreachable point).
+
+**Root Cause**:
+This is often a logic error in the Task Planner's state machine or its interaction with other modules.
+1.  **Ambiguous Success/Failure Conditions**: The Task Planner doesn't have clear criteria for when a sub-task is complete or has failed.
+2.  **Ineffective Recovery Strategy**: The recovery action itself is failing or leading back to the same problematic state.
+3.  **Missing Timeout**: Actions are not configured with a timeout, allowing them to hang indefinitely.
+
+**Solution**:
+1.  **Define Clear Transitions**: For each state transition, explicitly define the conditions that trigger it.
+2.  **Implement Timeouts**: For all long-running actions (navigation, manipulation), implement a timeout mechanism. If a timeout occurs, consider it a failure and trigger a recovery.
+3.  **Log State Transitions**: Log the Task Planner's state transitions to help debug the sequence of events.
+4.  **Human Override**: For initial debugging, implement a simple human override mechanism to manually advance or reset the planner.
+
+### 45. World Model Has Outdated/Incorrect Object Information
+
+**Symptom**:
+The robot tries to grasp an object at a location where it no longer is, or navigates to a place where an object was previously detected but is now gone.
+
+**Root Cause**:
+The World Model is not being updated frequently enough or correctly.
+1.  **Slow Perception Updates**: The Perception module is publishing object poses too slowly.
+2.  **Lack of Object Permanence**: The World Model doesn't account for objects being moved or removed.
+3.  **Sensor Noise/Ambiguity**: Perception module provides noisy or ambiguous readings, leading to incorrect updates.
+
+**Solution**:
+1.  **Increase Perception Rate**: Ensure the Perception module publishes object detections at a sufficiently high frequency.
+2.  **Stateful Object Tracking**: Implement stateful object tracking within the World Model, potentially using a Kalman Filter to smooth noisy observations.
+3.  **Object Hypothesis Management**: When an object is "grasped" or "placed" by the manipulation module, the World Model should update its internal state accordingly.
+4.  **Periodic Re-scan**: Implement a mechanism for the robot to periodically re-scan its environment to refresh object locations.
+
+### 46. Voice Command Understood, But Robot Performs Wrong Action
+
+**Symptom**:
+The Voice Handler correctly transcribes and parses the user's intent, but the robot performs an entirely different or nonsensical action (e.g., "bring me the cup" results in the robot waving its arm).
+
+**Root Cause**:
+The mapping between the parsed intent and the robot's executable actions is incorrect.
+1.  **Task Planner Logic Error**: The Task Planner is misinterpreting the intent from the Voice Handler.
+2.  **VLA Action Mapping**: The VLA Integration module is translating the high-level VLA output to low-level robot actions incorrectly.
+3.  **Controller Mismatch**: The low-level controllers are not responding as expected to the commands from the Task Planner.
+
+**Solution**:
+1.  **Intermediate Logging**: Log the output of each stage of the pipeline (Voice Handler's parsed intent, Task Planner's action sequence, VLA's output actions) to identify where the misinterpretation occurs.
+2.  **Clear Action Definitions**: Ensure the action space for your VLA model and the commands for your low-level controllers are clearly defined and consistent.
+3.  **Simulation Debugging**: Replay the scenario in simulation with the misbehaving parsed intent to debug the Task Planner's logic.
+
+### 47. Robot Struggles with Grasping Objects (Despite Correct Commands)
+
+**Symptom**:
+The robot navigates to an object, the manipulation module issues a grasp command, but the gripper fails to reliably pick up the object.
+
+**Root Cause**:
+1.  **Calibration Issues**: The camera-to-robot or robot kinematic calibration is inaccurate.
+2.  **Grasp Quality**: The grasp pose generated by the manipulation module is not stable enough.
+3.  **Object Properties**: The object's real-world properties (texture, weight, deformability) differ from simulation.
+4.  **Gripper Force**: The actual force exerted by the gripper is insufficient.
+
+**Solution**:
+1.  **Recalibrate**: Perform precise hand-eye and kinematic calibration for the robot arm.
+2.  **Grasp Planning Refinement**: Use a more sophisticated grasp planner that considers object geometry and material properties. Randomize object properties (e.g., friction, compliance) more aggressively in sim.
+3.  **Tactile Feedback**: Integrate tactile sensors into the gripper to refine the grasp during execution.
+4.  **Increase Gripper Force**: If hardware allows, increase the commanded gripper force.
+
+### 48. Autonomous Navigation Fails Frequently
+
+**Symptom**:
+The robot frequently gets stuck, collides with walls, or fails to reach its destination during navigation tasks.
+
+**Root Cause**:
+1.  **Inaccurate Map**: The environment map built by SLAM is inaccurate or incomplete.
+2.  **Poor Localization**: The robot's localization within the map is drifting or inconsistent.
+3.  **Local Planner Issues**: The local planner (for obstacle avoidance) is too conservative or too aggressive.
+4.  **Unmodeled Obstacles**: Dynamic or transparent obstacles are not being detected by the perception system.
+
+**Solution**:
+1.  **Improve SLAM**: Use a more robust SLAM algorithm (e.g., Cartographer) or a better LiDAR sensor.
+2.  **Tune Localization**: Adjust the parameters of your AMCL (Adaptive Monte Carlo Localization) or visual odometry.
+3.  **Local Planner Tuning**: Adjust the parameters of your local planner (e.g., DWA, TEB) to balance obstacle avoidance with efficiency.
+4.  **Enhance Perception**: Integrate additional sensors (e.g., ultrasonic, depth camera) for robust obstacle detection, especially for transparent objects.
+
+### 49. High Latency in the Overall System
+
+**Symptom**:
+From the moment a voice command is given to the robot's first physical response, there's a noticeable delay (e.g., >5 seconds), making the robot feel unresponsive.
+
+**Root Cause**:
+Latency accumulates across multiple stages of the pipeline.
+1.  **Sequential Processing**: Modules are waiting for previous stages to fully complete before starting.
+2.  **Inefficient Communication**: Large messages being sent over slow network links.
+3.  **Slow Inference**: VLA or perception models running slowly on the hardware.
+4.  **Limited Compute**: The main processing unit (e.g., Jetson) is overloaded.
+
+**Solution**:
+1.  **Parallelize**: Design the pipeline for maximum parallelism where possible (e.g., Perception can run continuously while Voice Handler processes input).
+2.  **Optimize Message Passing**: Use compressed image topics, smaller message types, and efficient ROS 2 communication patterns.
+3.  **Optimize Inference**: Export models to TensorRT, use lower precision (FP16/INT8), or use smaller models suitable for edge devices.
+4.  **Distribute Compute**: Offload some processing to a stronger companion computer or cloud if needed.
+
+### 50. Robot's Behavior Inconsistent Across Runs
+
+**Symptom**:
+The robot successfully performs a task in one run but fails or behaves differently in a subsequent run with the same initial conditions and command.
+
+**Root Cause**:
+This often indicates non-determinism or sensitivity to minor unmodeled variations.
+1.  **Random Seed Issues**: Random seeds are not fixed in simulation or policy training.
+2.  **Sensor Noise**: Real-world sensor noise has a significant, unhandled impact.
+3.  **Unaccounted Variability**: Minor variations in the real environment (e.g., object orientation, slight changes in friction) are not robustly handled.
+4.  **Race Conditions**: Unsynchronized operations between ROS 2 nodes.
+
+**Solution**:
+1.  **Fix Random Seeds**: For all training and simulation, fix random seeds to ensure reproducibility.
+2.  **Rethink Robustness**: Ensure your policies are explicitly trained to handle the level of noise and variability present in the real world.
+3.  **Pre-process Inputs**: Normalize and filter sensor inputs more aggressively.
+4.  **Synchronize Nodes**: Implement more robust synchronization mechanisms (e.g., message filters, action feedback) between communicating nodes to avoid race conditions.
+
+
+
+### 23. `ros2_control` Controller Fails to Load
+
+**Symptom**:
+Your `ros2_control` system fails to start, with errors in the log like `Controller 'my_controller' failed to load`, `Failed to find resource in package`, or `Could not load library`.
+
+**Root Cause**:
+1.  **Plugin Not Exported**: Your controller is written as a plugin, but you forgot to export it in your `CMakeLists.txt` and `package.xml`.
+2.  **Incorrect YAML Config**: The `controllers.yaml` file that configures your controllers has a syntax error or references joints that don't exist in your URDF.
+3.  **Wrong Controller Type**: The `type` field for a controller in your YAML file is incorrect (e.g., `joint_trajectory_controller/JointTrajectoryController` has a typo).
+
+**Solution**:
+1.  **Export the Plugin**: In your `package.xml`, make sure you have:
+    ```xml
+    <export>
+      <ros2_control plugin_path="${prefix}/my_controller_plugins.xml"/>
+    </export>
+    ```
+    And a corresponding `my_controller_plugins.xml` file.
+2.  **Validate YAML**: Carefully check your `controllers.yaml`. Verify that every joint name listed under a controller exists as a `<joint>` in your URDF.
+3.  **Check Controller Types**: Double-check the `type` of every controller against the official `ros2_control` documentation for the available controller types.
+
+### 24. Humanoid Walks With a Limp
+
+**Symptom**:
+The robot's walking gait is asymmetrical. It leans to one side or one leg moves differently than the other.
+
+**Root Cause**:
+1.  **Asymmetrical URDF**: The mass, inertia, or joint limits are not symmetrical between the left and right legs/feet in the URDF.
+2.  **Controller Tuning**: The PID gains for the joints on one leg are different from the other.
+3.  **Gait Generator Bug**: The algorithm generating the walking trajectory is producing an asymmetrical pattern.
+
+**Solution**:
+1.  **Audit Your URDF**: Use a diff tool to compare the left and right leg link and joint definitions in your URDF/Xacro file. They should be identical except for sign changes in origins and axes.
+2.  **Unify Controller Configs**: Ensure your `controllers.yaml` uses the same gains for corresponding left and right joints.
+3.  **Debug Gait Trajectories**: Plot the desired joint angle trajectories being sent to the left and right leg controllers. They should be mirror images (or appropriately phase-shifted).
+
+### 25. Robot Oscillates When Standing Still
+
+**Symptom**:
+When commanded to stand still, the robot continuously shakes, vibrates, or oscillates around its setpoint.
+
+**Root Cause**:
+This is a classic controls problem. The **Proportional (P) or Derivative (D) gains** in your balance controller or joint controllers are too high. The controller is over-correcting for tiny errors, leading to instability.
+
+**Solution**:
+1.  **Reduce P Gain**: Cut the P gain for the oscillating joints in half and observe. Keep reducing until the oscillation stops, even if it means the robot becomes "softer" or sags.
+2.  **Reduce D Gain**: The D gain acts as a damper. If it's too high, it can amplify sensor noise and cause high-frequency vibrations. Reduce it.
+3.  **Add a Deadband**: In your controller logic, create a small "deadband" around the setpoint. If the error is within this tiny range (e.g., +/- 0.01 degrees), the controller output is zero. This stops the controller from chasing microscopic errors.
+
+### 26. Inverse Kinematics (IK) Solver Fails
+
+**Symptom**:
+You command the robot's hand to a specific pose in space, but the IK solver (e.g., MoveIt, BioIK) reports "No IK solution found".
+
+**Root Cause**:
+1.  **Unreachable Pose**: The target pose is physically impossible for the robot to reach. It's too far away, or requires the arm to bend in a way its joint limits forbid.
+2.  **Singularity**: The target pose forces the arm into a singularity (e.g., fully stretched out or wrist aligned with the elbow), where infinite joint velocities would be needed.
+3.  **Incorrect Solver Setup**: Your IK solver is not configured with the correct kinematic chain (base link and end-effector link) or joint limits.
+
+**Solution**:
+1.  **Visualize the Target**: In RViz2, use the interactive marker to manually move the end-effector to the desired pose. This will give you an intuitive feel for whether the pose is reachable.
+2.  **Check Joint Limits**: In your URDF, ensure the `<limit>` tags for your arm joints have realistic `upper` and `lower` values.
+3.  **Provide a Seed State**: Give the IK solver a "hint" by providing a seed state (a set of joint angles) that is reasonably close to a potential solution. This helps the solver avoid local minima.
+
+### 27. Gripper Fails to Grasp Object
+
+**Symptom**:
+In simulation, the grasp command is sent, the fingers close, but they pass right through the target object instead of grasping it.
+
+**Root Cause**:
+**Missing `<collision>` Geometry**: Either the robot's fingers or the object you are trying to grasp are missing their `<collision>` tags in their URDF/SDF files. Physics engines only calculate collisions between entities that both have collision geometry.
+
+**Solution**:
+Ensure that both the finger links and the object model have valid `<collision>` blocks. It is a common mistake to only define `<visual>` geometry. The collision geometry can be simpler than the visual geometry (e.g., a box or cylinder) for performance reasons, but it must be present.
+
+### 28. Robot Arm Moves Extremely Slowly
+
+**Symptom**:
+You command the arm to move to a new target, and it moves correctly, but takes a very long time to complete the motion.
+
+**Root Cause**:
+The velocity or acceleration limits in your IK solver or trajectory planner are set too low. Planners like MoveIt scale down the velocity of the generated trajectory to respect these limits.
+
+**Solution**:
+In your MoveIt configuration (e.g., `joint_limits.yaml`), find the `max_velocity` and `max_acceleration` parameters for each joint in the arm. Increase them to more realistic, yet still safe, values.
+
+### 29. Collision Detected... Spam in Console
+
+**Symptom**:
+The console is flooded with messages like `[WARN] [move_group]: Collision detected between 'forearm_link' and 'base_link'`.
+
+**Root Cause**:
+The robot's current state is in collision with itself or the environment, according to its URDF. This is often because the collision geometry is too large or doesn't accurately represent the visual model. It can also happen at startup if the robot's initial "zero" pose is self-colliding.
+
+**Solution**:
+1.  **Refine Collision Geometry**: In the URDF, make the `<collision>` meshes more accurate or slightly smaller than the visual meshes, especially for adjacent links.
+2.  **Define an Allowed Collision Matrix (ACM)**: In your MoveIt setup (SRDF file), you can explicitly tell the planner that certain collisions are allowed or expected. For example, a finger is allowed to collide with the palm. This will disable the warnings for those specific link pairs.
+3.  **Adjust the "Home" Pose**: Make sure the robot's default starting pose is not in a state of self-collision.
+
+### 30. Arm Overshoots or is Inaccurate
+
+**Symptom**:
+The robot arm tries to reach a target but consistently stops short, overshoots, or is off by a few centimeters.
+
+**Root Cause**:
+1.  **Inaccurate URDF**: The physical dimensions in your URDF (the lengths of the links) do not perfectly match the real robot. Even small errors accumulate over the length of the arm.
+2.  **Controller Error**: Your `ros2_control` joint controllers are not accurately achieving their commanded positions.
+3.  **Camera Calibration**: If using vision for a closed-loop system, your camera's intrinsic or extrinsic (camera-to-robot) calibration is incorrect.
+
+**Solution**:
+1.  **Calibrate Your URDF**: Carefully re-measure the physical robot and update the link lengths in your URDF. This is a critical step for accuracy.
+2.  **Tune Joint Controllers**: Ensure your joint controllers have minimal steady-state error. You may need to add some Integral (I) gain to eliminate small, persistent errors.
+3.  **Perform Camera-Robot Calibration**: Use a calibration pattern (like a checkerboard) to precisely determine the transform between your camera's optical frame and the robot's base frame.
+```
+

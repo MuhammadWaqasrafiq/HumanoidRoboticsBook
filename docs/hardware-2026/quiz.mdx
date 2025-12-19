@@ -1,0 +1,340 @@
+---
+id: hardware-2026-quiz
+title: Chapter 02 Quiz - Hardware Requirements
+sidebar_label: Quiz
+sidebar_position: 2
+description: Test your understanding of GPU requirements, lab tiers, and hardware selection for Physical AI
+keywords: [quiz, hardware, gpu, rtx-4070-ti, workstation-setup]
+---
+
+# Chapter 02 Quiz: The Hardware You Actually Need in 2026
+
+Test your understanding of GPU requirements, workstation configurations, and hardware selection strategies for Physical AI development.
+
+:::tip How to Use This Quiz
+- Answer all 7 questions honestly (don't peek at the answers!)
+- Each question has one correct answer
+- Explanations are provided after each answer
+- Aim for 5/7 or better to demonstrate mastery
+:::
+
+---
+
+## Question 1: GPU Selection Fundamentals
+
+**What is the MOST critical GPU specification for Physical AI development in 2026?**
+
+A) CUDA core count (determines parallel processing power)
+B) VRAM capacity (determines max model size you can run)
+C) Base clock speed (determines raw compute performance)
+D) TDP (thermal design power, affects cooling requirements)
+
+<details>
+<summary>Click to reveal answer</summary>
+
+**Answer: B) VRAM capacity (determines max model size you can run)**
+
+**Explanation**: While all specifications matter, **VRAM is the hard bottleneck**. If a VLA model requires 14 GB VRAM and your GPU only has 12 GB, the model simply won't run - no amount of CUDA cores or clock speed can fix this.
+
+**VRAM requirements hierarchy**:
+- **Isaac Sim (complex scenes)**: 10-12 GB
+- **OpenVLA 7B inference**: 8-12 GB (16-bit precision)
+- **Pi0 14B inference**: 14-16 GB (16-bit precision)
+- **VLA fine-tuning (7B)**: 12-16 GB (with LoRA + gradient checkpointing)
+
+**Real-world example**: RTX 4070 Ti (12 GB) can run OpenVLA 7B comfortably but requires 8-bit quantization for Pi0 14B. RTX 4080 (16 GB) runs Pi0 14B at full 16-bit precision.
+
+**Key takeaway**: Always check VRAM requirements first, then evaluate CUDA cores and clock speeds.
+
+</details>
+
+---
+
+## Question 2: Lab Tier Selection
+
+**A professional developer building commercial Physical AI applications has a $3,000 budget. Which lab tier should they choose?**
+
+A) Economy Lab ($1,460) - save money, invest in cloud credits
+B) Mid-Tier Lab ($2,640) - optimal for professional work
+C) Premium Lab ($4,960) - stretch budget with financing
+D) Cloud-only approach - no hardware purchase
+
+<details>
+<summary>Click to reveal answer</summary>
+
+**Answer: B) Mid-Tier Lab ($2,640) - optimal for professional work**
+
+**Explanation**: The Mid-Tier Lab fits the budget ($2,640 < $3,000) and provides **production-grade hardware** perfectly suited for professional developers:
+
+**Why Mid-Tier is optimal**:
+- **RTX 4080 (16 GB)**: Runs Pi0 14B at full precision (critical for commercial apps)
+- **64 GB RAM**: Supports multi-session workflows (Isaac Sim + VSCode + browser + Jupyter)
+- **2-3x faster than Economy**: Faster iteration = more productivity
+- **24/7 operation**: Better cooling prevents thermal throttling
+- **Future-proof**: 1000W PSU supports future RTX 5090 upgrade
+
+**Why NOT other options**:
+- **Economy Lab**: 12 GB VRAM limits to 8-bit quantization for Pi0 14B (lower quality outputs)
+- **Premium Lab**: $4,960 exceeds budget; overkill for commercial work (unless training custom models)
+- **Cloud-only**: $3,000/year in cloud credits ≈ 4,000 hours on Lambda Labs ($0.75/hr). Only makes sense if usage < 5h/week.
+
+**ROI calculation**: Mid-Tier saves $18,500 over 5 years vs equivalent cloud (AWS g5.2xlarge).
+
+</details>
+
+---
+
+## Question 3: VRAM Workload Estimation
+
+**You're developing a Physical AI pipeline that runs Isaac Sim (complex warehouse scene with 3 robots) and OpenVLA 7B inference simultaneously. What is the MINIMUM VRAM required?**
+
+A) 8 GB (sufficient for basic workloads)
+B) 12 GB (minimum for this combined workload)
+C) 16 GB (recommended for comfortable headroom)
+D) 24 GB (overkill, only needed for research)
+
+<details>
+<summary>Click to reveal answer</summary>
+
+**Answer: B) 12 GB (minimum for this combined workload)**
+
+**Explanation**: Let's break down VRAM usage:
+
+**Isaac Sim (complex warehouse, 3 robots)**:
+- Base scene rendering: 4 GB
+- Photorealistic assets: +2 GB
+- 3 humanoid robots (articulated, collision meshes): +3 GB
+- **Subtotal**: ~9-10 GB
+
+**OpenVLA 7B inference (16-bit precision)**:
+- Model weights: 7B parameters × 2 bytes = 14 GB
+- With 8-bit quantization: ~7-8 GB
+- **Subtotal**: 8 GB (quantized)
+
+**Combined workload**: 10 GB (Isaac Sim) + 8 GB (OpenVLA quantized) = **18 GB theoretical**
+
+However, with GPU memory optimizations (shared memory, dynamic allocation), this fits in **12 GB** by:
+1. Using 8-bit quantization for OpenVLA (reduces to 7-8 GB)
+2. Reducing Isaac Sim asset quality slightly (reduces to 8-9 GB)
+
+**Why 12 GB is the minimum**:
+- RTX 4070 Ti (12 GB): Tight fit, requires tuning, occasional OOM (out of memory) errors
+- RTX 4080 (16 GB): Comfortable, no optimization needed, headroom for debugging
+
+**Key insight**: Real-world VRAM usage varies 10-20% based on scene complexity. Always budget 20% headroom above calculated minimum.
+
+</details>
+
+---
+
+## Question 4: CPU vs GPU Priority
+
+**You have $2,000 budget and must choose between two configurations. Which is better for Physical AI development?**
+
+A) AMD Ryzen 9 7950X (16-core, $600) + RTX 4070 Ti (12 GB, $800) = $1,400 + $600 other
+B) AMD Ryzen 5 7600 (6-core, $200) + RTX 4080 (16 GB, $1,150) = $1,350 + $650 other
+
+<details>
+<summary>Click to reveal answer</summary>
+
+**Answer: B) AMD Ryzen 5 7600 (6-core) + RTX 4080 (16 GB)**
+
+**Explanation**: Physical AI workloads are **GPU-bound**, not CPU-bound. Investing more in GPU delivers better performance.
+
+**Performance comparison**:
+
+| Workload | Config A (7950X + 4070 Ti) | Config B (7600 + 4080) | Winner |
+|----------|---------------------------|----------------------|--------|
+| Isaac Sim rendering | 45 FPS | 60 FPS | **B** (+33%) |
+| VLA inference (Pi0 14B) | 8-bit quantization required | 16-bit full precision | **B** |
+| Fine-tuning (7B model) | 2.5 hours/epoch | 1.8 hours/epoch | **B** (-28%) |
+| ROS 2 package build | 45 seconds | 60 seconds | A (+25%) |
+
+**Key findings**:
+- GPU-heavy tasks (simulation, inference, training): **Config B wins 3/4 workloads**
+- CPU-heavy task (ROS 2 builds): Config A is 15 seconds faster (marginal)
+- **Critical difference**: Config B's 16 GB VRAM enables full-precision Pi0 14B (better outputs)
+
+**When to prioritize CPU**:
+- Parallel experimentation (running 10+ models simultaneously)
+- Training from scratch (requires feeding data to GPU quickly)
+- CI/CD pipelines (many parallel builds)
+
+For typical Physical AI development (simulation + inference + occasional fine-tuning), **GPU > CPU**.
+
+</details>
+
+---
+
+## Question 5: Dual-Boot vs Alternatives
+
+**Why is dual-booting Ubuntu 22.04 alongside Windows the ONLY practical option for Physical AI development in 2026?**
+
+A) WSL2 and VMs work fine but are slightly slower
+B) Isaac Sim requires native GPU drivers which WSL2/VMs cannot provide
+C) Dual-boot is just a personal preference, not a technical requirement
+D) Cloud instances are too expensive for any budget
+
+<details>
+<summary>Click to reveal answer</summary>
+
+**Answer: B) Isaac Sim requires native GPU drivers which WSL2/VMs cannot provide**
+
+**Explanation**: Isaac Sim relies on **NVIDIA OptiX ray tracing** and **CUDA GPU acceleration**, which require:
+1. Direct GPU access (no virtualization layer)
+2. Native NVIDIA drivers (version 535+)
+3. X11 or Wayland display server (Linux GUI)
+
+**Why alternatives fail**:
+
+**WSL2 (Windows Subsystem for Linux)**:
+- ❌ GPU passthrough for GUI apps not supported (as of 2026)
+- ❌ Isaac Sim window crashes or shows black screen
+- ✅ ROS 2 CLI tools work fine (but insufficient for Physical AI)
+
+**Virtual Machines (VirtualBox, VMware)**:
+- ❌ GPU passthrough extremely complex (requires VT-d, IOMMU configuration)
+- ❌ 20-30% performance penalty even when working
+- ❌ Photorealistic rendering broken (no OptiX support)
+
+**Cloud instances (AWS, Lambda, Paperspace)**:
+- ✅ Technically works perfectly
+- ❌ Cost: $1,000-6,000/year for 8-12h/day usage
+- ❌ Latency: 50-150ms input lag (frustrating for development)
+- ❌ No offline work (requires internet)
+
+**Dual-boot advantages**:
+- ✅ Native GPU performance (100% speed)
+- ✅ Full Isaac Sim compatibility
+- ✅ One-time hardware cost ($1,460-4,960)
+- ✅ Offline development possible
+
+**Exception**: Apple Silicon (M1/M2/M3) Macs cannot dual-boot Ubuntu. Cloud is the only option.
+
+</details>
+
+---
+
+## Question 6: Total Cost of Ownership (TCO)
+
+**An Economy Lab ($1,460 initial cost) saves approximately how much over 3 years compared to AWS g5.xlarge cloud instances (assuming 8h/day usage)?**
+
+A) $1,000-2,000 (minimal savings)
+B) $2,500-3,500 (modest savings)
+C) $4,700-6,950 (substantial savings)
+D) $10,000+ (extreme savings)
+
+<details>
+<summary>Click to reveal answer</summary>
+
+**Answer: C) $4,700-6,950 (substantial savings)**
+
+**Explanation**: Let's calculate the full 3-year TCO:
+
+**Economy Lab owned hardware**:
+- Initial build: $1,460
+- Electricity (250W avg, 8h/day, $0.12/kWh): $90/year × 3 = $270
+- Optional RAM upgrade (year 3): $120
+- **Total 3-year**: $1,460 + $270 + $120 = **$1,850**
+
+**AWS g5.xlarge (A10G GPU, 24 GB VRAM)**:
+- Hourly rate: $1.006
+- Daily usage: 8 hours
+- Annual cost: $1.006 × 8h × 365 days = $2,937
+- **Total 3-year**: $2,937 × 3 = **$8,811**
+
+**Savings**: $8,811 - $1,850 = **$6,961**
+
+**Lambda Labs (RTX 6000 Ada, cheaper alternative)**:
+- Hourly rate: $0.75
+- Annual cost: $0.75 × 8h × 365 = $2,190
+- **Total 3-year**: $2,190 × 3 = **$6,570**
+- **Savings**: $6,570 - $1,850 = **$4,720**
+
+**Breakeven point**: After **6-9 months** of 8h/day usage, owned hardware pays for itself.
+
+**When cloud makes sense**:
+- Sporadic usage (under 5 hours/week = 260 hours/year)
+- 260h × $1.006 = $261/year (cheaper than $1,850 upfront)
+- Short-term projects (under 6 months)
+- Testing before committing to hardware purchase
+
+**Key insight**: If you'll use Physical AI tools **consistently** (5+ hours/week), owning hardware saves thousands over 3-5 years.
+
+</details>
+
+---
+
+## Question 7: Hardware Decision Matrix
+
+**You're a student with a $1,200 budget. You plan to complete this book (6 months) and then build a capstone project (3 months). What should you do?**
+
+A) Buy Economy Lab ($1,460) - stretch budget with student loan
+B) Buy used RTX 3090 (24 GB) workstation (~$1,200) - older but more VRAM
+C) Use cloud (Lambda Labs) for 9 months, then decide ($0.75/hr × 500 hours = $375)
+D) Wait and save more money before starting
+
+<details>
+<summary>Click to reveal answer</summary>
+
+**Answer: C) Use cloud (Lambda Labs) for 9 months, then decide**
+
+**Explanation**: This is the **only scenario where cloud is optimal**:
+
+**Time-limited project (9 months)**:
+- Estimated usage: 4-6 hours/day × 180 days (6 months book) = 720-1,080 hours
+- Add capstone (3 months): +300 hours
+- **Total**: ~1,000-1,400 hours
+
+**Cloud cost**:
+- Lambda Labs RTX 6000 Ada ($0.75/hr): $750-1,050 total
+- Paperspace A5000 ($1.10/hr): $1,100-1,540 total
+- **Average**: ~$900-1,200 for 9 months
+
+**Why NOT buy hardware**:
+- Economy Lab ($1,460) exceeds budget by $260
+- Used RTX 3090: Risk of no warranty, potential GPU degradation, driver issues
+- After 9 months, you might not need Physical AI tools anymore (graduation, career change)
+
+**Why cloud is better for short-term**:
+- Pay only for hours used (no upfront cost)
+- No electricity or maintenance costs
+- Can stop anytime (flexibility)
+- Access to latest GPUs (Lambda Labs upgrades hardware regularly)
+
+**Decision framework**:
+- **Under 6 months usage**: Always cloud
+- **6-12 months usage**: Cloud if budget under $1,500, hardware if budget over $2,000
+- **12+ months usage**: Always buy hardware (ROI breakeven at 9-12 months)
+
+**Student-specific tip**: Many universities offer free GPU cloud credits (Google Cloud Education, AWS Educate). Check with your CS department before paying out of pocket.
+
+</details>
+
+---
+
+## Scoring Guide
+
+**7/7 correct**: Hardware expert! You understand GPU requirements, TCO analysis, and decision trade-offs.
+**5-6 correct**: Strong understanding. Review the concepts you missed.
+**3-4 correct**: Good start. Re-read the sections corresponding to incorrect answers.
+**0-2 correct**: Go back and re-read Chapter 02 carefully, especially GPU comparison and lab tier sections.
+
+---
+
+## Key Takeaways to Remember
+
+1. **VRAM is the hard bottleneck** - 12 GB minimum for most Physical AI workloads
+2. **GPU > CPU** for Physical AI - invest more in GPU, less in CPU
+3. **Three lab tiers**: Economy ($1,460), Mid-Tier ($2,640), Premium ($4,960)
+4. **TCO savings**: Owning hardware saves $4,700-117,000 over 3-5 years vs cloud
+5. **Dual-boot required** - WSL2 and VMs cannot run Isaac Sim properly
+6. **RTX 4070 Ti (12 GB)**: Best price/performance for students and hobbyists
+7. **RTX 4080 (16 GB)**: Optimal for professional developers and commercial projects
+8. **Cloud makes sense** only for under 5h/week usage or under 6 month projects
+
+---
+
+:::note Next Steps
+Ready to install the software stack? Move on to **Chapter 03: ROS 2 Fundamentals** to begin setting up ROS 2 Jazzy, Isaac Sim, and your development environment. Make sure you've chosen your lab tier (or cloud provider) before proceeding.
+:::

@@ -1,0 +1,94 @@
+# ROS 2 Parameter File Example
+# Demonstrates YAML parameter configuration for multi-node systems
+
+# Syntax:
+# node_name:
+#   ros__parameters:    # Note: double underscore
+#     param_name: value
+
+# Publisher node parameters
+talker:
+  ros__parameters:
+    message_prefix: "Robot says: "
+    publish_rate: 5.0
+    use_timestamp: true
+
+# Subscriber node parameters
+listener:
+  ros__parameters:
+    log_level: "INFO"
+    buffer_size: 10
+    enable_statistics: false
+
+# Example: Configurable velocity controller
+configurable_velocity:
+  ros__parameters:
+    # Speed limits
+    linear_speed: 0.8      # m/s
+    angular_speed: 0.4     # rad/s
+    max_acceleration: 2.0  # m/s^2
+
+    # Publishing configuration
+    publish_rate: 15.0     # Hz
+    topic_name: '/mobile_base/cmd_vel'
+
+    # Feature flags
+    enable_rotation: true
+    enable_debug_output: false
+
+    # Safety parameters
+    emergency_stop_distance: 0.3  # meters
+    obstacle_avoidance: true
+
+# Example: Multi-robot configuration
+# Each robot can have unique parameters
+robot1:
+  talker:
+    ros__parameters:
+      publish_rate: 10.0
+  listener:
+    ros__parameters:
+      log_level: "DEBUG"
+
+robot2:
+  talker:
+    ros__parameters:
+      publish_rate: 5.0
+  listener:
+    ros__parameters:
+      log_level: "WARN"
+
+# Example: Array parameters
+sensor_fusion:
+  ros__parameters:
+    # String array
+    sensor_topics: ['/camera/image', '/lidar/scan', '/imu/data']
+
+    # Double array
+    sensor_weights: [0.5, 0.3, 0.2]
+
+    # Boolean array
+    sensor_enabled: [true, true, false]
+
+    # Integer array
+    sensor_priorities: [1, 2, 3]
+
+# Example: Nested configuration
+navigation_stack:
+  ros__parameters:
+    global_planner:
+      algorithm: "A*"
+      resolution: 0.05
+      update_frequency: 1.0
+
+    local_planner:
+      algorithm: "DWA"
+      max_vel_x: 0.5
+      max_vel_theta: 1.0
+      acc_lim_x: 2.5
+      acc_lim_theta: 3.2
+
+    costmap:
+      robot_radius: 0.3
+      inflation_radius: 0.5
+      obstacle_range: 2.5

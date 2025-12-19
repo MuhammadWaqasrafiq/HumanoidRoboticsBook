@@ -1,0 +1,250 @@
+---
+id: why-physical-ai-quiz
+title: Chapter 01 Quiz - Why Physical AI
+sidebar_label: Quiz
+sidebar_position: 2
+description: Test your understanding of Physical AI fundamentals and the convergence factors
+keywords: [quiz, physical-ai, assessment, learning]
+---
+
+# Chapter 01 Quiz: Why Physical AI Is the Next Frontier
+
+Test your understanding of Physical AI fundamentals, technology convergence, and deployment roadmap.
+
+:::tip How to Use This Quiz
+- Answer all 7 questions honestly (don't peek at the answers!)
+- Each question has one correct answer
+- Explanations are provided after each answer
+- Aim for 5/7 or better to demonstrate mastery
+:::
+
+---
+
+## Question 1: Physical AI Definition
+
+**What is the fundamental difference between traditional AI and Physical AI?**
+
+A) Physical AI uses larger language models
+B) Physical AI interacts with and manipulates the physical world through embodied platforms
+C) Physical AI is faster than traditional AI
+D) Physical AI doesn't require training data
+
+<details>
+<summary>Click to reveal answer</summary>
+
+**Answer: B) Physical AI interacts with and manipulates the physical world through embodied platforms**
+
+**Explanation**: Physical AI requires embodiment (a physical robot), perception of the 3D environment, reasoning about physical actions, execution of motions, and learning from physical interactions. Traditional AI operates purely in the digital realm (text, images, data) without physical interaction.
+
+**Key Distinction**: Physical AI faces challenges like sensor noise, irreversible consequences (objects break), and expensive training (real-world interactions), which digital AI never encounters.
+</details>
+
+---
+
+## Question 2: Technology Convergence
+
+**Which of the following is NOT one of the five key technologies converging to enable Physical AI in 2024-2026?**
+
+A) Vision-Language-Action (VLA) models
+B) Quantum computing for robot control
+C) GPU-accelerated simulation (Isaac Sim)
+D) Affordable hardware platforms (under $20K humanoids)
+
+<details>
+<summary>Click to reveal answer</summary>
+
+**Answer: B) Quantum computing for robot control**
+
+**Explanation**: The five convergence factors are:
+1. VLA models (OpenVLA, RT-2-X, Octo, Pi0)
+2. Sim-to-real transfer techniques
+3. Affordable hardware platforms ($16K-$90K humanoids)
+4. GPU-accelerated simulation (NVIDIA Isaac Sim)
+5. Open-source robotics ecosystem (ROS 2)
+
+Quantum computing, while promising, is not currently a key enabler for Physical AI deployment. Today's Physical AI systems run on conventional GPUs (NVIDIA RTX 4070 Ti+).
+
+</details>
+
+---
+
+## Question 3: VLA Models
+
+**What is the primary breakthrough enabled by Vision-Language-Action (VLA) models?**
+
+A) Robots can see in the dark
+B) Natural language commands are translated directly to robot actions without hand-coding behaviors
+C) Robots can lift heavier objects
+D) Robots require less electricity
+
+<details>
+<summary>Click to reveal answer</summary>
+
+**Answer: B) Natural language commands are translated directly to robot actions without hand-coding behaviors**
+
+**Explanation**: VLA models are the "ChatGPT moment" for robotics. Just as LLMs eliminated hand-crafted NLP rules, VLA models eliminate hand-crafted robot control programs.
+
+**Example**: A command like "Pick up the red cup and place it on the table" gets translated end-to-end to motor commands, without developers writing custom code for object detection, grasp planning, motion control, etc.
+
+**Key Models**:
+- OpenVLA (7B parameters, 970K trajectories)
+- RT-2-X (Google's generalist robot policy)
+- Octo (open-source alternative)
+- Pi0 (Physical Intelligence foundation model)
+
+</details>
+
+---
+
+## Question 4: Economic Drivers
+
+**According to the chapter, what is the approximate breakeven point (in years) for humanoid robots vs. human workers in repetitive tasks?**
+
+A) 6 months
+B) 1.5 years
+C) 5 years
+D) 10 years
+
+<details>
+<summary>Click to reveal answer</summary>
+
+**Answer: B) 1.5 years**
+
+**Explanation**: Based on the 5-year Total Cost of Ownership comparison:
+- **Human worker**: $300,000 ($0 initial + $45K salary + $15K benefits × 5 years)
+- **Humanoid robot**: $75,000 ($50K hardware + $5K/year maintenance × 5 years)
+
+**Breakeven calculation**: $50K initial cost ÷ ($60K human annual cost - $5K robot annual cost) = ~0.9 years. Adding deployment overhead brings it to ~1.5 years.
+
+**Note**: Breakeven is faster for 24/7 operations (no shift changes) and slower for tasks requiring high dexterity or cognitive flexibility.
+
+**Ethical consideration**: Job displacement must be addressed through retraining programs and policy interventions.
+
+</details>
+
+---
+
+## Question 5: Application Domains
+
+**Which application domain has the HIGHEST maturity and is seeing mass deployment in 2024-2026?**
+
+A) Household & personal assistance
+B) Manufacturing & warehousing
+C) Healthcare & elder care
+D) Space exploration
+
+<details>
+<summary>Click to reveal answer</summary>
+
+**Answer: B) Manufacturing & warehousing**
+
+**Explanation**: Manufacturing and warehousing are in the "Leaders" quadrant - high maturity (80%+ of early deployments) and large market size.
+
+**Maturity levels by domain**:
+- **High**: Manufacturing & Warehousing (mass deployment 2024-2026)
+- **Medium**: Healthcare, Agriculture, Hazardous environments (pilots 2025-2027)
+- **Low**: Household robots (prototypes, deployment 2027-2030)
+
+**Key players**: Boston Dynamics (Stretch), Agility Robotics (Digit), Amazon Robotics
+
+**Why manufacturing leads**: Controlled environments, repetitive tasks, strong ROI case, and regulatory clarity make it ideal for early adoption.
+
+</details>
+
+---
+
+## Question 6: Humanoid Form Factor
+
+**What is the primary advantage of humanoid robots over specialized robots (wheeled, tracked, drones)?**
+
+A) Humanoids are cheaper to manufacture
+B) Humanoids can fly and swim
+C) Humanoids fit existing human infrastructure without retrofitting
+D) Humanoids are faster at all tasks
+
+<details>
+<summary>Click to reveal answer</summary>
+
+**Answer: C) Humanoids fit existing human infrastructure without retrofitting**
+
+**Explanation**: Human environments are designed for humans:
+- **Stairs**: 80% of buildings have stairs inaccessible to wheeled robots
+- **Doors**: Require hands to open (round knobs, push bars)
+- **Tools**: Hammers, wrenches, keyboards designed for human hands
+- **Spaces**: Narrow aisles, low ceilings optimized for 1.7m height
+
+**The iPhone Analogy**: Before smartphones, you carried separate devices (phone, camera, GPS, music player). The iPhone wasn't the best at any task, but "good enough" at all in one device.
+
+Humanoids are the iPhone of robotics - not the fastest at any single task, but versatile enough to replace multiple specialized robots across applications. This amortizes hardware cost.
+
+</details>
+
+---
+
+## Question 7: 2024-2030 Timeline
+
+**According to the deployment roadmap, when are consumer humanoid robots (mass market, 1M+ units) expected to become ubiquitous?**
+
+A) 2025-2026
+B) 2026-2027
+C) 2028-2029
+D) 2030+
+
+<details>
+<summary>Click to reveal answer</summary>
+
+**Answer: D) 2030+**
+
+**Explanation**: The roadmap shows three phases:
+
+**2024-2025: Foundation**
+- VLA models released (OpenVLA, RT-2-X, Octo)
+- $16K humanoids available (Unitree G1)
+- Manufacturing pilots (Figure + BMW)
+
+**2026-2027: Early Adoption**
+- 10,000+ humanoids in factories
+- First home robot beta programs (1000 households)
+- Sub-$20K platforms available
+- Safety certifications established
+
+**2028-2029: Scale-Up**
+- 100,000+ humanoids in warehouses
+- Elder care robots in 10,000+ facilities
+- Sub-$10K hobbyist kits
+
+**2030+: Mass Market**
+- 1M+ humanoids globally
+- Consumer home robots (vacuum + tidy + cook)
+- Physical AI as ubiquitous as smartphones
+
+**Why the delay?**: Consumer adoption requires solving reliability (10,000+ hours between failures), dexterity (90%+ object manipulation), long-horizon task planning (100+ steps), and achieving sub-$10K prices. Manufacturing deployment leads by 2-3 years because requirements are simpler (repetitive tasks, controlled environments).
+
+</details>
+
+---
+
+## Scoring Guide
+
+**7/7 correct**: Expert level! You have mastered Physical AI fundamentals.
+**5-6 correct**: Strong understanding. Review the concepts you missed.
+**3-4 correct**: Good start. Re-read the sections corresponding to incorrect answers.
+**0-2 correct**: Go back and re-read Chapter 01 carefully.
+
+---
+
+## Key Takeaways to Remember
+
+1. **Physical AI** = AI systems interacting with the physical world through embodied robots
+2. **Five convergence factors**: VLA models, sim-to-real, affordable hardware, GPU simulation, ROS 2
+3. **VLA models** eliminate hand-coded behaviors (the "ChatGPT moment" for robotics)
+4. **Economic breakeven**: ~1.5 years for repetitive tasks
+5. **Application maturity**: Manufacturing > Healthcare > Household
+6. **Humanoid advantage**: Fits existing infrastructure without retrofitting
+7. **Timeline**: Manufacturing 2024-2026, Consumer 2030+
+
+---
+
+:::note Next Steps
+Ready to learn about the hardware you need? Move on to **Chapter 02: The Hardware You Actually Need in 2026** to understand GPU requirements, workstation setup, and three lab tiers (Economy/Mid/Premium).
+:::

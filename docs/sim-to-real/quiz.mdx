@@ -1,0 +1,62 @@
+---
+id: quiz
+title: Chapter 12 Quiz - Sim-to-Real Transfer
+sidebar_position: 1
+description: Test your understanding of sim-to-real transfer, domain randomization, and hardware deployment strategies.
+keywords: [quiz, sim-to-real, domain-randomization, reality-gap, isaac-sim]
+---
+
+# Chapter 12 Quiz: Sim-to-Real Transfer
+
+Test your knowledge of the critical techniques and best practices for bridging the reality gap and deploying policies from simulation to real-world robots.
+
+## Questions
+
+1.  **What is the "reality gap" in the context of robotics?**
+    a) The difference in cost between simulated and real robots.
+    b) The discrepancy between policies trained in simulation and their performance in the real world.
+    c) The time delay between a robot's perception and its action.
+    d) The ethical concerns surrounding AI in physical systems.
+    **Answer**: b) The discrepancy between policies trained in simulation and their performance in the real world.
+
+2.  **Which of the following is NOT a primary source of the reality gap?**
+    a) Physics discrepancies (e.g., contact models).
+    b) Sensor discrepancies (e.g., noise characteristics).
+    c) Computational power differences between sim and real.
+    d) Modeling errors (e.g., URDF/SDF inaccuracies).
+    **Answer**: c) Computational power differences between sim and real.
+
+3.  **What is the main goal of Domain Randomization (DR)?**
+    a) To make the simulation perfectly photorealistic.
+    b) To train policies to be invariant to variations between sim and real.
+    c) To reduce the computational cost of simulation.
+    d) To generate synthetic data for human supervised learning.
+    **Answer**: b) To train policies to be invariant to variations between sim and real.
+
+4.  **Which type of parameter would you NOT typically randomize in Visual Domain Randomization?**
+    a) Textures and lighting.
+    b) Camera position and field of view.
+    c) The robot's joint limits.
+    d) Object colors and materials.
+    **Answer**: c) The robot's joint limits.
+
+5.  **When quantifying the reality gap, what does a "Policy Success Rate Drop" metric of >25% typically indicate?**
+    a) The simulation is too complex.
+    b) The real robot is underperforming due to mechanical failure.
+    c) There is a significant reality gap that needs to be addressed.
+    d) The policy is too simple for the task.
+    **Answer**: c) There is a significant reality gap that needs to be addressed.
+
+6.  **In the Teacher-Student Distillation Workflow for Unitree robots, what kind of information does the "Teacher Policy" typically have access to that the "Student Policy" does not?**
+    a) Real-world sensor data.
+    b) Privileged information (e.g., exact contact forces).
+    c) Only non-privileged information.
+    d) The robot's battery level.
+    **Answer**: b) Privileged information (e.g., exact contact forces).
+
+7.  **When deploying a navigation policy to a Jetson Economy Tier, which optimization technique is crucial for maximizing inference speed on the Jetson's GPU?**
+    a) Increasing the model's complexity.
+    b) Using float32 precision for all calculations.
+    c) Exporting the policy to an ONNX or TensorRT engine.
+    d) Running all inference on the CPU.
+    **Answer**: c) Exporting the policy to an ONNX or TensorRT engine.

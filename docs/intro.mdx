@@ -1,0 +1,176 @@
+---
+id: intro
+title: Welcome to Physical AI & Humanoid Robotics
+sidebar_position: 1
+description: Learn to build embodied intelligence with ROS 2, NVIDIA Isaac Sim, and Vision-Language-Action models - from digital twin to autonomous humanoid butler
+keywords: [physical-ai, humanoid-robotics, ros2, nvidia-isaac, vla-models, robotics-education]
+hide_table_of_contents: false
+---
+
+# Physical AI & Humanoid Robotics
+
+**Building Embodied Intelligence with ROS 2, NVIDIA Isaac, and Vision-Language-Action Models**
+
+*A Hands-On Capstone Journey from Digital Brain to Physical Body (2026 Edition)*
+
+---
+
+## 🎯 What You'll Build
+
+By the end of this book, you'll go from **"Hello World" in ROS 2** to deploying a **simulated (and optionally real) humanoid robot** that:
+
+- ✅ Accepts natural-language voice commands ("*Pick up the red cup and place it on the table*")
+- ✅ Understands visual scenes using Vision-Language-Action (VLA) models
+- ✅ Executes complex physical tasks autonomously (navigation, manipulation, multi-step sequences)
+- ✅ Runs on accessible hardware (RTX 4070 Ti+, ~$700-$3,000 budget)
+
+**Your capstone project**: An **autonomous humanoid butler** that performs household tasks end-to-end.
+
+---
+
+## 👥 Who This Book Is For
+
+### You Should Read This If You Are:
+
+- **AI/ML Engineer** wanting to transition from software-only AI to Physical AI / embodied intelligence
+- **Robotics Researcher** entering the humanoid era and needing practical VLA integration skills
+- **Technical Educator** building Physical AI labs or hackathon curriculum
+- **Startup Founder/Engineer** at a robotics company targeting human-centered environments
+- **Graduate Student** researching sim-to-real transfer, locomotion, or manipulation
+
+### Prerequisites
+
+**Required Skills**:
+- ✅ Solid Python programming (functions, classes, async)
+- ✅ Basic Linux command line (bash, file navigation, package management)
+- ✅ Introductory deep learning (PyTorch or TensorFlow familiarity)
+
+**Hardware Requirements**:
+- ✅ Laptop with **RTX 4070 Ti or better GPU** (12GB+ VRAM)
+- ✅ **32GB+ RAM**
+- ✅ **Ubuntu 22.04 LTS** (dual-boot instructions provided for Windows/MacOS)
+
+**No prior ROS or robotics experience required** - we teach everything from fundamentals!
+
+---
+
+## 📚 Book Structure
+
+### Part I: Foundation (Weeks 0-1)
+- [**Chapter 01**: Why Physical AI Is the Next Frontier](/docs/why-physical-ai)
+- [**Chapter 02**: The Hardware You Actually Need in 2026](/docs/hardware-2026)
+
+**Goal**: Understand the Physical AI landscape and set up your complete development workstation in under 4 hours.
+
+---
+
+### Part II: ROS 2 & Simulation (Weeks 1-5)
+- [**Chapter 03**: ROS 2 – The Robotic Nervous System](/docs/ros2-fundamentals)
+- [**Chapter 04**: URDF & Digital Twins – Modeling Humanoids](/docs/urdf-digital-twins)
+- [**Chapter 05**: Gazebo Classic vs. Ignition vs. NVIDIA Isaac Sim](/docs/simulation-ecosystem)
+- [**Chapter 06**: NVIDIA Isaac Platform Deep Dive](/docs/isaac-platform)
+
+**Goal**: Master ROS 2 fundamentals and create your first digital twin humanoid that moves in simulation.
+
+---
+
+### Part III: Core Robotics (Weeks 6-9)
+- [**Chapter 07**: Perception Stack – VSLAM, Depth, Segmentation](/docs/perception-stack)
+- [**Chapter 08**: Bipedal Locomotion and Balance Control](/docs/bipedal-locomotion)
+- [**Chapter 09**: Dexterous Manipulation with Humanoid Hands](/docs/dexterous-manipulation)
+
+**Goal**: Implement robust perception, locomotion, and manipulation for reliable environment interaction.
+
+---
+
+### Part IV: Intelligence Layer (Weeks 10-12)
+- [**Chapter 10**: Vision-Language-Action Models (VLA)](/docs/vla-models)
+- [**Chapter 11**: Voice-to-Action Pipeline (Whisper → LLM → ROS 2)](/docs/voice-to-action)
+- [**Chapter 12**: Sim-to-Real Transfer Cookbook](/docs/sim-to-real)
+
+**Goal**: Deploy the AI "brain" - VLA models that convert natural language commands into physical actions, plus sim-to-real transfer for physical hardware.
+
+---
+
+### Part V: Integration (Weeks 13-15)
+- [**Chapter 13**: Capstone Project – Autonomous Humanoid Butler](/docs/capstone-butler)
+
+**Goal**: Synthesize all learned skills into a complete autonomous system performing complex household tasks.
+
+---
+
+### Appendices
+- [**Appendix A**: Lab Build Guides](/docs/appendices/lab-build-guides) (Economy, Mid-Tier, Premium tiers with complete BOMs)
+- [**Appendix B**: Troubleshooting Bible](/docs/appendices/troubleshooting-bible) (100 most common errors and fixes)
+- [**Appendix C**: Future Roadmap (2026–2030)](/docs/appendices/future-roadmap) (Emerging research directions and platform landscape)
+
+---
+
+## ⏱️ Time Commitment
+
+- **Full book**: ~40-60 hours over 15 weeks (3-4 hours/week)
+- **MVP (Chapters 1-6, 10-11)**: ~25-30 hours (working VLA pipeline)
+- **Individual chapters**: 2-4 hours each
+
+**Flexible pacing**: Work at your own speed. Each chapter is self-contained with embedded quizzes.
+
+---
+
+## 🛠️ Tech Stack
+
+| Component | Technology |
+|-----------|------------|
+| **Robotics Middleware** | ROS 2 Iron Irwini (2023-2028 support) |
+| **Physics Simulation** | NVIDIA Isaac Sim 2025.1+ |
+| **Programming** | Python 3.10+ (rclpy), C++ 17 (rclcpp) |
+| **VLA Models** | OpenVLA-7B (primary), Octo, RT-2-X (alternatives) |
+| **Voice Pipeline** | Whisper (speech recognition) + LLM (command parsing) |
+| **Hardware** | Ubuntu 22.04 LTS, RTX 4070 Ti+ GPU |
+
+---
+
+## ✅ Success Criteria
+
+**You've successfully completed this book when you can**:
+
+1. ✅ Install and run a full-stack Physical AI workstation in under 4 hours ([SC-001](/docs/intro#success-criteria))
+2. ✅ Build, simulate, and control a bipedal humanoid in NVIDIA Isaac Sim using only book instructions ([SC-002](/docs/intro#success-criteria))
+3. ✅ Deploy a working VLA pipeline that turns spoken commands into executed robot actions ([SC-003](/docs/intro#success-criteria))
+4. ✅ Score 80%+ on all embedded quizzes ([SC-005](/docs/intro#success-criteria))
+5. ✅ Complete the capstone autonomous butler project end-to-end ([SC-006](/docs/intro#success-criteria))
+
+---
+
+## 🚀 Getting Started
+
+Ready to begin? Start with [**Chapter 01: Why Physical AI Is the Next Frontier →**](/docs/why-physical-ai)
+
+Or jump directly to:
+- [**Chapter 02: Hardware Setup**](/docs/hardware-2026) - Set up your workstation
+- [**Chapter 03: ROS 2 Fundamentals**](/docs/ros2-fundamentals) - Learn the robotic nervous system
+- [**Chapter 10: VLA Models**](/docs/vla-models) - Deploy the AI brain
+
+---
+
+## 📜 License & Contributing
+
+- **Code** (examples, scripts): [MIT License](https://github.com/your-username/physical-ai-book/blob/main/LICENSE)
+- **Content** (prose, documentation): [CC-BY-4.0 License](https://github.com/your-username/physical-ai-book/blob/main/LICENSE-CONTENT)
+
+**Contributions welcome!** See [CONTRIBUTING.md](https://github.com/your-username/physical-ai-book/blob/main/CONTRIBUTING.md) for guidelines.
+
+---
+
+## 🙏 Acknowledgments
+
+This book builds on the incredible work of:
+- The **ROS 2** community for robotics middleware
+- **NVIDIA** for Isaac Sim and GPU acceleration
+- **Physical AI researchers** advancing VLA models (OpenVLA, RT-2-X, Octo teams)
+- **Open-source robotics** pioneers making embodied intelligence accessible
+
+---
+
+**Let's build the future of Physical AI together.** 🤖✨
+
+[**Begin your journey →**](/docs/why-physical-ai)

@@ -1,0 +1,226 @@
+---
+id: index
+title: Chapter 03 - ROS 2 Fundamentals
+sidebar_position: 3
+description: Master the Robot Operating System 2 - nodes, topics, services, actions, and launch files
+keywords: [ros2, robotics, pub-sub, nodes, topics, middleware, jazzy]
+---
+
+# Chapter 03: ROS 2 Fundamentals
+
+## Learning Objectives
+
+By the end of this chapter, you will be able to:
+
+1. **Understand ROS 2 architecture** - nodes, topics, services, actions, parameters
+2. **Create publisher/subscriber nodes** in Python using rclpy
+3. **Implement service clients and servers** for request-response patterns
+4. **Use action servers** for long-running robot tasks with feedback
+5. **Configure parameters and launch files** for multi-node systems
+6. **Debug ROS 2 applications** using command-line tools and visualization
+
+:::tip Prerequisites
+Before starting this chapter, ensure you have:
+- Completed Chapter 02 (hardware setup or cloud instance)
+- Ubuntu 22.04 with ROS 2 Jazzy installed
+- Basic Python knowledge (functions, classes, imports)
+- Terminal/command line familiarity
+:::
+
+---
+
+## Introduction: Why ROS 2?
+
+**Robot Operating System 2 (ROS 2)** is not an operating system like Linux or Windows. It's a **middleware framework** that provides:
+
+- **Communication infrastructure**: Nodes send messages to each other
+- **Hardware abstraction**: Same code works with different robots
+- **Standard libraries**: Motion planning, localization, perception, control
+- **Tools ecosystem**: Debugging, visualization, simulation integration
+
+### ROS 1 vs ROS 2: Why the Rewrite?
+
+| Feature | ROS 1 (Legacy) | ROS 2 (Modern) |
+|---------|---------------|----------------|
+| **Real-time support** | No | Yes (DDS middleware) |
+| **Multi-robot** | Difficult (single master) | Native support |
+| **Security** | None | DDS Security (encryption, auth) |
+| **Platform support** | Linux only | Linux, Windows, macOS |
+| **Production readiness** | Research-focused | Industry-grade |
+| **Lifecycle management** | Manual | Managed nodes |
+
+**For Physical AI**: ROS 2 is mandatory because:
+- **Real-time**: Humanoid balance control requires 1000 Hz control loops
+- **Reliability**: Production robots can't tolerate single-point failures (ROS 1 master node)
+- **Security**: Commercial deployments need encrypted communication
+
+---
+
+## ROS 2 Architecture Overview
+
+```mermaid
+graph TB
+    subgraph "Application Layer"
+        N1[Publisher Node]
+        N2[Subscriber Node]
+        N3[Service Server]
+        N4[Action Client]
+    end
+
+    subgraph "ROS 2 Middleware DDS"
+        T1[/topic/cmd_vel]
+        T2[/topic/sensor_data]
+        S1[/service/calculate]
+        A1[/action/navigate]
+    end
+
+    subgraph "Transport Layer"
+        UDP[UDP Multicast]
+        TCP[TCP Unicast]
+    end
+
+    N1 -->|publish| T1
+    T1 -->|subscribe| N2
+    N3 <-->|request/response| S1
+    N4 <-->|goal/feedback/result| A1
+
+    T1 & T2 --> UDP
+    S1 & A1 --> TCP
+
+    style N1 fill:#90EE90
+    style N2 fill:#FFD700
+    style N3 fill:#87CEEB
+    style N4 fill:#FFA07A
+```
+
+### Key Concepts
+
+1. **Node**: An independent process (Python script, C++ program) that performs computation
+2. **Topic**: A named communication channel for streaming data (pub-sub pattern)
+3. **Service**: Request-response pattern (client asks, server responds once)
+4. **Action**: Long-running task with goal, feedback, and result (e.g., "navigate to waypoint")
+5. **Parameter**: Runtime configuration (e.g., robot speed, sensor calibration)
+
+---
+
+## Chapter Structure
+
+This chapter is divided into 4 sections:
+
+1. **[Nodes & Topics](./nodes-topics)** - Publisher/subscriber communication
+2. **[Services & Actions](./services-actions)** - Request-response and goal-based tasks
+3. **[Parameters & Launch Files](./parameters-launch)** - Configuration and multi-node startup
+4. **[Debugging Tools](./debugging-tools)** - rqt, rviz2, ros2 CLI commands
+
+Each section includes:
+- Conceptual explanation with diagrams
+- Hands-on Python code examples
+- Common pitfalls and troubleshooting tips
+
+:::note Estimated Time
+- **Reading**: 2-3 hours for all 4 sections
+- **Coding exercises**: 3-4 hours to complete all examples
+- **Total**: 5-7 hours to master ROS 2 fundamentals
+:::
+
+---
+
+## Quick Start: Your First ROS 2 Node
+
+Let's verify your ROS 2 installation works with a simple "Hello World":
+
+```bash
+# Source ROS 2 environment (add to ~/.bashrc for persistence)
+source /opt/ros/jazzy/setup.bash
+
+# Check ROS 2 version
+ros2 --version
+# Expected output: ros2 cli version: 0.XX.X
+
+# Run demo talker node (publisher)
+ros2 run demo_nodes_cpp talker
+```
+
+**Expected output:**
+```
+[INFO] [talker]: Publishing: 'Hello World: 1'
+[INFO] [talker]: Publishing: 'Hello World: 2'
+[INFO] [talker]: Publishing: 'Hello World: 3'
+...
+```
+
+Open a **second terminal** and run the listener (subscriber):
+
+```bash
+source /opt/ros/jazzy/setup.bash
+ros2 run demo_nodes_py listener
+```
+
+**Expected output:**
+```
+[INFO] [listener]: I heard: [Hello World: 1]
+[INFO] [listener]: I heard: [Hello World: 2]
+[INFO] [listener]: I heard: [Hello World: 3]
+...
+```
+
+**What just happened?**
+1. `talker` node publishes messages to `/chatter` topic
+2. `listener` node subscribes to `/chatter` topic
+3. ROS 2 middleware (DDS) delivers messages automatically
+4. Nodes can be in different languages (C++ vs Python) - they communicate transparently
+
+---
+
+## Installation Verification
+
+Run these commands to verify your ROS 2 setup:
+
+```bash
+# Check ROS 2 environment variables
+env | grep ROS
+# Should show: ROS_VERSION=2, ROS_DISTRO=jazzy
+
+# List available ROS 2 packages
+ros2 pkg list | head -10
+
+# Check DDS implementation (default: Fast DDS)
+ros2 doctor --report | grep middleware
+# Should show: middleware name: rmw_fastrtps_cpp
+
+# Test topic communication
+ros2 topic list
+# Should show: /parameter_events, /rosout (always present)
+
+# Check node discovery
+ros2 node list
+# Should show: (empty if no nodes running)
+```
+
+If any command fails, revisit **Chapter 02 - Appendix A: Lab Build Guides** for ROS 2 installation troubleshooting.
+
+---
+
+## Next Steps
+
+Ready to dive deeper? Start with **[Section 1: Nodes & Topics](./nodes-topics)** to learn the foundation of ROS 2 communication.
+
+Prefer a different learning path?
+- **Hands-on learner**: Jump to code examples in each section
+- **Visual learner**: Focus on Mermaid diagrams and ros2 CLI visualization
+- **System designer**: Read about architecture patterns in Services & Actions section
+
+:::tip Quick Navigation
+- **Next**: [Nodes & Topics](./nodes-topics) - Publisher/subscriber pattern
+- **Skip ahead**: [Debugging Tools](./debugging-tools) - Troubleshooting ROS 2 issues
+- **Related**: Chapter 04 (URDF modeling) builds on ROS 2 fundamentals
+:::
+
+---
+
+## Further Reading
+
+- **Official ROS 2 Documentation**: https://docs.ros.org/en/jazzy/
+- **ROS 2 Tutorials**: https://docs.ros.org/en/jazzy/Tutorials.html
+- **DDS Specification**: https://www.omg.org/spec/DDS/ (for advanced users)
+- **Fast DDS Documentation**: https://fast-dds.docs.eprosima.com/ (default ROS 2 middleware)

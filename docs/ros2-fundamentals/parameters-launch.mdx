@@ -1,0 +1,814 @@
+---
+id: parameters-launch
+title: Section 3 - Parameters & Launch Files
+sidebar_position: 3
+description: Configuring ROS 2 nodes with parameters and orchestrating multi-node systems with launch files
+keywords: [ros2-parameters, ros2-launch, configuration, yaml, python-launch]
+---
+
+# Section 3: Parameters & Launch Files
+
+## Introduction
+
+So far we've built individual nodes that communicate via topics, services, and actions. Real robotics applications require:
+
+- **Runtime configuration**: Adjust robot speed, sensor thresholds, algorithm parameters without recompiling
+- **Multi-node orchestration**: Launch 10+ nodes simultaneously with correct dependencies and namespaces
+- **Environment management**: Different configs for simulation vs hardware, development vs production
+
+ROS 2 provides two mechanisms for this:
+
+1. **Parameters**: Runtime configuration values (robot speed, sensor topic names, PID gains)
+2. **Launch files**: Python scripts that start multiple nodes with coordinated configuration
+
+---
+
+## What are Parameters?
+
+A **parameter** is a named value associated with a node that can be:
+- **Declared** in node code with default values
+- **Set** from command line, launch files, or parameter files
+- **Changed** at runtime without restarting the node
+
+**Analogy**: Parameters are like configuration settings in an app:
+```python
+# Traditional config file
+config = {
+    'max_speed': 1.0,
+    'sensor_topic': '/camera/image',
+    'enable_debug': False
+}
+
+# ROS 2 parameters (similar concept, but dynamic)
+self.declare_parameter('max_speed', 1.0)
+self.declare_parameter('sensor_topic', '/camera/image')
+self.declare_parameter('enable_debug', False)
+```
+
+### Parameter Types
+
+ROS 2 supports these parameter types:
+- `bool` - True/False flags
+- `int` - Integer values
+- `double` - Floating-point numbers
+- `string` - Text values
+- `byte_array` - Binary data
+- `bool_array`, `int_array`, `double_array`, `string_array` - Arrays of values
+
+---
+
+## Node with Parameters Example
+
+Let's create a configurable velocity publisher:
+
+```python
+# File: configurable_velocity.py
+import rclpy
+from rclpy.node import Node
+from geometry_msgs.msg import Twist
+
+
+class ConfigurableVelocity(Node):
+    def __init__(self):
+        super().__init__('configurable_velocity')
+
+        # Declare parameters with default values
+        self.declare_parameter('linear_speed', 0.5)  # m/s
+        self.declare_parameter('angular_speed', 0.3)  # rad/s
+        self.declare_parameter('publish_rate', 10.0)  # Hz
+        self.declare_parameter('topic_name', '/cmd_vel')
+        self.declare_parameter('enable_rotation', True)
+
+        # Get parameter values
+        linear = self.get_parameter('linear_speed').value
+        angular = self.get_parameter('angular_speed').value
+        rate = self.get_parameter('publish_rate').value
+        topic = self.get_parameter('topic_name').value
+        enable_rot = self.get_parameter('enable_rotation').value
+
+        # Create publisher with configured topic
+        self.publisher = self.create_publisher(Twist, topic, 10)
+
+        # Create timer with configured rate
+        timer_period = 1.0 / rate
+        self.timer = self.create_timer(timer_period, self.timer_callback)
+
+        # Store configuration
+        self.linear_speed = linear
+        self.angular_speed = angular if enable_rot else 0.0
+
+        self.get_logger().info(f'Started with: linear={linear}, angular={angular}, rate={rate}')
+
+    def timer_callback(self):
+        msg = Twist()
+        msg.linear.x = self.linear_speed
+        msg.angular.z = self.angular_speed
+        self.publisher.publish(msg)
+
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = ConfigurableVelocity()
+
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
+
+
+if __name__ == '__main__':
+    main()
+```
+
+**Key concepts**:
+- `declare_parameter(name, default_value)` - Register parameter with fallback
+- `get_parameter(name).value` - Retrieve current value
+- Parameters are read during `__init__()`, so changes require node restart (for this example)
+
+**Running with custom parameters**:
+```bash
+# Use defaults
+python3 configurable_velocity.py
+
+# Override parameters from command line
+ros2 run my_package configurable_velocity --ros-args \
+  -p linear_speed:=1.0 \
+  -p angular_speed:=0.5 \
+  -p publish_rate:=20.0 \
+  -p enable_rotation:=false
+```
+
+---
+
+## Parameter Introspection with CLI
+
+While node is running, use these commands:
+
+```bash
+# List all nodes
+ros2 node list
+
+# List parameters for a node
+ros2 param list /configurable_velocity
+# Output:
+# enable_rotation
+# angular_speed
+# linear_speed
+# publish_rate
+# topic_name
+
+# Get parameter value
+ros2 param get /configurable_velocity linear_speed
+# Output: Double value is: 0.5
+
+# Set parameter at runtime (if node supports dynamic updates)
+ros2 param set /configurable_velocity linear_speed 1.0
+# Output: Set parameter successful
+
+# Dump all parameters to file
+ros2 param dump /configurable_velocity > my_params.yaml
+```
+
+---
+
+## Parameter Files (YAML)
+
+Instead of passing parameters on command line, use **YAML files**:
+
+```yaml
+# File: robot_config.yaml
+configurable_velocity:
+  ros__parameters:
+    linear_speed: 0.8
+    angular_speed: 0.4
+    publish_rate: 15.0
+    topic_name: '/mobile_base/cmd_vel'
+    enable_rotation: true
+```
+
+**Load parameters from file**:
+```bash
+ros2 run my_package configurable_velocity --ros-args \
+  --params-file robot_config.yaml
+```
+
+**YAML structure**:
+- Top level: Node name (`configurable_velocity`)
+- Second level: `ros__parameters` (double underscore)
+- Third level: Parameter names and values
+
+---
+
+## Dynamic Parameter Updates
+
+To allow runtime parameter changes without restarting, add a **parameter callback**:
+
+```python
+from rcl_interfaces.msg import ParameterDescriptor, SetParametersResult
+
+
+class DynamicConfigNode(Node):
+    def __init__(self):
+        super().__init__('dynamic_config_node')
+
+        # Declare parameter with descriptor (optional constraints)
+        speed_descriptor = ParameterDescriptor(
+            description='Maximum linear speed in m/s',
+            floating_point_range=[
+                {'from_value': 0.0, 'to_value': 2.0, 'step': 0.1}
+            ]
+        )
+        self.declare_parameter('max_speed', 0.5, speed_descriptor)
+
+        # Register callback for parameter changes
+        self.add_on_set_parameters_callback(self.parameters_callback)
+
+        self.max_speed = self.get_parameter('max_speed').value
+        self.get_logger().info(f'Initial max_speed: {self.max_speed}')
+
+    def parameters_callback(self, params):
+        """Called when parameters are set at runtime."""
+        for param in params:
+            if param.name == 'max_speed':
+                # Validate value
+                if 0.0 <= param.value <= 2.0:
+                    self.max_speed = param.value
+                    self.get_logger().info(f'Updated max_speed to {param.value}')
+                    return SetParametersResult(successful=True)
+                else:
+                    self.get_logger().error(f'Invalid speed: {param.value}')
+                    return SetParametersResult(successful=False)
+
+        return SetParametersResult(successful=True)
+```
+
+**Benefits**:
+- Change parameters without restarting node
+- Validate new values before applying
+- Log configuration changes
+
+**Testing dynamic updates**:
+```bash
+# Terminal 1: Run node
+python3 dynamic_config_node.py
+
+# Terminal 2: Change parameter
+ros2 param set /dynamic_config_node max_speed 1.2
+# Node logs: "Updated max_speed to 1.2"
+
+# Try invalid value
+ros2 param set /dynamic_config_node max_speed 3.0
+# Node logs: "Invalid speed: 3.0"
+# Output: Setting parameter failed
+```
+
+---
+
+## What are Launch Files?
+
+A **launch file** is a Python script that:
+- Starts multiple nodes simultaneously
+- Sets parameters for each node
+- Configures remappings (redirect topic names)
+- Manages node lifecycle (start order, restart on crash)
+- Loads parameter files
+
+**Why launch files?**
+- Manually starting 15 nodes is error-prone
+- Ensures correct startup order (e.g., sensor driver before SLAM)
+- Consistent configuration across team members
+
+---
+
+## Basic Launch File Example
+
+Let's create a launch file that starts a publisher and subscriber together:
+
+```python
+# File: simple_demo.launch.py
+from launch import LaunchDescription
+from launch_ros.actions import Node
+
+
+def generate_launch_description():
+    return LaunchDescription([
+        # Launch publisher node
+        Node(
+            package='demo_nodes_cpp',
+            executable='talker',
+            name='my_publisher',
+            output='screen'  # Print logs to terminal
+        ),
+
+        # Launch subscriber node
+        Node(
+            package='demo_nodes_py',
+            executable='listener',
+            name='my_subscriber',
+            output='screen'
+        ),
+    ])
+```
+
+**Running the launch file**:
+```bash
+ros2 launch my_package simple_demo.launch.py
+```
+
+**Output**: Both nodes start, talker publishes, listener receives messages
+
+---
+
+## Launch File with Parameters
+
+Let's launch our configurable velocity node with custom parameters:
+
+```python
+# File: velocity_launch.launch.py
+from launch import LaunchDescription
+from launch_ros.actions import Node
+
+
+def generate_launch_description():
+    return LaunchDescription([
+        Node(
+            package='my_package',
+            executable='configurable_velocity',
+            name='robot_velocity_controller',
+            output='screen',
+            parameters=[{
+                'linear_speed': 1.0,
+                'angular_speed': 0.5,
+                'publish_rate': 20.0,
+                'topic_name': '/robot/cmd_vel',
+                'enable_rotation': True
+            }]
+        ),
+    ])
+```
+
+**Or load from YAML file**:
+```python
+import os
+from ament_index_python.packages import get_package_share_directory
+from launch import LaunchDescription
+from launch_ros.actions import Node
+
+
+def generate_launch_description():
+    # Get path to parameter file
+    config_dir = get_package_share_directory('my_package')
+    params_file = os.path.join(config_dir, 'config', 'robot_config.yaml')
+
+    return LaunchDescription([
+        Node(
+            package='my_package',
+            executable='configurable_velocity',
+            name='robot_velocity_controller',
+            output='screen',
+            parameters=[params_file]  # Load from YAML
+        ),
+    ])
+```
+
+---
+
+## Multi-Node Launch File Example
+
+Let's launch a complete robot system with multiple nodes:
+
+```python
+# File: robot_system.launch.py
+from launch import LaunchDescription
+from launch_ros.actions import Node
+from launch.actions import DeclareLaunchArgument, LogInfo
+from launch.substitutions import LaunchConfiguration
+
+
+def generate_launch_description():
+    # Declare launch arguments (command-line overrides)
+    use_sim_time_arg = DeclareLaunchArgument(
+        'use_sim_time',
+        default_value='false',
+        description='Use simulation time if true'
+    )
+
+    robot_name_arg = DeclareLaunchArgument(
+        'robot_name',
+        default_value='robot1',
+        description='Robot namespace'
+    )
+
+    # Get launch argument values
+    use_sim_time = LaunchConfiguration('use_sim_time')
+    robot_name = LaunchConfiguration('robot_name')
+
+    return LaunchDescription([
+        # Declare arguments
+        use_sim_time_arg,
+        robot_name_arg,
+
+        # Log launch info
+        LogInfo(msg=['Launching robot system for: ', robot_name]),
+
+        # 1. Sensor driver node
+        Node(
+            package='sensor_driver',
+            executable='lidar_node',
+            name='lidar_driver',
+            namespace=robot_name,
+            parameters=[{
+                'use_sim_time': use_sim_time,
+                'scan_topic': '/scan',
+                'frame_id': 'lidar_link'
+            }],
+            output='screen'
+        ),
+
+        # 2. Localization node
+        Node(
+            package='localization',
+            executable='amcl',
+            name='localizer',
+            namespace=robot_name,
+            parameters=[{
+                'use_sim_time': use_sim_time,
+                'odom_topic': '/odom',
+                'scan_topic': '/scan'
+            }],
+            output='screen'
+        ),
+
+        # 3. Navigation planner
+        Node(
+            package='navigation',
+            executable='path_planner',
+            name='planner',
+            namespace=robot_name,
+            parameters=[{
+                'use_sim_time': use_sim_time,
+                'max_speed': 1.0,
+                'safety_distance': 0.3
+            }],
+            output='screen'
+        ),
+
+        # 4. Velocity controller
+        Node(
+            package='control',
+            executable='velocity_controller',
+            name='controller',
+            namespace=robot_name,
+            parameters=[{
+                'use_sim_time': use_sim_time,
+                'cmd_vel_topic': '/cmd_vel'
+            }],
+            remappings=[
+                ('/cmd_vel', '/mobile_base/cmd_vel')  # Remap topic
+            ],
+            output='screen'
+        ),
+    ])
+```
+
+**Running with custom arguments**:
+```bash
+# Use defaults
+ros2 launch my_package robot_system.launch.py
+
+# Override arguments
+ros2 launch my_package robot_system.launch.py \
+  use_sim_time:=true \
+  robot_name:=robot2
+```
+
+**Key features**:
+- **DeclareLaunchArgument**: Command-line parameters for launch file
+- **namespace**: Prefix all node names and topics (multi-robot support)
+- **remappings**: Redirect topic names (e.g., `/cmd_vel` → `/mobile_base/cmd_vel`)
+- **output='screen'**: Show node logs in terminal
+
+---
+
+## Launch File with Conditionals
+
+Start nodes conditionally based on arguments:
+
+```python
+from launch import LaunchDescription
+from launch_ros.actions import Node
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
+from launch.conditions import IfCondition
+
+
+def generate_launch_description():
+    use_rviz_arg = DeclareLaunchArgument(
+        'use_rviz',
+        default_value='true',
+        description='Launch RViz for visualization'
+    )
+
+    use_rviz = LaunchConfiguration('use_rviz')
+
+    return LaunchDescription([
+        use_rviz_arg,
+
+        # Always launch robot nodes
+        Node(
+            package='my_package',
+            executable='robot_controller',
+            name='controller',
+            output='screen'
+        ),
+
+        # Conditionally launch RViz
+        Node(
+            package='rviz2',
+            executable='rviz2',
+            name='rviz',
+            condition=IfCondition(use_rviz),  # Only if use_rviz=true
+            output='screen'
+        ),
+    ])
+```
+
+**Usage**:
+```bash
+# Launch with RViz
+ros2 launch my_package robot.launch.py use_rviz:=true
+
+# Launch without RViz
+ros2 launch my_package robot.launch.py use_rviz:=false
+```
+
+---
+
+## Including Other Launch Files
+
+Modular launch files can include others:
+
+```python
+# File: simulation.launch.py
+from launch import LaunchDescription
+from launch.actions import IncludeLaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from ament_index_python.packages import get_package_share_directory
+import os
+
+
+def generate_launch_description():
+    # Get paths to other launch files
+    gazebo_pkg = get_package_share_directory('gazebo_ros')
+    robot_pkg = get_package_share_directory('my_robot_description')
+
+    gazebo_launch = os.path.join(gazebo_pkg, 'launch', 'gazebo.launch.py')
+    robot_launch = os.path.join(robot_pkg, 'launch', 'robot_state_publisher.launch.py')
+
+    return LaunchDescription([
+        # Include Gazebo simulator launch file
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(gazebo_launch),
+            launch_arguments={'world': 'empty_world'}.items()
+        ),
+
+        # Include robot description launch file
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(robot_launch),
+            launch_arguments={'use_sim_time': 'true'}.items()
+        ),
+    ])
+```
+
+**Benefits**:
+- Reuse existing launch files
+- Compose complex systems from smaller modules
+- Override included launch file arguments
+
+---
+
+## Launch File Introspection
+
+```bash
+# List all launch files in a package
+ros2 launch my_package <TAB>
+
+# See launch file arguments
+ros2 launch my_package robot_system.launch.py --show-args
+# Output:
+# Arguments (pass arguments as '<name>:=<value>'):
+#   'use_sim_time':
+#       Use simulation time if true
+#       (default: 'false')
+#   'robot_name':
+#       Robot namespace
+#       (default: 'robot1')
+
+# See what nodes would be launched (dry run)
+ros2 launch my_package robot_system.launch.py --show-nodes
+```
+
+---
+
+## Best Practices
+
+### Parameters
+1. **Always declare parameters** with defaults in `__init__()`
+2. **Use descriptive names**: `max_linear_velocity` not `max_vel`
+3. **Add ParameterDescriptor** with value ranges and descriptions
+4. **Validate in callback** before applying dynamic updates
+5. **Log parameter changes** for debugging
+
+### Launch Files
+1. **Use DeclareLaunchArgument** for flexibility (sim vs real, robot names)
+2. **Organize by system**: `sensors.launch.py`, `navigation.launch.py`, `main.launch.py`
+3. **Use namespaces** for multi-robot systems
+4. **Load parameters from YAML** files, not hardcoded in launch file
+5. **Document required arguments** with descriptions
+
+---
+
+## Common Pitfalls and Solutions
+
+### 1. "Parameter not declared"
+
+**Symptom**: `ParameterNotDeclaredException` when calling `get_parameter()`
+
+**Cause**: Forgot to call `declare_parameter()` first
+
+**Solution**:
+```python
+# Wrong: get before declare
+self.speed = self.get_parameter('speed').value  # ERROR
+
+# Correct: declare then get
+self.declare_parameter('speed', 1.0)
+self.speed = self.get_parameter('speed').value
+```
+
+### 2. "Launch file not found"
+
+**Symptom**: `launch file '...' not found`
+
+**Cause**: Launch file not in correct directory or not installed
+
+**Solution**:
+```python
+# Correct directory structure:
+my_package/
+  launch/
+    my_launch.launch.py  # Must end with .launch.py
+
+# In setup.py:
+from glob import glob
+data_files=[
+    ('share/my_package/launch', glob('launch/*.launch.py')),
+]
+```
+
+### 3. "Parameter file not loaded"
+
+**Symptom**: Node uses default parameters, ignoring YAML file
+
+**Cause**: Incorrect YAML structure or file path
+
+**Solution**:
+```yaml
+# Wrong: Missing ros__parameters
+my_node:
+  speed: 1.0
+
+# Correct: Double underscore
+my_node:
+  ros__parameters:
+    speed: 1.0
+```
+
+### 4. "Nodes start in wrong order"
+
+**Symptom**: Subscriber starts before publisher, misses messages
+
+**Solution**: Use event handlers to wait for nodes:
+```python
+from launch.actions import RegisterEventHandler
+from launch.event_handlers import OnProcessStart
+
+# Wait for sensor node to start before starting planner
+sensor_node = Node(...)
+planner_node = Node(...)
+
+wait_for_sensor = RegisterEventHandler(
+    event_handler=OnProcessStart(
+        target_action=sensor_node,
+        on_start=[planner_node]
+    )
+)
+```
+
+---
+
+## Practical Example: Multi-Robot System
+
+Let's launch 3 robots with unique namespaces and configurations:
+
+```python
+# File: multi_robot.launch.py
+from launch import LaunchDescription
+from launch_ros.actions import Node
+
+
+def generate_launch_description():
+    nodes = []
+
+    # Launch 3 robots with different configurations
+    for i in range(1, 4):
+        robot_name = f'robot{i}'
+
+        # Each robot gets velocity controller
+        velocity_node = Node(
+            package='my_package',
+            executable='configurable_velocity',
+            name='velocity_controller',
+            namespace=robot_name,
+            parameters=[{
+                'linear_speed': 0.5 + (i * 0.2),  # robot1: 0.7, robot2: 0.9, robot3: 1.1
+                'angular_speed': 0.3,
+                'publish_rate': 10.0,
+                'topic_name': '/cmd_vel'
+            }],
+            output='screen'
+        )
+
+        # Each robot gets obstacle detector
+        detector_node = Node(
+            package='sensors',
+            executable='obstacle_detector',
+            name='obstacle_detector',
+            namespace=robot_name,
+            parameters=[{
+                'safety_distance': 0.5,
+                'sensor_topic': '/scan'
+            }],
+            output='screen'
+        )
+
+        nodes.extend([velocity_node, detector_node])
+
+    return LaunchDescription(nodes)
+```
+
+**Result**: Launches 6 nodes total (2 per robot) with unique topics:
+- `/robot1/cmd_vel`, `/robot1/scan`
+- `/robot2/cmd_vel`, `/robot2/scan`
+- `/robot3/cmd_vel`, `/robot3/scan`
+
+---
+
+## Key Takeaways
+
+1. **Parameters** enable runtime configuration without recompiling
+2. **Parameter files (YAML)** separate configuration from code
+3. **Dynamic parameters** allow updates without restarting nodes
+4. **Launch files** orchestrate multi-node systems with coordinated configuration
+5. **Namespaces** enable multi-robot systems on same network
+6. **DeclareLaunchArgument** makes launch files flexible and reusable
+
+---
+
+## Exercises
+
+Try these hands-on challenges:
+
+1. **Parameterized node**: Modify `simple_publisher.py` to accept parameters for message content and publish rate
+   - Test with `ros2 param set` at runtime
+   - Save parameters to YAML file with `ros2 param dump`
+
+2. **Launch file**: Create a launch file that starts publisher and subscriber from Chapter 03.1
+   - Add parameters to configure topic name
+   - Test with different topic names
+
+3. **Multi-instance**: Create a launch file that starts 5 publishers with unique names and different rates
+   - Use loop to generate nodes dynamically
+   - Verify with `ros2 node list` and `ros2 topic hz`
+
+4. **Conditional launch**: Create a launch file with arguments to enable/disable specific nodes
+   - Add `use_visualization` argument to launch RViz
+   - Add `robot_count` argument to launch N robots
+
+---
+
+## Next Section
+
+Ready to debug your ROS 2 applications? Continue to **[Section 4: Debugging Tools](./debugging-tools)** to learn troubleshooting techniques and visualization tools.
+
+---
+
+## Further Reading
+
+- **ROS 2 Parameters**: https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Parameters.html
+- **ROS 2 Launch**: https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Launch/Launch-Main.html
+- **Launch File Architecture**: https://design.ros2.org/articles/roslaunch.html
+- **Parameter YAML Files**: https://docs.ros.org/en/jazzy/Concepts/About-ROS-2-Parameters.html

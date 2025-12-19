@@ -1,0 +1,83 @@
+---
+id: quiz
+title: Chapter 13 Quiz - Capstone Autonomous Butler Project
+sidebar_position: 1
+description: Test your understanding of integrating various Physical AI components into a cohesive autonomous butler system.
+keywords: [quiz, capstone, integration, autonomous-robot, humanoid-butler]
+---
+
+# Chapter 13 Quiz: Capstone Autonomous Butler Project
+
+Test your knowledge of designing, integrating, and evaluating an autonomous humanoid butler.
+
+## Questions
+
+1.  **Which of the following is NOT listed as a core capability of the Autonomous Butler?**
+    a) Voice Command Understanding
+    b) Environment Mapping & Localization
+    c) Dexterous Manipulation
+    d) Advanced Machine Learning Model Development
+    **Answer**: d) Advanced Machine Learning Model Development
+
+2.  **In the high-level system architecture, what is the primary role of the "World Model"?**
+    a) To directly control the robot's actuators.
+    b) To translate voice commands into text.
+    c) To aggregate sensor data and maintain a consistent understanding of the environment and robot state.
+    d) To plan high-level task sequences.
+    **Answer**: c) To aggregate sensor data and maintain a consistent understanding of the environment and robot state.
+
+3.  **For long-running, cancellable tasks with feedback in ROS 2, which communication mechanism is most appropriate?**
+    a) ROS 2 Topics
+    b) ROS 2 Services
+    c) ROS 2 Actions
+    d) ROS 2 Parameters
+    **Answer**: c) ROS 2 Actions
+
+4.  **When implementing the Task Planner module, which design pattern is recommended for handling success, failure, and recovery attempts?**
+    a) A simple sequential list of commands.
+    b) A reactive behavior tree.
+    c) A finite state machine (FSM).
+    d) Direct end-to-end learning.
+    **Answer**: c) A finite state machine (FSM).
+
+5.  **Which module would typically be responsible for breaking down a high-level command like "Go to kitchen, pick up cup, bring to living room" into a sequence of navigation and manipulation goals?**
+    a) Perception Module
+    b) VLA Integration Module
+    c) Task Planner Module
+    d) Voice Handler Module
+    **Answer**: c) Task Planner Module
+
+6.  **If the robot attempts to grasp an object but consistently fails because the object is not found, what is a recommended fallback strategy mentioned?**
+    a) Immediately stop all operations.
+    b) Attempt recovery by searching a wider area.
+    c) Ask the user for a new command.
+    d) Ignore the failure and proceed to the next step.
+    **Answer**: b) Attempt recovery by searching a wider area.
+
+7.  **Which of the following ROS 2 packages would be responsible for global and local path planning, as well as obstacle avoidance?**
+    a) `capstone_perception`
+    b) `capstone_navigation`
+    c) `capstone_manipulation`
+    d) `capstone_vla_integration`
+    **Answer**: b) `capstone_navigation`
+
+8.  **What is the purpose of the `capstone_world_model` module?**
+    a) To perform speech-to-text conversion.
+    b) To run VLA model inference.
+    c) To track known objects, their properties, and the robot's current pose.
+    d) To generate joint commands for the arm.
+    **Answer**: c) To track known objects, their properties, and the robot's current pose.
+
+9.  **When evaluating the Butler's "Task Planning & Execution" capability, what would be a measurable success criterion?**
+    a) The robot can move its arm smoothly.
+    b) The robot can transcribe voice commands with 95% accuracy.
+    c) The robot can execute 3-step sequential tasks reliably.
+    d) The robot can identify 5 different object types.
+    **Answer**: c) The robot can execute 3-step sequential tasks reliably.
+
+10. **Why is it important to approach the capstone project iteratively, testing each component and sub-system before full integration?**
+    a) To reduce the total number of code lines.
+    b) To make the project easier to document.
+    c) To simplify debugging and isolate issues, building complexity gradually.
+    d) To ensure that all modules are written in the same programming language.
+    **Answer**: c) To simplify debugging and isolate issues, building complexity gradually.

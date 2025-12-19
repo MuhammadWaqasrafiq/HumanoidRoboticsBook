@@ -1,0 +1,665 @@
+---
+id: quiz
+title: Chapter 10 Quiz - Vision-Language-Action Models
+sidebar_position: 99
+description: Test your understanding of VLA models, OpenVLA, GR00T N1, and robot learning
+---
+
+# Chapter 10 Quiz: Vision-Language-Action Models
+
+Test your mastery of VLA concepts, model architectures, and deployment strategies!
+
+:::info Quiz Instructions
+- 8 questions covering VLA fundamentals through advanced topics
+- Each question has detailed explanations
+- Score 80% or higher to demonstrate mastery
+- Review relevant sections if you score below 80%
+:::
+
+---
+
+## Question 1: VLA Architecture Components
+
+**Which component is responsible for generating actual robot control commands in a VLA model?**
+
+<details>
+<summary>A) Vision Encoder (DINOv2, SigLIP)</summary>
+
+**Incorrect**
+
+The vision encoder extracts visual features from camera images but does NOT generate actions.
+
+**What it does:**
+- Input: 224x224 RGB image
+- Output: 768-1024D feature vector
+- Purpose: Scene understanding, object detection
+
+**For action generation:** You need the Action Decoder (MLP, Diffusion, or Flow Matching).
+</details>
+
+<details>
+<summary>B) Language Model (Llama 2, Gemma)</summary>
+
+**Incorrect**
+
+The language model processes text commands but doesn't directly output robot actions.
+
+**What it does:**
+- Input: Natural language string
+- Output: Contextualized embeddings
+- Purpose: Command understanding, task reasoning
+
+**For actions:** The fusion layer combines language + vision, then the action decoder generates motor commands.
+</details>
+
+<details>
+<summary>C) Fusion Layer (Cross-Attention)</summary>
+
+**Incorrect**
+
+The fusion layer combines vision and language features but doesn't generate actions.
+
+**What it does:**
+- Input: Vision features + Language embeddings
+- Output: Fused multimodal representation
+- Purpose: Align visual observations with language commands
+
+**Next step:** Fused features go to the action decoder.
+</details>
+
+<details>
+<summary>D) Action Decoder (MLP, Diffusion, Flow Matching)</summary>
+
+ **Correct!**
+
+The **action decoder** is the final component that generates robot control commands.
+
+**Three main types:**
+
+1. **MLP Decoder (OpenVLA)**
+   - Direct regression: fused_features  actions
+   - Speed: 80-120ms (8-12 Hz)
+   - Use case: Fast, deterministic control
+
+2. **Diffusion Decoder (Octo)**
+   - Iterative denoising: noise  actions
+   - Speed: ~100ms (10-20 Hz)
+   - Use case: Smooth trajectories, multimodal distributions
+
+3. **Flow Matching (0, GR00T N1)**
+   - Direct flow: noise  actions (no iteration)
+   - Speed: 8-20ms (50-120 Hz)
+   - Use case: Real-time humanoid control
+
+**Output format:** Typically 7-DoF vector: [joint1, joint2, joint3, joint4, joint5, joint6, gripper]
+</details>
+
+---
+
+## Question 2: OpenVLA Performance
+
+**OpenVLA-7B outperforms RT-2-X (55B) by how much on the Open X-Embodiment benchmark?**
+
+<details>
+<summary>A) +5.2% absolute task success rate</summary>
+
+**Incorrect**
+
+OpenVLA's improvement is much larger than 5.2%.
+
+**Actual performance:** +16.5% absolute task success rate with 7x fewer parameters.
+</details>
+
+<details>
+<summary>B) +16.5% absolute task success rate</summary>
+
+ **Correct!**
+
+OpenVLA-7B achieves **+16.5% absolute improvement** over RT-2-X (55B) on 29 tasks.
+
+**Key results:**
+- **OpenVLA-7B:** 72.1% task success rate (7.23B parameters)
+- **RT-2-X:** 55.6% task success rate (55B parameters)
+- **Improvement:** +16.5 percentage points
+- **Efficiency:** 7x fewer parameters
+
+**Why OpenVLA wins:**
+1. **Dual vision encoders:** DINOv2 + SigLIP (complementary features)
+2. **Better training data:** 970K trajectories from Open X-Embodiment
+3. **Efficient architecture:** Llama 2-7B backbone optimized for robotics
+
+**Implication:** Smaller, open-source models can outperform large proprietary models!
+</details>
+
+<details>
+<summary>C) -8.3% (RT-2-X is better)</summary>
+
+**Incorrect**
+
+This is backwards! OpenVLA significantly outperforms RT-2-X.
+
+**Actual:** OpenVLA +16.5% better than RT-2-X.
+</details>
+
+<details>
+<summary>D) Equal performance (same success rate)</summary>
+
+**Incorrect**
+
+OpenVLA substantially outperforms RT-2-X.
+
+**Actual:** +16.5% absolute improvement with 7x fewer parameters.
+</details>
+
+---
+
+## Question 3: Model Quantization
+
+**You have an RTX 4060 Ti with 16 GB VRAM. OpenVLA-7B requires 14 GB in FP16. What's the BEST quantization strategy for production deployment?**
+
+<details>
+<summary>A) Keep FP16 precision (14 GB VRAM)</summary>
+
+ **Suboptimal**
+
+While FP16 fits on 16 GB VRAM, it leaves only 2 GB for:
+- OS and other processes
+- Inference batch processing
+- Safety margin
+
+**Better:** INT8 gives 50% VRAM reduction with &lt;1% accuracy loss.
+</details>
+
+<details>
+<summary>B) Use INT8 quantization (7 GB VRAM)</summary>
+
+ **Correct - Best Choice!**
+
+**INT8 is optimal for production:**
+
+**Advantages:**
+- **VRAM:** 7 GB (50% reduction from FP16)
+- **Speed:** 1.5-2x faster inference
+- **Accuracy:** 71.6% vs 72.1% FP16 (-0.5%, negligible)
+- **Headroom:** 9 GB free for batch processing, OS, safety margin
+
+**Code:**
+```python
+from transformers import BitsAndBytesConfig
+
+quant_config = BitsAndBytesConfig(
+    load_in_8bit=True,
+    llm_int8_threshold=6.0
+)
+
+model = AutoModelForVision2Seq.from_pretrained(
+    "openvla/openvla-7b",
+    quantization_config=quant_config,
+    device_map="auto"
+)
+```
+
+**Production recommendation:** INT8 for best balance of speed, accuracy, and resource efficiency.
+</details>
+
+<details>
+<summary>C) Use INT4 quantization (3.5 GB VRAM)</summary>
+
+ **Over-aggressive**
+
+INT4 saves maximum VRAM but sacrifices too much accuracy for production:
+
+**Trade-offs:**
+- **VRAM:** 3.5 GB (great!)
+- **Speed:** 2-3x faster (great!)
+- **Accuracy:** 69.8% vs 72.1% FP16 (-2.3%, **significant**)
+
+**When to use INT4:**
+- Experimentation on low-VRAM GPUs (RTX 3060 8GB)
+- Rapid prototyping
+- Non-critical applications
+
+**For production:** INT8 is better - minimal accuracy loss with good VRAM savings.
+</details>
+
+<details>
+<summary>D) Don't quantize, buy more VRAM</summary>
+
+L **Impractical**
+
+Upgrading GPU is expensive and unnecessary when INT8 gives 50% VRAM reduction with &lt;1% accuracy loss.
+
+**Better:** Use INT8 quantization for production deployment.
+</details>
+
+---
+
+## Question 4: GR00T N1 Dual-System Architecture
+
+**In GR00T N1's dual-system architecture, what is the primary role of System 1?**
+
+<details>
+<summary>A) High-level task planning and reasoning</summary>
+
+**Incorrect**
+
+That's **System 2's** role (the VLM).
+
+**System 2 (slow thinking):**
+- Frequency: 1-2 Hz
+- Purpose: Reasons about scene, generates high-level plan
+- Example: "To pick cup: 1) approach, 2) grasp, 3) lift, 4) move to table"
+
+**System 1:** Fast motor control (120 Hz).
+</details>
+
+<details>
+<summary>B) Fast reactive motor control at 120Hz</summary>
+
+ **Correct!**
+
+**System 1 (fast thinking)** executes reactive motor control at **120Hz**.
+
+**System 1 characteristics:**
+- **Frequency:** 120 Hz (8ms per action)
+- **Input:** High-level plan from System 2 + current visual observations
+- **Output:** Continuous action sequence (joint positions, velocities)
+- **Purpose:** Real-time reactive control, balance recovery, obstacle avoidance
+
+**System 2 characteristics:**
+- **Frequency:** 1-2 Hz
+- **Input:** Scene image + natural language command
+- **Output:** High-level task plan
+- **Purpose:** Deliberate reasoning, task understanding
+
+**Analogy to human cognition:**
+- **System 2:** Conscious planning ("I need to pick up this cup")
+- **System 1:** Automatic execution (muscle memory, reflexes)
+
+**Why this matters for humanoids:**
+- Bipedal balance requires fast feedback (100+ Hz)
+- Task planning can be slower (1-2 Hz)
+- Separation allows optimization of each system independently
+</details>
+
+<details>
+<summary>C) Vision encoding from DINOv2</summary>
+
+**Incorrect**
+
+Vision encoding is part of both systems but not the primary role of System 1.
+
+**System 1's role:** Fast motor control at 120Hz, not vision processing.
+</details>
+
+<details>
+<summary>D) Language command parsing</summary>
+
+**Incorrect**
+
+Language parsing is done by **System 2** (the VLM).
+
+**System 1:** Fast motor control based on System 2's plan.
+</details>
+
+---
+
+## Question 5: VLA Model Selection
+
+**You're building a mobile manipulator for warehouse automation. Which VLA model is MOST appropriate?**
+
+<details>
+<summary>A) OpenVLA-7B</summary>
+
+ **Good but not optimal**
+
+OpenVLA is excellent for learning and research but:
+- **Strength:** Open-source, well-documented, strong baseline
+- **Limitation:** Not specifically optimized for mobile manipulation or open-world scenarios
+
+**Better choice:** 0.5 (designed for mobile manipulators with open-world generalization).
+</details>
+
+<details>
+<summary>B) GR00T N1</summary>
+
+L **Incorrect - Wrong Use Case**
+
+GR00T N1 is designed for **humanoid robots**, not mobile manipulators.
+
+**GR00T N1 strengths:**
+- Bipedal locomotion
+- Whole-body coordination
+- Humanoid-specific training data (Fourier GR-1, 1X NEO)
+
+**For warehouse mobile manipulation:** Use 0.5 or Octo instead.
+</details>
+
+<details>
+<summary>C) 0.5 (Physical Intelligence)</summary>
+
+ **Correct - Best Choice!**
+
+**0.5 is optimal for warehouse mobile manipulation:**
+
+**Key advantages:**
+1. **Open-world generalization:** Can clean entirely new environments (kitchens, bedrooms) zero-shot
+2. **Mobile manipulator focus:** Trained on mobile manipulator platforms
+3. **Flow matching:** 50Hz smooth trajectories
+4. **Large dataset:** 10,000+ hours from 7 robot platforms
+
+**Real-world demonstration:**
+- Physical Intelligence deployed 0.5 on mobile manipulators
+- Successfully cleaned new, unseen environments
+- Robust to environmental variations
+
+**Alternative:** Octo (best for multi-embodiment transfer, fast fine-tuning)
+
+**Why not others:**
+- OpenVLA: Good baseline but not specialized for mobile manipulation
+- GR00T N1: Humanoid-specific
+- Helix: Humanoid upper-body only (Figure 02)
+</details>
+
+<details>
+<summary>D) Helix (Figure AI)</summary>
+
+L **Incorrect - Wrong Platform**
+
+Helix is designed for **humanoid robots** (specifically Figure 02), not mobile manipulators.
+
+**Helix strengths:**
+- Full humanoid upper-body control (35 DoF)
+- 200Hz ultra-low-latency
+- Dexterous manipulation
+
+**For warehouse mobile manipulation:** Use 0.5 instead.
+</details>
+
+---
+
+## Question 6: Action Decoder Types
+
+**Which action decoder type produces the SMOOTHEST trajectories at the FASTEST inference speed?**
+
+<details>
+<summary>A) MLP Regressor (Direct prediction)</summary>
+
+**Incorrect**
+
+MLP is fast but NOT the smoothest.
+
+**MLP characteristics:**
+- **Speed:** 80-120ms (8-12 Hz) - moderate
+- **Smoothness:** Deterministic but can be jerky
+- **Use case:** OpenVLA, simple tasks
+
+**Smoothest + fastest:** Flow Matching (0, GR00T N1) at 50-120 Hz.
+</details>
+
+<details>
+<summary>B) Diffusion Policy (Iterative denoising)</summary>
+
+**Incorrect**
+
+Diffusion produces smooth trajectories but is SLOWER.
+
+**Diffusion characteristics:**
+- **Speed:** ~100ms (10-20 Hz) - slow due to iteration
+- **Smoothness:** Excellent (gradual denoising)
+- **Use case:** Octo, complex multi-modal tasks
+
+**Faster:** Flow Matching eliminates iteration, achieving 50-120 Hz.
+</details>
+
+<details>
+<summary>C) Flow Matching (Direct flow)</summary>
+
+ **Correct!**
+
+**Flow Matching** achieves both smoothness AND speed.
+
+**How it works:**
+- **Method:** Direct flow from noise distribution to action distribution (no iteration)
+- **Speed:** 8-20ms per action (50-120 Hz)
+- **Smoothness:** Continuous flow  smooth trajectories
+- **Used by:** 0 (50Hz), 0-FAST (50+Hz), GR00T N1 (120Hz)
+
+**Comparison:**
+
+| Decoder Type | Speed (Hz) | Smoothness | Inference Method |
+|--------------|------------|------------|------------------|
+| **MLP** | 8-12 | Moderate | Direct regression |
+| **Diffusion** | 10-20 | Excellent | Iterative (20-100 steps) |
+| **Flow Matching** | 50-120 | Excellent | Direct (1 step) |
+
+**Key innovation:** Flow matching gets diffusion's smoothness without iteration penalty.
+
+**Why it matters:**
+- Humanoid control needs 50+ Hz for balance
+- Flow matching enables real-time reactive control
+- Smoother than MLP, faster than diffusion
+</details>
+
+<details>
+<summary>D) Transformer Decoder (Autoregressive)</summary>
+
+**Incorrect**
+
+Transformer autoregressive decoding is typically SLOWER than all three options.
+
+**Transformer characteristics:**
+- **Speed:** Sequential generation (slow)
+- **Smoothness:** Depends on training
+- **Use case:** Language modeling, not typical for VLA action decoders
+
+**Best for actions:** Flow Matching (fast + smooth).
+</details>
+
+---
+
+## Question 7: Training Data Scale
+
+**Which VLA model was trained on the LARGEST dataset?**
+
+<details>
+<summary>A) OpenVLA - 970K robot trajectories</summary>
+
+ **Large but not the largest**
+
+OpenVLA uses 970,000 trajectories from Open X-Embodiment dataset.
+
+**Estimated hours:** ~5,000-7,000 hours of robot operation.
+
+**Largest:** 0 with 10,000 hours from 7 platforms.
+</details>
+
+<details>
+<summary>B) Octo - 800K robot trajectories</summary>
+
+L **Not the largest**
+
+Octo uses 800,000 trajectories from 25 datasets.
+
+**Estimated hours:** ~4,000-6,000 hours.
+
+**Largest:** 0 with 10,000 hours.
+</details>
+
+<details>
+<summary>C) 0 - 10,000 hours from 7 robot platforms</summary>
+
+ **Correct!**
+
+**0 has the largest training dataset:** 10,000 hours of robot operation.
+
+**Dataset breakdown:**
+- **Platforms:** 7 different robot embodiments
+- **Tasks:** 68 unique task categories
+- **Data type:** Real-world teleoperation demonstrations
+- **Quality:** High-quality, multi-operator data
+
+**Why this matters:**
+1. **Better generalization:** More diverse scenarios covered
+2. **Robust policies:** Learned from many edge cases
+3. **Zero-shot transfer:** Can handle novel situations
+
+**Comparison:**
+- **0:** 10,000 hours (largest)
+- **OpenVLA:** ~6,000 hours equivalent (970K trajectories)
+- **Octo:** ~5,000 hours equivalent (800K trajectories)
+- **Helix:** 500 hours (smallest but highest quality)
+
+**Note:** Helix's 500 hours is multi-robot, multi-operator, specifically for humanoids.
+</details>
+
+<details>
+<summary>D) RT-2-X - Web-scale vision-language data + robot data</summary>
+
+ **Different metric**
+
+RT-2-X uses web-scale pretraining BUT has less robot-specific data.
+
+**Robot data:** Estimated &lt;1,000 hours of robot trajectories
+**Web data:** Billions of image-text pairs (not robot-specific)
+
+**0 has more robot-specific training data:** 10,000 hours pure robot demonstrations.
+</details>
+
+---
+
+## Question 8: Practical Deployment
+
+**You need to deploy a VLA model on a Jetson AGX Orin (32GB RAM, 8-core ARM CPU, moderate GPU). What's your BEST strategy?**
+
+<details>
+<summary>A) Run OpenVLA-7B in FP16 (14 GB VRAM)</summary>
+
+L **Won't fit**
+
+Jetson AGX Orin has integrated GPU sharing system RAM, not 14+ GB dedicated VRAM.
+
+**Jetson AGX Orin specs:**
+- **Total RAM:** 32 GB (shared CPU/GPU)
+- **GPU VRAM:** ~8-12 GB effective after OS
+- **FP16 OpenVLA:** Requires 14 GB  **won't fit**
+
+**Solution:** Use INT8 or smaller model.
+</details>
+
+<details>
+<summary>B) Run OpenVLA-7B with INT8 quantization (7 GB VRAM)</summary>
+
+ **Correct - Best Strategy!**
+
+**INT8 quantization makes OpenVLA viable on Jetson:**
+
+**Why this works:**
+- **VRAM:** 7 GB (fits in Jetson's effective GPU memory)
+- **Accuracy:** 71.6% (-0.5% from FP16, negligible)
+- **Speed:** 1.5-2x faster than FP16 (important for ARM CPU)
+- **Deployment:** Production-ready with minimal accuracy loss
+
+**Implementation:**
+```python
+from transformers import BitsAndBytesConfig
+
+quant_config = BitsAndBytesConfig(load_in_8bit=True)
+
+model = AutoModelForVision2Seq.from_pretrained(
+    "openvla/openvla-7b",
+    quantization_config=quant_config,
+    device_map="auto"  # Automatic GPU placement
+)
+```
+
+**Alternative:** 0-FAST (3.5 GB, optimized for edge deployment).
+
+**Jetson deployment tips:**
+1. Use INT8 quantization
+2. Enable TensorRT optimization (NVIDIA native)
+3. Reduce batch size to 1 for real-time inference
+4. Monitor temperature (Jetson can throttle under load)
+</details>
+
+<details>
+<summary>C) Use cloud API (Gemini Robotics)</summary>
+
+L **Defeats purpose of edge deployment**
+
+Cloud APIs require internet connectivity, introducing:
+- **Latency:** 50-200ms network round-trip (too slow for real-time control)
+- **Reliability:** Fails when internet drops
+- **Privacy:** Sends camera/sensor data to cloud
+- **Cost:** API fees per request
+
+**Edge deployment purpose:** Low latency, offline operation, privacy.
+
+**Better:** INT8 quantized local model.
+</details>
+
+<details>
+<summary>D) Run GR00T N1 with INT4 quantization</summary>
+
+ **Possible but not optimal**
+
+GR00T N1 requires more resources than OpenVLA even with INT4:
+- **Architecture:** Dual-system (System 1 + System 2) = 2 models
+- **Complexity:** 120Hz control loop requires more compute
+- **VRAM:** ~6-8 GB with INT4 (tight fit on Jetson)
+
+**Better:** OpenVLA-7B INT8 is simpler and proven on edge devices.
+
+**GR00T N1 edge deployment:** Wait for optimized edge-specific version.
+</details>
+
+---
+
+## Score Interpretation
+
+**Calculate your score:**
+- 8/8 correct: **Expert** - Ready for VLA production deployment
+- 6-7/8 correct: **Proficient** - Strong understanding, minor gaps
+- 4-5/8 correct: **Developing** - Review key sections
+- 0-3/8 correct: **Needs Review** - Re-read Chapter 10
+
+---
+
+## Key Takeaways
+
+If you struggled with specific topics, review these sections:
+
+| Question | Topic | Review Section |
+|----------|-------|----------------|
+| Q1 | VLA Architecture | VLA Architecture Fundamentals |
+| Q2 | OpenVLA Performance | OpenVLA: Your First VLA Model |
+| Q3 | Quantization | Model Quantization (Reduce VRAM) |
+| Q4 | GR00T N1 Architecture | GR00T N1: Humanoid-Specific VLA |
+| Q5 | Model Selection | VLA Model Comparison |
+| Q6 | Action Decoders | VLA Architecture  Action Decoder |
+| Q7 | Training Data | Research: VLA Model Landscape |
+| Q8 | Edge Deployment | Model Quantization + Practical Tips |
+
+---
+
+## Next Steps
+
+After completing this quiz:
+
+1.  **Score >= 80%:** Proceed to Chapter 11 (Voice-to-Action Pipeline)
+2.  **Score &lt; 80%:** Review Chapter 10 sections and retry quiz
+3. **Hands-on:** Run `code-examples/vla/openvla-inference.py`
+4. **Advanced:** Experiment with INT8 vs INT4 quantization
+
+:::tip Practice Challenge
+**Deploy OpenVLA on your GPU:**
+1. Install dependencies (PyTorch, transformers, bitsandbytes)
+2. Run `openvla-inference.py` with INT8 quantization
+3. Test with 5 different natural language commands
+4. Measure inference latency and VRAM usage
+5. Compare FP16 vs INT8 performance
+
+**Time budget:** 30-45 minutes
+**Difficulty:** Intermediate
+**Prerequisites:** RTX GPU (8+ GB VRAM), Python 3.10+
+:::
