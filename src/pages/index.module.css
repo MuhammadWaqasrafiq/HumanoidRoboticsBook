@@ -1,0 +1,225 @@
+/**
+ * CSS files with the .module.css suffix will be treated as CSS modules
+ * and scoped locally.
+ */
+
+.heroBanner {
+  padding: 4rem 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  background-color: #1a2a44; /* Dark blue background */
+  color: white;
+  min-height: 500px; /* Ensure sufficient height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media screen and (max-width: 996px) {
+  .heroBanner {
+    padding: 2rem;
+  }
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px; /* Space between buttons */
+  margin-top: 2rem;
+}
+
+/* Custom Card Styles for Features Section */
+.features {
+  display: flex;
+  align-items: center;
+  padding: 2rem 0;
+  width: 100%;
+}
+
+.featureCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease-in-out;
+  height: 100%; /* Ensure cards are same height */
+  background-color: white;
+}
+
+.featureCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+}
+
+.featureCard h3 {
+  font-size: 1.5rem;
+  margin-top: 1rem;
+  color: #1a2a44;
+}
+
+.featureCard p {
+  color: #555;
+}
+
+/* Specific animations for feature cards */
+.animated-section {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.animated-section.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.animated-item-1 {
+  transition-delay: 0.1s;
+}
+.animated-item-2 {
+  transition-delay: 0.2s;
+}
+.animated-item-3 {
+  transition-delay: 0.3s;
+}
+
+
+/* What You'll Learn Section */
+.whatYoullLearn {
+  background-color: #f0f2f5; /* Light background for contrast */
+  padding: 4rem 0;
+}
+
+.whatYoullLearn h2 {
+  color: #1a2a44;
+  margin-bottom: 3rem;
+  font-weight: 700;
+}
+
+.whatYoullLearn ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.whatYoullLearn li {
+  background-color: white;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.whatYoullLearn li:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.whatYoullLearn li svg {
+  margin-right: 12px;
+  color: #3578e5; /* Accent color for icons */
+  font-size: 1.3rem;
+}
+
+
+/* Who Is This For Section */
+.whoIsThisFor {
+  background-color: #ffffff;
+  padding: 6rem 0;
+}
+
+.whoIsThisFor h2 {
+  font-size: 2.8rem;
+  color: #1a2a44;
+  margin-bottom: 1rem;
+}
+
+.whoIsThisFor p {
+  font-size: 1.1rem;
+  color: #555;
+  max-width: 800px;
+  margin: 0 auto 3rem;
+}
+
+.audienceCard {
+  border: 1px solid #eee;
+  border-radius: 16px;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  transition: all 0.3s ease-in-out;
+  background-color: white;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.audienceCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+  border-color: #3578e5;
+}
+
+.audienceCard .icon {
+  font-size: 3.5rem;
+  margin-bottom: 1.5rem;
+  color: #3578e5;
+}
+
+.audienceCard h3 {
+  font-size: 1.8rem;
+  color: #1a2a44;
+  margin-bottom: 0.8rem;
+}
+
+.audienceCard p {
+  font-size: 1.1rem;
+  color: #666;
+  margin: 0;
+}
+
+/* Call to Action Section */
+.callToAction {
+  background-color: #1a2a44;
+  color: white;
+  padding: 6rem 0;
+  text-align: center;
+}
+
+.callToAction h2 {
+  color: white;
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+}
+
+.callToAction p {
+  font-size: 1.2rem;
+  max-width: 700px;
+  margin: 0 auto 2.5rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.callToAction .button {
+  background-color: #3578e5;
+  color: white;
+  padding: 0.8rem 2rem;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.callToAction .button:hover {
+  background-color: #2a65cc;
+  text-decoration: none;
+}

@@ -12,16 +12,15 @@ const config = {
   favicon: 'img/new_logo.svg',
 
   url: 'https://MuhammadWaqasrafiq.github.io',
-  baseUrl: '/HumanoidRoboticsBook/',
+  baseUrl: '/EmbodiesAI/',
 
-  // GitHub pages deployment config.
   organizationName: 'MuhammadWaqasrafiq',
-  projectName: 'HumanoidRoboticsBook',
+  projectName: 'EmbodiesAI',
 
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
 
-  // FontAwesome Icons ke liye stylesheet integrate ki hai
+  // FontAwesome Icons ke liye stylesheet
   stylesheets: [
     {
       href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css',
@@ -47,8 +46,7 @@ const config = {
       ({
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: 'https://github.com/MuhammadWaqasrafiq/HumanoidRoboticsBook/tree/main/',
-          routeBasePath: '/',
+          editUrl: 'https://github.com/MuhammadWaqasrafiq/EmbodiesAI/tree/main/',
         },
         blog: false,
         theme: {
@@ -76,7 +74,7 @@ const config = {
             label: 'Book',
           },
           {
-            href: 'https://github.com/MuhammadWaqasrafiq/HumanoidRoboticsBook',
+            href: 'https://github.com/MuhammadWaqasrafiq/EmbodiesAI',
             label: 'GitHub',
             position: 'right',
           },
@@ -88,15 +86,15 @@ const config = {
           {
             title: 'Learn',
             items: [
-              { label: 'Introduction', to: '/intro' },
-              { label: 'Why Physical AI', to: '/why-physical-ai' },
+              { label: 'Introduction', to: '/docs/intro' },
+              { label: 'Why Physical AI', to: '/docs/why-physical-ai' },
             ],
           },
           {
             title: 'Resources',
             items: [
-              { label: 'GitHub Repo', href: 'https://github.com/MuhammadWaqasrafiq/HumanoidRoboticsBook' },
-              { label: 'Code Samples', href: 'https://github.com/MuhammadWaqasrafiq/HumanoidRoboticsBook/tree/main/code-examples' },
+              { label: 'GitHub Repo', href: 'https://github.com/MuhammadWaqasrafiq/EmbodiesAI' },
+              { label: 'Code Samples', href: 'https://github.com/MuhammadWaqasrafiq/EmbodiesAI/tree/main/code-examples' },
             ],
           },
           {
@@ -104,25 +102,36 @@ const config = {
             items: [
               {
                 html: `
-                <div style="display: flex; flex-direction: column; gap: 8px; margin-top: -10px;">
-                  <!-- Icons Row -->
-                  <div style="display: flex; gap: 1.2rem; align-items: center;">
-                    <a href="https://github.com/MuhammadWaqasrafiq/HumanoidRoboticsBook" target="_blank" rel="noopener noreferrer" style="color: #fff; font-size: 1.4rem;"><i class="fa-brands fa-github"></i></a>
-                    <a href="https://linkedin.com/in/muhammadwaqasrafiq" target="_blank" rel="noopener noreferrer" style="color: #fff; font-size: 1.4rem;"><i class="fa-brands fa-linkedin"></i></a>
-                    <a href="https://wa.me/923463033195" target="_blank" rel="noopener noreferrer" style="color: #fff; font-size: 1.4rem;"><i class="fa-brands fa-whatsapp"></i></a>
-                    <a href="https://youtube.com/@your_channel" target="_blank" rel="noopener noreferrer" style="color: #fff; font-size: 1.4rem;"><i class="fa-brands fa-youtube"></i></a>
-                  </div>
-                  <!-- Compact License Link -->
-                  <a href="https://github.com/MuhammadWaqasrafiq/HumanoidRoboticsBook/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" style="font-size: 0.85rem; color: #3578e5; text-decoration: none; margin-top: 2px;">
-                    MIT License <i class="fas fa-external-link-alt" style="font-size: 0.7rem;"></i>
-                  </a>
-                </div>
+               <div class="footer__socials" style="display: flex; gap: 1.5rem; margin-bottom: 1rem;">
+ 
+  <a href="https://github.com/MuhammadWaqasrafiq/EmbodiesAI" target="_blank" rel="noopener noreferrer" aria-label="GitHub" style="color: #fff; font-size: 1.6rem; transition: color 0.3s ease;">
+    <i class="fa-brands fa-github"></i>
+  </a>
+
+  <a href="https://linkedin.com/in/muhammadwaqasrafiq" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" style="color: #fff; font-size: 1.6rem; transition: color 0.3s ease;">
+    <i class="fa-brands fa-linkedin"></i>
+  </a>
+
+
+  <a href="https://wa.me/923463033195" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" style="color: #ffffffff; font-size: 1.6rem; transition: transform 0.3s ease;">
+    <i class="fa-brands fa-whatsapp"></i>
+  </a>
+
+
+  <a href="https://www.youtube.com/watch?v=dZTfXiPSZyE" target="_blank" rel="noopener noreferrer" aria-label="YouTube" style="color: #fff; font-size: 1.6rem; transition: color 0.3s ease;">
+    <i class="fa-brands fa-youtube"></i>
+  </a>
+</div>
                 `,
+              },
+              {
+                label: 'MIT License',
+                href: 'https://github.com/MuhammadWaqasrafiq/EmbodiesAI/blob/main/LICENSE',
               },
             ],
           },
         ],
-        // Professional Short Copyright
+        // Shortened professional copyright line
         copyright: `© ${new Date().getFullYear()} Embodied AI • MuhammadWaqasrafiq • MIT & CC-BY-4.0`,
       },
       prism: {
