@@ -1,0 +1,22 @@
+# FastAPI
+fastapi
+uvicorn[standard]
+
+# Google Gemini
+google-generativeai
+
+# Vector Database
+qdrant-client
+
+# Text Processing
+langchain-text-splitters
+
+# Configuration
+pydantic
+pydantic-settings
+
+# Database (as requested)
+sqlalchemy
+
+# Environment variables
+python-dotenv
