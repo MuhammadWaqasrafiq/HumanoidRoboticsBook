@@ -17,8 +17,9 @@ const config = {
   url: 'https://muhammadwaqasrafiq.github.io',
   baseUrl: '/HumanoidRoboticsBook/',
 
-  organizationName: 'MuhammadWaqasRafiq', // GitHub username
-  projectName: 'HumanoidRoboticsBook',    // Repo name
+  organizationName: 'MuhammadWaqasrafiq',
+  projectName: 'HumanoidRoboticsBook',
+  trailingSlash: false, // Ye line zaroor add karen
 
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
@@ -59,7 +60,7 @@ const config = {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl:
-            'https://github.com/MuhammadWaqasRafiq/HumanoidRoboticsBook/tree/main/',
+            'https://github.com/MuhammadWaqasrafiq/HumanoidRoboticsBook/tree/main/',
         },
         blog: false,
         theme: {
@@ -89,7 +90,7 @@ const config = {
           label: 'Book',
         },
         {
-          href: 'https://github.com/MuhammadWaqasRafiq/HumanoidRoboticsBook',
+          href: 'https://github.com/MuhammadWaqasrafiq/HumanoidRoboticsBook',
           label: 'GitHub',
           position: 'right',
         },
@@ -111,11 +112,11 @@ const config = {
           items: [
             {
               label: 'GitHub Repo',
-              href: 'https://github.com/MuhammadWaqasRafiq/HumanoidRoboticsBook',
+              href: 'https://github.com/MuhammadWaqasrafiq/HumanoidRoboticsBook',
             },
             {
               label: 'Code Samples',
-              href: 'https://github.com/MuhammadWaqasRafiq/HumanoidRoboticsBook/tree/main/code-examples',
+              href: 'https://github.com/MuhammadWaqasrafiq/HumanoidRoboticsBook/tree/main/code-examples',
             },
           ],
         },
@@ -125,10 +126,10 @@ const config = {
             {
               html: `
 <div style="display:flex; gap:1.5rem; margin-bottom:1rem;">
-  <a href="https://github.com/MuhammadWaqasRafiq/HumanoidRoboticsBook" target="_blank" rel="noopener noreferrer" aria-label="GitHub" style="color:#fff;font-size:1.6rem;">
+  <a href="https://github.com/MuhammadWaqasrafiq/HumanoidRoboticsBook" target="_blank" rel="noopener noreferrer" aria-label="GitHub" style="color:#fff;font-size:1.6rem;">
     <i class="fa-brands fa-github"></i>
   </a>
-  <a href="https://linkedin.com/in/muhammadwaqasrafiq" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" style="color:#fff;font-size:1.6rem;">
+  <a href="https://linkedin.com/in/MuhammadWaqasrafiq" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" style="color:#fff;font-size:1.6rem;">
     <i class="fa-brands fa-linkedin"></i>
   </a>
   <a href="https://wa.me/923463033195" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" style="color:#fff;font-size:1.6rem;">
@@ -142,7 +143,7 @@ const config = {
             },
             {
               label: 'MIT License',
-              href: 'https://github.com/MuhammadWaqasRafiq/HumanoidRoboticsBook/blob/main/LICENSE',
+              href: 'https://github.com/MuhammadWaqasrafiq/HumanoidRoboticsBook/blob/main/LICENSE',
             },
           ],
         },

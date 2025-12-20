@@ -10,6 +10,20 @@ app = FastAPI(
     version="1.0.0",
 )
 
+# CORS Middleware to allow requests from the frontend
+from fastapi.middleware.cors import CORSMiddleware
+origins = [
+    "http://localhost:3000",  # Docusaurus dev server
+    "http://localhost",
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 @app.on_event("startup")
 def on_startup():
     """
