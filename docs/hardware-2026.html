@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="docs-wrapper plugin-docs plugin-id-default docs-version-current docs-doc-page docs-doc-id-hardware-2026/index" data-has-hydrated="false">
+<head>
+<meta charset="UTF-8">
+<meta name="generator" content="Docusaurus v3.9.2">
+<title data-rh="true">Chapter 02 - The Hardware You Actually Need in 2026 | Embodied AI: The Future of Robotics</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://muhammadwaqasrafiq.github.io/HumanoidRoboticsBook/img/social-card.jpg"><meta data-rh="true" name="twitter:image" content="https://muhammadwaqasrafiq.github.io/HumanoidRoboticsBook/img/social-card.jpg"><meta data-rh="true" property="og:url" content="https://muhammadwaqasrafiq.github.io/HumanoidRoboticsBook/docs/hardware-2026"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Chapter 02 - The Hardware You Actually Need in 2026 | Embodied AI: The Future of Robotics"><meta data-rh="true" name="description" content="GPU requirements, workstation setup, and three lab tiers (Economy/Mid/Premium) for Physical AI development"><meta data-rh="true" property="og:description" content="GPU requirements, workstation setup, and three lab tiers (Economy/Mid/Premium) for Physical AI development"><meta data-rh="true" name="keywords" content="rtx-4070-ti,nvidia-gpu,ubuntu-22.04,physical-ai-lab,hardware-requirements"><link data-rh="true" rel="icon" href="/HumanoidRoboticsBook/img/new_logo.svg"><link data-rh="true" rel="canonical" href="https://muhammadwaqasrafiq.github.io/HumanoidRoboticsBook/docs/hardware-2026"><link data-rh="true" rel="alternate" href="https://muhammadwaqasrafiq.github.io/HumanoidRoboticsBook/docs/hardware-2026" hreflang="en"><link data-rh="true" rel="alternate" href="https://muhammadwaqasrafiq.github.io/HumanoidRoboticsBook/docs/hardware-2026" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"02. The Hardware You Actually Need in 2026","item":"https://muhammadwaqasrafiq.github.io/HumanoidRoboticsBook/docs/hardware-2026/"}]}</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"><link rel="stylesheet" href="/HumanoidRoboticsBook/assets/css/styles.a6d7e190.css">
+<script src="/HumanoidRoboticsBook/assets/js/runtime~main.803ab506.js" defer="defer"></script>
+<script src="/HumanoidRoboticsBook/assets/js/main.a5cf34ea.js" defer="defer"></script>
+</head>
+<body class="navigation-with-keyboard">
+<svg style="display: none;"><defs>
+<symbol id="theme-svg-external-link" viewBox="0 0 24 24"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"/></symbol>
+</defs></svg>
+<script>!function(){var t=function(){try{return new URLSearchParams(window.location.search).get("docusaurus-theme")}catch(t){}}()||function(){try{return window.localStorage.getItem("theme")}catch(t){}}();document.documentElement.setAttribute("data-theme",t||"light"),document.documentElement.setAttribute("data-theme-choice",t||"light")}(),function(){try{const c=new URLSearchParams(window.location.search).entries();for(var[t,e]of c)if(t.startsWith("docusaurus-data-")){var a=t.replace("docusaurus-data-","data-");document.documentElement.setAttribute(a,e)}}catch(t){}}()</script><div id="__docusaurus"><div role="region" aria-label="Skip to main content"><a class="skipToContent_fXgn" href="#__docusaurus_skipToContent_fallback">Skip to main content</a></div><nav aria-label="Main" class="theme-layout-navbar navbar navbar--fixed-top"><div class="navbar__inner"><div class="theme-layout-navbar-left navbar__items"><button aria-label="Toggle navigation bar" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/HumanoidRoboticsBook/"><div class="navbar__logo"><img src="/HumanoidRoboticsBook/img/new_logo.svg" alt="Embodied AI Logo" class="themedComponent_mlkZ themedComponent--light_NVdE"><img src="/HumanoidRoboticsBook/img/new_logo.svg" alt="Embodied AI Logo" class="themedComponent_mlkZ themedComponent--dark_xIcU"></div><b class="navbar__title text--truncate">Embodied AI</b></a><a aria-current="page" class="navbar__item navbar__link navbar__link--active" href="/HumanoidRoboticsBook/docs/intro">Book</a></div><div class="theme-layout-navbar-right navbar__items navbar__items--right"><a href="https://github.com/MuhammadWaqasrafiq/HumanoidRoboticsBook" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">GitHub<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a><div class="toggle_vylO colorModeToggle_DEke"><button class="clean-btn toggleButton_gllP toggleButtonDisabled_aARS" type="button" disabled="" title="system mode" aria-label="Switch between dark and light mode (currently system mode)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP lightToggleIcon_pyhR"><path fill="currentColor" d="M12,9c1.65,0,3,1.35,3,3s-1.35,3-3,3s-3-1.35-3-3S10.35,9,12,9 M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5 S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1 s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0 c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95 c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41 L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41 s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06 c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP darkToggleIcon_wfgR"><path fill="currentColor" d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP systemToggleIcon_QzmC"><path fill="currentColor" d="m12 21c4.971 0 9-4.029 9-9s-4.029-9-9-9-9 4.029-9 9 4.029 9 9 9zm4.95-13.95c1.313 1.313 2.05 3.093 2.05 4.95s-0.738 3.637-2.05 4.95c-1.313 1.313-3.093 2.05-4.95 2.05v-14c1.857 0 3.637 0.737 4.95 2.05z"></path></svg></button></div><div class="navbarSearchContainer_Bca1"></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="__docusaurus_skipToContent_fallback" class="theme-layout-main main-wrapper mainWrapper_z2l0"><div class="docsWrapper_hBAB"><button aria-label="Scroll back to top" class="clean-btn theme-back-to-top-button backToTopButton_sjWU" type="button"></button><div class="docRoot_UBD9"><aside class="theme-doc-sidebar-container docSidebarContainer_YfHR"><div class="sidebarViewport_aRkj"><div class="sidebar_njMd"><nav aria-label="Docs sidebar" class="menu thin-scrollbar menu_SIkG"><ul class="theme-doc-sidebar-menu menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/HumanoidRoboticsBook/docs/intro"><span title="Introduction" class="linkLabel_WmDU">Introduction</span></a></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret menu__link--active" role="button" aria-expanded="true" href="/HumanoidRoboticsBook/docs/why-physical-ai"><span title="Part I: Foundation" class="categoryLinkLabel_W154">Part I: Foundation</span></a></div><ul class="menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/HumanoidRoboticsBook/docs/why-physical-ai"><span title="01. Why Physical AI Is the Next Frontier" class="linkLabel_WmDU">01. Why Physical AI Is the Next Frontier</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link menu__link--active" aria-current="page" tabindex="0" href="/HumanoidRoboticsBook/docs/hardware-2026"><span title="02. The Hardware You Actually Need in 2026" class="linkLabel_WmDU">02. The Hardware You Actually Need in 2026</span></a></li></ul></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="true" href="/HumanoidRoboticsBook/docs/ros2-fundamentals"><span title="Part II: ROS 2 &amp; Simulation" class="categoryLinkLabel_W154">Part II: ROS 2 &amp; Simulation</span></a></div><ul class="menu__list"><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-2 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" tabindex="0" href="/HumanoidRoboticsBook/docs/ros2-fundamentals"><span title="03. ROS 2 – The Robotic Nervous System" class="categoryLinkLabel_W154">03. ROS 2 – The Robotic Nervous System</span></a></div></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/HumanoidRoboticsBook/docs/urdf-digital-twins"><span title="04. URDF &amp; Digital Twins" class="linkLabel_WmDU">04. URDF &amp; Digital Twins</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/HumanoidRoboticsBook/docs/simulation-ecosystem"><span title="05. Gazebo vs Isaac Sim" class="linkLabel_WmDU">05. Gazebo vs Isaac Sim</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/HumanoidRoboticsBook/docs/isaac-platform"><span title="06. NVIDIA Isaac Platform" class="linkLabel_WmDU">06. NVIDIA Isaac Platform</span></a></li></ul></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="true" href="/HumanoidRoboticsBook/docs/perception-stack"><span title="Part III: Core Robotics" class="categoryLinkLabel_W154">Part III: Core Robotics</span></a></div><ul class="menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/HumanoidRoboticsBook/docs/perception-stack"><span title="07. Perception Stack" class="linkLabel_WmDU">07. Perception Stack</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/HumanoidRoboticsBook/docs/bipedal-locomotion"><span title="08. Bipedal Locomotion" class="linkLabel_WmDU">08. Bipedal Locomotion</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/HumanoidRoboticsBook/docs/dexterous-manipulation"><span title="09. Dexterous Manipulation" class="linkLabel_WmDU">09. Dexterous Manipulation</span></a></li></ul></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="true" href="/HumanoidRoboticsBook/docs/vla-models"><span title="Part IV: Intelligence Layer" class="categoryLinkLabel_W154">Part IV: Intelligence Layer</span></a></div><ul class="menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/HumanoidRoboticsBook/docs/vla-models"><span title="10. Vision-Language-Action Models" class="linkLabel_WmDU">10. Vision-Language-Action Models</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/HumanoidRoboticsBook/docs/voice-to-action"><span title="11. Voice-to-Action Pipeline" class="linkLabel_WmDU">11. Voice-to-Action Pipeline</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/HumanoidRoboticsBook/docs/sim-to-real"><span title="12. Sim-to-Real Transfer" class="linkLabel_WmDU">12. Sim-to-Real Transfer</span></a></li></ul></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="true" href="/HumanoidRoboticsBook/docs/capstone-butler"><span title="Part V: Integration" class="categoryLinkLabel_W154">Part V: Integration</span></a></div><ul class="menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/HumanoidRoboticsBook/docs/capstone-butler"><span title="13. Capstone: Autonomous Butler" class="linkLabel_WmDU">13. Capstone: Autonomous Butler</span></a></li></ul></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" href="/HumanoidRoboticsBook/docs/appendices/lab-build-guides"><span title="Appendices" class="categoryLinkLabel_W154">Appendices</span></a></div></li></ul></nav></div></div></aside><main class="docMainContainer_TBSr"><div class="container padding-top--md padding-bottom--lg"><div class="row"><div class="col docItemCol_VOVn"><div class="docItemContainer_Djhp"><article><nav class="theme-doc-breadcrumbs breadcrumbsContainer_Z_bl" aria-label="Breadcrumbs"><ul class="breadcrumbs"><li class="breadcrumbs__item"><a aria-label="Home page" class="breadcrumbs__link" href="/HumanoidRoboticsBook/"><svg viewBox="0 0 24 24" class="breadcrumbHomeIcon_YNFT"><path d="M10 19v-5h4v5c0 .55.45 1 1 1h3c.55 0 1-.45 1-1v-7h1.7c.46 0 .68-.57.33-.87L12.67 3.6c-.38-.34-.96-.34-1.34 0l-8.36 7.53c-.34.3-.13.87.33.87H5v7c0 .55.45 1 1 1h3c.55 0 1-.45 1-1z" fill="currentColor"></path></svg></a></li><li class="breadcrumbs__item"><span class="breadcrumbs__link">Part I: Foundation</span></li><li class="breadcrumbs__item breadcrumbs__item--active"><span class="breadcrumbs__link">02. The Hardware You Actually Need in 2026</span></li></ul></nav><div class="tocCollapsible_ETCw theme-doc-toc-mobile tocMobile_ITEo"><button type="button" class="clean-btn tocCollapsibleButton_TO0P">On this page</button></div><div class="theme-doc-markdown markdown"><header><h1>Chapter 02: The Hardware You Actually Need in 2026</h1></header>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="learning-objectives">Learning Objectives<a href="#learning-objectives" class="hash-link" aria-label="Direct link to Learning Objectives" title="Direct link to Learning Objectives" translate="no">​</a></h2>
+<p>By the end of this chapter, you will be able to:</p>
+<ol>
+<li class=""><strong>Evaluate GPU requirements</strong> for Physical AI development (VRAM, CUDA cores, tensor cores)</li>
+<li class=""><strong>Compare hardware configurations</strong> across Economy, Mid-Tier, and Premium lab setups</li>
+<li class=""><strong>Select appropriate hardware</strong> based on your budget, workload, and deployment goals</li>
+<li class=""><strong>Install Ubuntu 22.04</strong> via dual-boot on Windows/MacOS systems</li>
+<li class=""><strong>Estimate total cost of ownership</strong> for Physical AI workstations over 3-5 years</li>
+</ol>
+<div class="theme-admonition theme-admonition-tip admonition_xJq3 alert alert--success"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewBox="0 0 12 16"><path fill-rule="evenodd" d="M6.5 0C3.48 0 1 2.19 1 5c0 .92.55 2.25 1 3 1.34 2.25 1.78 2.78 2 4v1h5v-1c.22-1.22.66-1.75 2-4 .45-.75 1-2.08 1-3 0-2.81-2.48-5-5.5-5zm3.64 7.48c-.25.44-.47.8-.67 1.11-.86 1.41-1.25 2.06-1.45 3.23-.02.05-.02.11-.02.17H5c0-.06 0-.13-.02-.17-.2-1.17-.59-1.83-1.45-3.23-.2-.31-.42-.67-.67-1.11C2.44 6.78 2 5.65 2 5c0-2.2 2.02-4 4.5-4 1.22 0 2.36.42 3.22 1.19C10.55 2.94 11 3.94 11 5c0 .66-.44 1.78-.86 2.48zM4 14h5c-.23 1.14-1.3 2-2.5 2s-2.27-.86-2.5-2z"></path></svg></span>Prerequisites</div><div class="admonitionContent_BuS1"><p>Before reading this chapter, you should:</p><ul>
+<li class="">Have completed Chapter 01 to understand Physical AI fundamentals</li>
+<li class="">Have a basic understanding of computer hardware (CPU, GPU, RAM, storage)</li>
+<li class="">Know your budget range for hardware investment</li>
+</ul></div></div>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="introduction-why-hardware-matters-for-physical-ai">Introduction: Why Hardware Matters for Physical AI<a href="#introduction-why-hardware-matters-for-physical-ai" class="hash-link" aria-label="Direct link to Introduction: Why Hardware Matters for Physical AI" title="Direct link to Introduction: Why Hardware Matters for Physical AI" translate="no">​</a></h2>
+<p>Unlike traditional software development where a $500 laptop suffices, Physical AI development has <strong>hard hardware requirements</strong>:</p>
+<ul>
+<li class=""><strong>GPU-accelerated simulation</strong>: NVIDIA Isaac Sim requires RTX GPUs with ray tracing for photorealistic rendering</li>
+<li class=""><strong>VLA model inference</strong>: 7B+ parameter models (OpenVLA, Pi0) need 12-16GB VRAM minimum</li>
+<li class=""><strong>Parallel training</strong>: Fine-tuning on your own robot data requires tensor cores and mixed-precision training</li>
+<li class=""><strong>Real-time performance</strong>: Robot control loops demand consistent 100+ FPS simulation without lag</li>
+</ul>
+<p><strong>The good news</strong>: Hardware costs have dropped dramatically. In 2026, you can build a production-grade Physical AI workstation for under $2000 - a 5x reduction from 2020 requirements.</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="gpu-requirements-the-heart-of-physical-ai">GPU Requirements: The Heart of Physical AI<a href="#gpu-requirements-the-heart-of-physical-ai" class="hash-link" aria-label="Direct link to GPU Requirements: The Heart of Physical AI" title="Direct link to GPU Requirements: The Heart of Physical AI" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="why-nvidia-gpus-are-mandatory-for-now">Why NVIDIA GPUs Are Mandatory (For Now)<a href="#why-nvidia-gpus-are-mandatory-for-now" class="hash-link" aria-label="Direct link to Why NVIDIA GPUs Are Mandatory (For Now)" title="Direct link to Why NVIDIA GPUs Are Mandatory (For Now)" translate="no">​</a></h3>
+<p>As of Q1 2026, <strong>NVIDIA GPUs are the only viable option</strong> for Physical AI development:</p>
+<ul>
+<li class=""><strong>Isaac Sim</strong>: NVIDIA-exclusive (requires CUDA, OptiX ray tracing)</li>
+<li class=""><strong>Isaac ROS</strong>: GPU-accelerated perception nodes (CUDA kernels)</li>
+<li class=""><strong>VLA models</strong>: Most inference engines (TensorRT, vLLM) optimized for NVIDIA</li>
+<li class=""><strong>PyTorch ecosystem</strong>: 90%+ of robotics research uses CUDA-first libraries</li>
+</ul>
+<p><strong>AMD/Intel GPUs</strong>: Not supported by Isaac Sim. ROCm support for PyTorch exists but lacks robotics-specific tooling.</p>
+<p><strong>Apple Silicon (M1/M2/M3)</strong>: Cannot run Isaac Sim natively. Cloud alternatives exist but add latency and cost.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="gpu-comparison-rtx-4070-ti-vs-4080-vs-4090">GPU Comparison: RTX 4070 Ti vs 4080 vs 4090<a href="#gpu-comparison-rtx-4070-ti-vs-4080-vs-4090" class="hash-link" aria-label="Direct link to GPU Comparison: RTX 4070 Ti vs 4080 vs 4090" title="Direct link to GPU Comparison: RTX 4070 Ti vs 4080 vs 4090" translate="no">​</a></h3>
+<table><thead><tr><th>Specification</th><th>RTX 4070 Ti</th><th>RTX 4080</th><th>RTX 4090</th></tr></thead><tbody><tr><td><strong>VRAM</strong></td><td>12 GB GDDR6X</td><td>16 GB GDDR6X</td><td>24 GB GDDR6X</td></tr><tr><td><strong>CUDA Cores</strong></td><td>7,680</td><td>9,728</td><td>16,384</td></tr><tr><td><strong>Tensor Cores</strong></td><td>240 (4th gen)</td><td>304 (4th gen)</td><td>512 (4th gen)</td></tr><tr><td><strong>RT Cores</strong></td><td>60 (3rd gen)</td><td>76 (3rd gen)</td><td>128 (3rd gen)</td></tr><tr><td><strong>Base Clock</strong></td><td>2.31 GHz</td><td>2.21 GHz</td><td>2.23 GHz</td></tr><tr><td><strong>Boost Clock</strong></td><td>2.61 GHz</td><td>2.51 GHz</td><td>2.52 GHz</td></tr><tr><td><strong>TDP</strong></td><td>285W</td><td>320W</td><td>450W</td></tr><tr><td><strong>Power Connector</strong></td><td>1x 16-pin (12VHPWR)</td><td>1x 16-pin</td><td>1x 16-pin</td></tr><tr><td><strong>PCIe</strong></td><td>4.0 x16</td><td>4.0 x16</td><td>4.0 x16</td></tr><tr><td><strong>Price (Q1 2026)</strong></td><td>$750-850</td><td>$1,100-1,200</td><td>$1,600-1,800</td></tr><tr><td><strong>Perf/Dollar</strong></td><td>⭐⭐⭐⭐⭐</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐</td></tr></tbody></table>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="vram-requirements-by-workload">VRAM Requirements by Workload<a href="#vram-requirements-by-workload" class="hash-link" aria-label="Direct link to VRAM Requirements by Workload" title="Direct link to VRAM Requirements by Workload" translate="no">​</a></h3>
+<p>Understanding VRAM needs is critical for avoiding bottlenecks:</p>
+<table><thead><tr><th>Workload</th><th>Minimum VRAM</th><th>Recommended VRAM</th><th>Notes</th></tr></thead><tbody><tr><td><strong>Isaac Sim (basic scenes)</strong></td><td>6 GB</td><td>8 GB</td><td>Small environments, single robot</td></tr><tr><td><strong>Isaac Sim (complex scenes)</strong></td><td>10 GB</td><td>12 GB</td><td>Multi-robot, photorealistic assets</td></tr><tr><td><strong>VLA inference (OpenVLA 7B)</strong></td><td>8 GB</td><td>12 GB</td><td>16-bit precision, batch size 1</td></tr><tr><td><strong>VLA inference (Pi0 14B)</strong></td><td>14 GB</td><td>16 GB</td><td>16-bit precision, batch size 1</td></tr><tr><td><strong>VLA fine-tuning (7B model)</strong></td><td>12 GB</td><td>16 GB</td><td>LoRA adapters, gradient checkpointing</td></tr><tr><td><strong>Perception stack (real-time)</strong></td><td>4 GB</td><td>6 GB</td><td>YOLO, depth estimation, pose</td></tr><tr><td><strong>Training custom models</strong></td><td>16 GB</td><td>24 GB</td><td>Full model training from scratch</td></tr></tbody></table>
+<p><strong>Key Insight</strong>: Most workflows use <strong>8-12 GB simultaneously</strong> (Isaac Sim + VLA inference). The <strong>RTX 4070 Ti&#x27;s 12 GB</strong> is the sweet spot for 2026.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="recommended-gpu-by-use-case">Recommended GPU by Use Case<a href="#recommended-gpu-by-use-case" class="hash-link" aria-label="Direct link to Recommended GPU by Use Case" title="Direct link to Recommended GPU by Use Case" translate="no">​</a></h3>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="hobbyiststudent-rtx-4070-ti-12-gb"><strong>Hobbyist/Student</strong>: RTX 4070 Ti (12 GB)<a href="#hobbyiststudent-rtx-4070-ti-12-gb" class="hash-link" aria-label="Direct link to hobbyiststudent-rtx-4070-ti-12-gb" title="Direct link to hobbyiststudent-rtx-4070-ti-12-gb" translate="no">​</a></h4>
+<ul>
+<li class=""><strong>Best for</strong>: Learning, prototyping, single-robot simulation</li>
+<li class=""><strong>Can do</strong>: Run OpenVLA 7B, moderate Isaac Sim scenes, basic fine-tuning</li>
+<li class=""><strong>Cannot do</strong>: Train models from scratch, run Pi0 14B at full precision</li>
+<li class=""><strong>Price</strong>: $750-850 (best performance per dollar)</li>
+</ul>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="professional-developer-rtx-4080-16-gb"><strong>Professional Developer</strong>: RTX 4080 (16 GB)<a href="#professional-developer-rtx-4080-16-gb" class="hash-link" aria-label="Direct link to professional-developer-rtx-4080-16-gb" title="Direct link to professional-developer-rtx-4080-16-gb" translate="no">​</a></h4>
+<ul>
+<li class=""><strong>Best for</strong>: Production pipelines, multi-robot scenarios, commercial projects</li>
+<li class=""><strong>Can do</strong>: Run Pi0 14B, complex Isaac Sim scenes, full VLA fine-tuning</li>
+<li class=""><strong>Cannot do</strong>: Train large models (30B+) without quantization</li>
+<li class=""><strong>Price</strong>: $1,100-1,200 (balanced power and cost)</li>
+</ul>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="researchenterprise-rtx-4090-24-gb"><strong>Research/Enterprise</strong>: RTX 4090 (24 GB)<a href="#researchenterprise-rtx-4090-24-gb" class="hash-link" aria-label="Direct link to researchenterprise-rtx-4090-24-gb" title="Direct link to researchenterprise-rtx-4090-24-gb" translate="no">​</a></h4>
+<ul>
+<li class=""><strong>Best for</strong>: Cutting-edge research, training custom VLA models, 24/7 workloads</li>
+<li class=""><strong>Can do</strong>: Everything, including multi-GPU scaling preparation</li>
+<li class=""><strong>Cannot do</strong>: Nothing in the Physical AI domain (as of 2026)</li>
+<li class=""><strong>Price</strong>: $1,600-1,800 (overkill for most, essential for research)</li>
+</ul>
+<div class="theme-admonition theme-admonition-warning admonition_xJq3 alert alert--warning"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8.893 1.5c-.183-.31-.52-.5-.887-.5s-.703.19-.886.5L.138 13.499a.98.98 0 0 0 0 1.001c.193.31.53.501.886.501h13.964c.367 0 .704-.19.877-.5a1.03 1.03 0 0 0 .01-1.002L8.893 1.5zm.133 11.497H6.987v-2.003h2.039v2.003zm0-3.004H6.987V5.987h2.039v4.006z"></path></svg></span>Power Supply Requirements</div><div class="admonitionContent_BuS1"><ul>
+<li class=""><strong>RTX 4070 Ti</strong>: Requires 700W PSU minimum (850W recommended)</li>
+<li class=""><strong>RTX 4080</strong>: Requires 850W PSU minimum (1000W recommended)</li>
+<li class=""><strong>RTX 4090</strong>: Requires 1000W PSU minimum (1200W recommended)</li>
+</ul><p>All use the <strong>12VHPWR (16-pin)</strong> connector. Ensure your PSU has native cables (not adapters) to avoid fire risk.</p></div></div>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="three-lab-tiers-pick-your-investment-level">Three Lab Tiers: Pick Your Investment Level<a href="#three-lab-tiers-pick-your-investment-level" class="hash-link" aria-label="Direct link to Three Lab Tiers: Pick Your Investment Level" title="Direct link to Three Lab Tiers: Pick Your Investment Level" translate="no">​</a></h2>
+<p>We present three hardware configurations optimized for different budgets and use cases. All prices reflect <strong>Q1 2026 market rates</strong> (USD, verified within 30 days of publication).</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="lab-tier-1-economy-lab-under-1500">Lab Tier 1: Economy Lab (under $1,500)<a href="#lab-tier-1-economy-lab-under-1500" class="hash-link" aria-label="Direct link to Lab Tier 1: Economy Lab (under $1,500)" title="Direct link to Lab Tier 1: Economy Lab (under $1,500)" translate="no">​</a></h3>
+<p><strong>Target audience</strong>: Students, hobbyists, budget-conscious learners</p>
+<p><strong>Philosophy</strong>: Minimum viable hardware for completing this book&#x27;s tutorials without compromise on learning outcomes.</p>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="bill-of-materials">Bill of Materials<a href="#bill-of-materials" class="hash-link" aria-label="Direct link to Bill of Materials" title="Direct link to Bill of Materials" translate="no">​</a></h4>
+<table><thead><tr><th>Component</th><th>Model</th><th>Price</th><th>Notes</th></tr></thead><tbody><tr><td><strong>GPU</strong></td><td>NVIDIA RTX 4070 Ti (12 GB)</td><td>$800</td><td>Refurbished or open-box saves $50-100</td></tr><tr><td><strong>CPU</strong></td><td>AMD Ryzen 5 7600 (6-core)</td><td>$200</td><td>Excellent single-thread, PCIe 4.0 support</td></tr><tr><td><strong>Motherboard</strong></td><td>MSI B650M Pro</td><td>$150</td><td>PCIe 4.0 x16, 4x DDR5 slots</td></tr><tr><td><strong>RAM</strong></td><td>32 GB DDR5-5200 (2x16GB)</td><td>$120</td><td>Crucial or G.Skill</td></tr><tr><td><strong>Storage</strong></td><td>1 TB NVMe Gen4 SSD</td><td>$80</td><td>Samsung 980 Pro or WD Black SN850X</td></tr><tr><td><strong>PSU</strong></td><td>850W 80+ Gold Modular</td><td>$110</td><td>EVGA, Corsair, or Seasonic</td></tr><tr><td><strong>Case</strong></td><td>Mid-tower ATX</td><td>$60</td><td>Fractal Design Meshify C (airflow)</td></tr><tr><td><strong>CPU Cooler</strong></td><td>Tower air cooler</td><td>$40</td><td>be quiet! Pure Rock 2</td></tr><tr><td><strong>Total</strong></td><td></td><td><strong>$1,460</strong></td><td>Excludes monitor, keyboard, mouse</td></tr></tbody></table>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="what-this-lab-can-do">What This Lab Can Do<a href="#what-this-lab-can-do" class="hash-link" aria-label="Direct link to What This Lab Can Do" title="Direct link to What This Lab Can Do" translate="no">​</a></h4>
+<p>✅ <strong>Supported workloads</strong>:</p>
+<ul>
+<li class="">Complete all 13 chapters of this book</li>
+<li class="">Run OpenVLA 7B inference (16-bit precision)</li>
+<li class="">Isaac Sim scenes with 1-2 humanoid robots</li>
+<li class="">Fine-tune VLA models using LoRA (4-bit quantization)</li>
+<li class="">Real-time perception pipelines (YOLO + depth)</li>
+<li class="">Develop and test ROS 2 packages</li>
+</ul>
+<p>❌ <strong>Limitations</strong>:</p>
+<ul>
+<li class="">Cannot run Pi0 14B at full precision (requires 8-bit quantization)</li>
+<li class="">Isaac Sim scenes with 5+ robots will lag (30-40 FPS)</li>
+<li class="">Fine-tuning takes 2-3x longer than Premium lab</li>
+<li class="">Cannot train models from scratch without heavy quantization</li>
+</ul>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="cost-breakdown-over-3-years">Cost Breakdown Over 3 Years<a href="#cost-breakdown-over-3-years" class="hash-link" aria-label="Direct link to Cost Breakdown Over 3 Years" title="Direct link to Cost Breakdown Over 3 Years" translate="no">​</a></h4>
+<table><thead><tr><th>Year</th><th>Component</th><th>Cost</th><th>Notes</th></tr></thead><tbody><tr><td>0</td><td>Initial build</td><td>$1,460</td><td>One-time investment</td></tr><tr><td>1</td><td>Electricity (250W avg, 8h/day)</td><td>$90</td><td>$0.12/kWh average US rate</td></tr><tr><td>2</td><td>Electricity</td><td>$90</td><td></td></tr><tr><td>3</td><td>Electricity</td><td>$90</td><td></td></tr><tr><td>3</td><td>RAM upgrade (64GB total)</td><td>$120</td><td>Optional, for larger models</td></tr><tr><td><strong>Total 3-Year TCO</strong></td><td></td><td><strong>$1,850</strong></td><td>$51/month amortized</td></tr></tbody></table>
+<p><strong>Comparison to cloud alternatives</strong>:</p>
+<ul>
+<li class=""><strong>AWS g5.xlarge</strong> (A10G GPU, 24 GB VRAM): $1.006/hour × 8h/day × 365 days × 3 years = <strong>$8,816</strong></li>
+<li class=""><strong>Lambda Labs</strong> (RTX 6000 Ada): $0.75/hour × 8h/day × 365 days × 3 years = <strong>$6,570</strong></li>
+</ul>
+<p><strong>Savings</strong>: $4,700-6,950 over 3 years by owning hardware.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="lab-tier-2-mid-tier-lab-2500-3500">Lab Tier 2: Mid-Tier Lab ($2,500-3,500)<a href="#lab-tier-2-mid-tier-lab-2500-3500" class="hash-link" aria-label="Direct link to Lab Tier 2: Mid-Tier Lab ($2,500-3,500)" title="Direct link to Lab Tier 2: Mid-Tier Lab ($2,500-3,500)" translate="no">​</a></h3>
+<p><strong>Target audience</strong>: Professional developers, small startups, serious hobbyists</p>
+<p><strong>Philosophy</strong>: Production-grade hardware for commercial projects and faster iteration.</p>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="bill-of-materials-1">Bill of Materials<a href="#bill-of-materials-1" class="hash-link" aria-label="Direct link to Bill of Materials" title="Direct link to Bill of Materials" translate="no">​</a></h4>
+<table><thead><tr><th>Component</th><th>Model</th><th>Price</th><th>Notes</th></tr></thead><tbody><tr><td><strong>GPU</strong></td><td>NVIDIA RTX 4080 (16 GB)</td><td>$1,150</td><td>Native 16-pin cable PSU</td></tr><tr><td><strong>CPU</strong></td><td>AMD Ryzen 7 7800X3D (8-core)</td><td>$400</td><td>Best gaming/simulation CPU (3D V-Cache)</td></tr><tr><td><strong>Motherboard</strong></td><td>ASUS TUF Gaming X670E-Plus</td><td>$280</td><td>PCIe 5.0 support, excellent VRMs</td></tr><tr><td><strong>RAM</strong></td><td>64 GB DDR5-6000 (2x32GB)</td><td>$240</td><td>G.Skill Trident Z5 Neo (optimized for Ryzen)</td></tr><tr><td><strong>Storage</strong></td><td>2 TB NVMe Gen4 SSD</td><td>$150</td><td>Samsung 990 Pro</td></tr><tr><td><strong>PSU</strong></td><td>1000W 80+ Gold Modular</td><td>$160</td><td>Corsair RM1000x or EVGA SuperNOVA</td></tr><tr><td><strong>Case</strong></td><td>Mid-tower ATX (premium)</td><td>$120</td><td>Fractal Design Torrent (best airflow 2026)</td></tr><tr><td><strong>CPU Cooler</strong></td><td>280mm AIO liquid cooler</td><td>$140</td><td>Arctic Liquid Freezer III 280</td></tr><tr><td><strong>Total</strong></td><td></td><td><strong>$2,640</strong></td><td>Excludes peripherals</td></tr></tbody></table>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="what-this-lab-can-do-1">What This Lab Can Do<a href="#what-this-lab-can-do-1" class="hash-link" aria-label="Direct link to What This Lab Can Do" title="Direct link to What This Lab Can Do" translate="no">​</a></h4>
+<p>✅ <strong>Supported workloads</strong>:</p>
+<ul>
+<li class="">Everything from Economy Lab, <strong>2-3x faster</strong></li>
+<li class="">Run Pi0 14B at 16-bit precision (no quantization)</li>
+<li class="">Isaac Sim scenes with 5+ robots at 60+ FPS</li>
+<li class="">Fine-tune VLA models using LoRA (16-bit precision, 3x faster)</li>
+<li class="">Multi-session development (Isaac Sim + VSCode + browser + Jupyter)</li>
+<li class="">Parallel experimentation (multiple model variants simultaneously)</li>
+</ul>
+<p>✅ <strong>Additional capabilities</strong>:</p>
+<ul>
+<li class="">24/7 operation without thermal throttling (better cooling)</li>
+<li class="">Headroom for future GPU upgrades (1000W PSU supports RTX 5090)</li>
+<li class="">64 GB RAM supports larger datasets in memory</li>
+</ul>
+<p>❌ <strong>Limitations</strong>:</p>
+<ul>
+<li class="">Cannot train 30B+ models from scratch at full precision</li>
+<li class="">Multi-GPU scaling requires motherboard upgrade</li>
+</ul>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="cost-breakdown-over-5-years">Cost Breakdown Over 5 Years<a href="#cost-breakdown-over-5-years" class="hash-link" aria-label="Direct link to Cost Breakdown Over 5 Years" title="Direct link to Cost Breakdown Over 5 Years" translate="no">​</a></h4>
+<table><thead><tr><th>Year</th><th>Component</th><th>Cost</th><th>Notes</th></tr></thead><tbody><tr><td>0</td><td>Initial build</td><td>$2,640</td><td>One-time investment</td></tr><tr><td>1-5</td><td>Electricity (350W avg, 10h/day)</td><td>$150/year</td><td>$0.12/kWh</td></tr><tr><td>5</td><td>Storage upgrade (4 TB)</td><td>$200</td><td>Optional, for large datasets</td></tr><tr><td><strong>Total 5-Year TCO</strong></td><td></td><td><strong>$3,590</strong></td><td>$60/month amortized</td></tr></tbody></table>
+<p><strong>Comparison to cloud alternatives</strong>:</p>
+<ul>
+<li class=""><strong>AWS g5.2xlarge</strong> (A10G GPU, 24 GB VRAM): $1.212/hour × 10h/day × 365 days × 5 years = <strong>$22,119</strong></li>
+</ul>
+<p><strong>Savings</strong>: $18,500 over 5 years.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="lab-tier-3-premium-lab-6000-8000">Lab Tier 3: Premium Lab ($6,000-8,000)<a href="#lab-tier-3-premium-lab-6000-8000" class="hash-link" aria-label="Direct link to Lab Tier 3: Premium Lab ($6,000-8,000)" title="Direct link to Lab Tier 3: Premium Lab ($6,000-8,000)" translate="no">​</a></h3>
+<p><strong>Target audience</strong>: Research labs, funded startups, enterprise teams</p>
+<p><strong>Philosophy</strong>: No compromises. Cutting-edge hardware for maximum productivity and capability.</p>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="bill-of-materials-2">Bill of Materials<a href="#bill-of-materials-2" class="hash-link" aria-label="Direct link to Bill of Materials" title="Direct link to Bill of Materials" translate="no">​</a></h4>
+<table><thead><tr><th>Component</th><th>Model</th><th>Price</th><th>Notes</th></tr></thead><tbody><tr><td><strong>GPU</strong></td><td>NVIDIA RTX 4090 (24 GB)</td><td>$1,700</td><td>Founders Edition or ASUS TUF</td></tr><tr><td><strong>CPU</strong></td><td>AMD Ryzen 9 7950X (16-core)</td><td>$600</td><td>Highest core count for parallel builds</td></tr><tr><td><strong>Motherboard</strong></td><td>ASUS ROG Crosshair X670E Hero</td><td>$650</td><td>PCIe 5.0, 10 Gbps Ethernet, Wi-Fi 6E</td></tr><tr><td><strong>RAM</strong></td><td>128 GB DDR5-6000 (4x32GB)</td><td>$500</td><td>G.Skill Trident Z5 Royal (quad-channel)</td></tr><tr><td><strong>Storage (primary)</strong></td><td>2 TB NVMe Gen5 SSD</td><td>$300</td><td>Crucial T700 (12.4 GB/s read)</td></tr><tr><td><strong>Storage (datasets)</strong></td><td>4 TB NVMe Gen4 SSD</td><td>$280</td><td>Samsung 990 Pro</td></tr><tr><td><strong>PSU</strong></td><td>1200W 80+ Platinum Modular</td><td>$250</td><td>Corsair HX1200 (10-year warranty)</td></tr><tr><td><strong>Case</strong></td><td>Full-tower ATX</td><td>$200</td><td>Fractal Design Define 7 XL (sound dampening)</td></tr><tr><td><strong>CPU Cooler</strong></td><td>360mm AIO liquid cooler</td><td>$180</td><td>Arctic Liquid Freezer III 360</td></tr><tr><td><strong>Extras</strong></td><td>PCIe 10 Gbps NIC, UPS</td><td>$300</td><td>ASUS XG-C100C + APC 1500VA UPS</td></tr><tr><td><strong>Total</strong></td><td></td><td><strong>$4,960</strong></td><td>Excludes peripherals</td></tr></tbody></table>
+<p><strong>Optional upgrades</strong>:</p>
+<ul>
+<li class=""><strong>Second RTX 4090</strong> (+$1,700): For multi-GPU training (requires NVLink bridge)</li>
+<li class=""><strong>Dual Xeon workstation</strong> (+$3,000): For compute clusters (overkill for most)</li>
+</ul>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="what-this-lab-can-do-2">What This Lab Can Do<a href="#what-this-lab-can-do-2" class="hash-link" aria-label="Direct link to What This Lab Can Do" title="Direct link to What This Lab Can Do" translate="no">​</a></h4>
+<p>✅ <strong>Supported workloads</strong>:</p>
+<ul>
+<li class="">Everything from Mid-Tier Lab, <strong>5x faster</strong></li>
+<li class="">Train VLA models from scratch (7-14B parameters)</li>
+<li class="">Isaac Sim scenes with 10+ robots + photorealistic rendering at 60 FPS</li>
+<li class="">Multi-GPU scaling (add second RTX 4090 for 2x throughput)</li>
+<li class="">128 GB RAM supports massive datasets (500K+ robot trajectories in memory)</li>
+<li class="">Gen5 SSD enables 10 GB/s dataset loading (no I/O bottlenecks)</li>
+</ul>
+<p>✅ <strong>Enterprise features</strong>:</p>
+<ul>
+<li class="">UPS (uninterruptible power supply) prevents data corruption during power loss</li>
+<li class="">10 Gbps Ethernet for fast remote access and dataset transfers</li>
+<li class="">Sound-dampened case for office environments (quieter operation)</li>
+</ul>
+<p>❌ <strong>Limitations</strong>:</p>
+<ul>
+<li class="">None for Physical AI development as of 2026</li>
+<li class="">Overkill for individual learners (diminishing returns)</li>
+</ul>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="cost-breakdown-over-5-years-1">Cost Breakdown Over 5 Years<a href="#cost-breakdown-over-5-years-1" class="hash-link" aria-label="Direct link to Cost Breakdown Over 5 Years" title="Direct link to Cost Breakdown Over 5 Years" translate="no">​</a></h4>
+<table><thead><tr><th>Year</th><th>Component</th><th>Cost</th><th>Notes</th></tr></thead><tbody><tr><td>0</td><td>Initial build</td><td>$4,960</td><td>One-time investment</td></tr><tr><td>1-5</td><td>Electricity (500W avg, 12h/day)</td><td>$260/year</td><td>$0.12/kWh</td></tr><tr><td>3</td><td>UPS battery replacement</td><td>$80</td><td>Every 3 years</td></tr><tr><td><strong>Total 5-Year TCO</strong></td><td></td><td><strong>$6,340</strong></td><td>$105/month amortized</td></tr></tbody></table>
+<p><strong>Comparison to cloud alternatives</strong>:</p>
+<ul>
+<li class=""><strong>AWS g5.12xlarge</strong> (4x A10G GPUs, 96 GB VRAM): $5.672/hour × 12h/day × 365 days × 5 years = <strong>$124,306</strong></li>
+</ul>
+<p><strong>Savings</strong>: $117,000 over 5 years. Premium lab pays for itself in 2 weeks of equivalent cloud usage.</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="hardware-decision-matrix">Hardware Decision Matrix<a href="#hardware-decision-matrix" class="hash-link" aria-label="Direct link to Hardware Decision Matrix" title="Direct link to Hardware Decision Matrix" translate="no">​</a></h2>
+<p>Use this flowchart to select your lab tier:</p>
+<!-- -->
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="cpu-ram-and-storage-requirements">CPU, RAM, and Storage Requirements<a href="#cpu-ram-and-storage-requirements" class="hash-link" aria-label="Direct link to CPU, RAM, and Storage Requirements" title="Direct link to CPU, RAM, and Storage Requirements" translate="no">​</a></h2>
+<div class="theme-admonition theme-admonition-tip admonition_xJq3 alert alert--success"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewBox="0 0 12 16"><path fill-rule="evenodd" d="M6.5 0C3.48 0 1 2.19 1 5c0 .92.55 2.25 1 3 1.34 2.25 1.78 2.78 2 4v1h5v-1c.22-1.22.66-1.75 2-4 .45-.75 1-2.08 1-3 0-2.81-2.48-5-5.5-5zm3.64 7.48c-.25.44-.47.8-.67 1.11-.86 1.41-1.25 2.06-1.45 3.23-.02.05-.02.11-.02.17H5c0-.06 0-.13-.02-.17-.2-1.17-.59-1.83-1.45-3.23-.2-.31-.42-.67-.67-1.11C2.44 6.78 2 5.65 2 5c0-2.2 2.02-4 4.5-4 1.22 0 2.36.42 3.22 1.19C10.55 2.94 11 3.94 11 5c0 .66-.44 1.78-.86 2.48zM4 14h5c-.23 1.14-1.3 2-2.5 2s-2.27-.86-2.5-2z"></path></svg></span>Component Priority</div><div class="admonitionContent_BuS1"><p>For Physical AI development, prioritize in this order:</p><ol>
+<li class=""><strong>GPU</strong> (Most Critical) - VRAM determines max model size, CUDA/Tensor cores determine speed</li>
+<li class=""><strong>RAM</strong> (Second Priority) - 32 GB minimum for Isaac Sim + VLA, 64 GB recommended</li>
+<li class=""><strong>CPU</strong> (Third Priority) - Affects ROS 2 build speed and physics simulation</li>
+<li class=""><strong>Storage</strong> (Fourth Priority) - Need 1 TB+ capacity, NVMe Gen4 recommended</li>
+</ol></div></div>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="cpu-selection">CPU Selection<a href="#cpu-selection" class="hash-link" aria-label="Direct link to CPU Selection" title="Direct link to CPU Selection" translate="no">​</a></h3>
+<p><strong>Why CPU matters less than GPU</strong>: Most Physical AI workloads are GPU-bound (simulation rendering, neural network inference). However, CPU still affects:</p>
+<ul>
+<li class=""><strong>Build times</strong>: Compiling ROS 2 packages, PyTorch from source</li>
+<li class=""><strong>Parallel data loading</strong>: Feeding training data to GPU</li>
+<li class=""><strong>Isaac Sim physics</strong>: CPU handles some physics calculations</li>
+</ul>
+<p><strong>Minimum</strong>: 6-core, 3.0 GHz base clock (AMD Ryzen 5 7600, Intel i5-13400)
+<strong>Recommended</strong>: 8-core, 3.5 GHz base clock (AMD Ryzen 7 7800X3D, Intel i7-13700K)</p>
+<p><strong>AMD vs Intel (2026)</strong>:</p>
+<ul>
+<li class=""><strong>AMD</strong>: Better price/performance, lower power consumption, PCIe 5.0 support</li>
+<li class=""><strong>Intel</strong>: Slightly better single-thread (marginal), more expensive</li>
+</ul>
+<p><strong>Verdict</strong>: AMD Ryzen 7000 series (7600/7800X3D/7950X) offers best value in 2026.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="ram-requirements">RAM Requirements<a href="#ram-requirements" class="hash-link" aria-label="Direct link to RAM Requirements" title="Direct link to RAM Requirements" translate="no">​</a></h3>
+<table><thead><tr><th>Workload</th><th>Minimum RAM</th><th>Recommended RAM</th><th>Notes</th></tr></thead><tbody><tr><td><strong>Basic ROS 2 development</strong></td><td>16 GB</td><td>32 GB</td><td>Multiple terminals, IDE, browser</td></tr><tr><td><strong>Isaac Sim + VLA inference</strong></td><td>32 GB</td><td>64 GB</td><td>Isaac Sim uses 8-12 GB system RAM</td></tr><tr><td><strong>Training VLA models</strong></td><td>64 GB</td><td>128 GB</td><td>Datasets loaded in memory for speed</td></tr><tr><td><strong>Multi-session workflows</strong></td><td>64 GB</td><td>128 GB</td><td>Isaac Sim + Jupyter + VSCode + Chrome</td></tr></tbody></table>
+<p><strong>DDR4 vs DDR5 (2026)</strong>:</p>
+<ul>
+<li class=""><strong>DDR5</strong>: Required for Ryzen 7000 and Intel 13th+ gen, 20% faster, same price as DDR4 in 2026</li>
+<li class=""><strong>DDR4</strong>: Legacy, only if using older CPUs (not recommended)</li>
+</ul>
+<p><strong>Verdict</strong>: 32 GB DDR5 minimum (Economy), 64 GB DDR5 recommended (Mid/Premium).</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="storage-requirements">Storage Requirements<a href="#storage-requirements" class="hash-link" aria-label="Direct link to Storage Requirements" title="Direct link to Storage Requirements" translate="no">​</a></h3>
+<table><thead><tr><th>Component</th><th>Minimum</th><th>Recommended</th><th>Notes</th></tr></thead><tbody><tr><td><strong>Ubuntu 22.04</strong></td><td>50 GB</td><td>100 GB</td><td>OS + system packages</td></tr><tr><td><strong>ROS 2 Jazzy</strong></td><td>10 GB</td><td>20 GB</td><td>Desktop install + dev tools</td></tr><tr><td><strong>Isaac Sim 2024.1</strong></td><td>40 GB</td><td>60 GB</td><td>Application + assets</td></tr><tr><td><strong>Python packages</strong></td><td>10 GB</td><td>20 GB</td><td>PyTorch, TensorFlow, OpenCV, etc.</td></tr><tr><td><strong>VLA models</strong></td><td>20 GB</td><td>50 GB</td><td>OpenVLA, Pi0, RT-2-X weights</td></tr><tr><td><strong>Datasets</strong></td><td>100 GB</td><td>500 GB</td><td>Robot trajectories, training data</td></tr><tr><td><strong>Total</strong></td><td><strong>230 GB</strong></td><td><strong>750 GB</strong></td><td>1 TB minimum, 2 TB recommended</td></tr></tbody></table>
+<p><strong>NVMe Gen3 vs Gen4 vs Gen5</strong>:</p>
+<ul>
+<li class=""><strong>Gen3</strong>: 3.5 GB/s read, sufficient for basic use, cheapest</li>
+<li class=""><strong>Gen4</strong>: 7 GB/s read, recommended for Economy/Mid labs</li>
+<li class=""><strong>Gen5</strong>: 12 GB/s read, overkill except for Premium (dataset-heavy workflows)</li>
+</ul>
+<p><strong>Verdict</strong>: 1 TB NVMe Gen4 minimum (Economy), 2 TB Gen4 (Mid), 2 TB Gen5 + 4 TB Gen4 (Premium).</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="dual-boot-setup-installing-ubuntu-2204-alongside-windowsmacos">Dual-Boot Setup: Installing Ubuntu 22.04 Alongside Windows/MacOS<a href="#dual-boot-setup-installing-ubuntu-2204-alongside-windowsmacos" class="hash-link" aria-label="Direct link to Dual-Boot Setup: Installing Ubuntu 22.04 Alongside Windows/MacOS" title="Direct link to Dual-Boot Setup: Installing Ubuntu 22.04 Alongside Windows/MacOS" translate="no">​</a></h2>
+<p><strong>Why dual-boot?</strong></p>
+<ul>
+<li class=""><strong>Preserve existing OS</strong>: Keep Windows for gaming, MacOS for daily work</li>
+<li class=""><strong>Hardware access</strong>: Native GPU drivers (no virtualization overhead)</li>
+<li class=""><strong>Best performance</strong>: Direct hardware access vs 20-30% VM penalty</li>
+</ul>
+<p><strong>Alternatives</strong>:</p>
+<ul>
+<li class=""><strong>WSL2 (Windows Subsystem for Linux)</strong>: ❌ Cannot run Isaac Sim (no GPU passthrough for GUI apps)</li>
+<li class=""><strong>Virtual machines (VirtualBox, VMware)</strong>: ❌ Poor GPU performance, complex setup</li>
+<li class=""><strong>Cloud instances</strong>: ❌ Expensive ($1,000+ annually), latency issues</li>
+</ul>
+<p><strong>Verdict</strong>: Dual-boot is the only practical option for Physical AI development in 2026.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="prerequisites">Prerequisites<a href="#prerequisites" class="hash-link" aria-label="Direct link to Prerequisites" title="Direct link to Prerequisites" translate="no">​</a></h3>
+<ul>
+<li class="">
+<p><strong>Windows users</strong>:</p>
+<ul>
+<li class="">Windows 10/11 installed</li>
+<li class="">100 GB free space on C: drive (or partition with free space)</li>
+<li class="">UEFI BIOS (not legacy BIOS)</li>
+<li class="">Secure Boot enabled or disabled (Ubuntu supports both)</li>
+<li class="">BitLocker disabled (or recovery key saved)</li>
+</ul>
+</li>
+<li class="">
+<p><strong>MacOS users</strong>:</p>
+<ul>
+<li class=""><strong>Intel Macs</strong>: Supported (follow Ubuntu installation guide)</li>
+<li class=""><strong>Apple Silicon (M1/M2/M3)</strong>: ❌ <strong>Not supported</strong> - Cannot run Isaac Sim, use cloud alternative</li>
+</ul>
+</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="step-by-step-dual-boot-guide-windows">Step-by-Step Dual-Boot Guide (Windows)<a href="#step-by-step-dual-boot-guide-windows" class="hash-link" aria-label="Direct link to Step-by-Step Dual-Boot Guide (Windows)" title="Direct link to Step-by-Step Dual-Boot Guide (Windows)" translate="no">​</a></h3>
+<p><strong>Time required</strong>: 60-90 minutes</p>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="1-create-ubuntu-2204-bootable-usb-15-minutes">1. Create Ubuntu 22.04 Bootable USB (15 minutes)<a href="#1-create-ubuntu-2204-bootable-usb-15-minutes" class="hash-link" aria-label="Direct link to 1. Create Ubuntu 22.04 Bootable USB (15 minutes)" title="Direct link to 1. Create Ubuntu 22.04 Bootable USB (15 minutes)" translate="no">​</a></h4>
+<p><strong>On Windows:</strong></p>
+<ol>
+<li class="">Download <strong>Ubuntu 22.04.3 LTS</strong> ISO from <a href="https://ubuntu.com/download/desktop" target="_blank" rel="noopener noreferrer" class="">https://ubuntu.com/download/desktop</a> (3.5 GB)</li>
+<li class="">Download <strong>Rufus</strong> from <a href="https://rufus.ie/" target="_blank" rel="noopener noreferrer" class="">https://rufus.ie/</a> (portable version, no install needed)</li>
+<li class="">Insert USB drive (8 GB minimum, <strong>all data will be erased</strong>)</li>
+<li class="">Launch Rufus:<!-- -->
+<ul>
+<li class="">Device: Select your USB drive</li>
+<li class="">Boot selection: Click SELECT, choose Ubuntu ISO</li>
+<li class="">Partition scheme: <strong>GPT</strong> (for UEFI systems)</li>
+<li class="">File system: <strong>FAT32</strong></li>
+<li class="">Click START</li>
+<li class="">When prompted &quot;Write in ISO Image mode&quot;, select <strong>ISO Image mode</strong> (not DD Image)</li>
+</ul>
+</li>
+<li class="">Wait 5-10 minutes for write to complete</li>
+<li class="">Safely eject USB when done</li>
+</ol>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="2-shrink-windows-partition-10-minutes">2. Shrink Windows Partition (10 minutes)<a href="#2-shrink-windows-partition-10-minutes" class="hash-link" aria-label="Direct link to 2. Shrink Windows Partition (10 minutes)" title="Direct link to 2. Shrink Windows Partition (10 minutes)" translate="no">​</a></h4>
+<p><strong>Create free space for Ubuntu:</strong></p>
+<ol>
+<li class="">Press <code>Win + X</code>, select <strong>Disk Management</strong></li>
+<li class="">Right-click <strong>C: drive</strong>, select <strong>Shrink Volume</strong></li>
+<li class="">Enter shrink amount: <strong>100000 MB</strong> (100 GB minimum, 200 GB recommended)</li>
+<li class="">Click <strong>Shrink</strong> - you&#x27;ll see <strong>Unallocated Space</strong> appear</li>
+<li class="">Close Disk Management</li>
+</ol>
+<div class="theme-admonition theme-admonition-warning admonition_xJq3 alert alert--warning"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8.893 1.5c-.183-.31-.52-.5-.887-.5s-.703.19-.886.5L.138 13.499a.98.98 0 0 0 0 1.001c.193.31.53.501.886.501h13.964c.367 0 .704-.19.877-.5a1.03 1.03 0 0 0 .01-1.002L8.893 1.5zm.133 11.497H6.987v-2.003h2.039v2.003zm0-3.004H6.987V5.987h2.039v4.006z"></path></svg></span>Important: Do Not Create Partition in Windows</div><div class="admonitionContent_BuS1"><p>Leave the unallocated space empty. Ubuntu installer will partition it automatically. Creating partitions in Windows can cause boot issues.</p></div></div>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="3-disable-fast-startup-and-secure-boot-5-minutes">3. Disable Fast Startup and Secure Boot (5 minutes)<a href="#3-disable-fast-startup-and-secure-boot-5-minutes" class="hash-link" aria-label="Direct link to 3. Disable Fast Startup and Secure Boot (5 minutes)" title="Direct link to 3. Disable Fast Startup and Secure Boot (5 minutes)" translate="no">​</a></h4>
+<p><strong>Disable Fast Startup (Windows):</strong></p>
+<ol>
+<li class="">Press <code>Win + X</code>, select <strong>Power Options</strong></li>
+<li class="">Click <strong>Additional power settings</strong> (right sidebar)</li>
+<li class="">Click <strong>Choose what the power buttons do</strong></li>
+<li class="">Click <strong>Change settings that are currently unavailable</strong></li>
+<li class="">Uncheck <strong>Turn on fast startup (recommended)</strong></li>
+<li class="">Click <strong>Save changes</strong></li>
+</ol>
+<p><strong>Check Secure Boot status (optional):</strong></p>
+<p>Ubuntu 22.04 supports Secure Boot, but disabling it can avoid issues during installation.</p>
+<ol>
+<li class="">Restart computer</li>
+<li class="">Press <code>F2</code>, <code>F10</code>, <code>F12</code>, or <code>Del</code> during boot to enter BIOS/UEFI (varies by manufacturer)</li>
+<li class="">Navigate to <strong>Security</strong> or <strong>Boot</strong> tab</li>
+<li class="">Find <strong>Secure Boot</strong> option</li>
+<li class="">Set to <strong>Disabled</strong> (or leave <strong>Enabled</strong> if you prefer - Ubuntu works with both)</li>
+<li class="">Save and exit BIOS</li>
+</ol>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="4-boot-from-usb-and-install-ubuntu-30-minutes">4. Boot from USB and Install Ubuntu (30 minutes)<a href="#4-boot-from-usb-and-install-ubuntu-30-minutes" class="hash-link" aria-label="Direct link to 4. Boot from USB and Install Ubuntu (30 minutes)" title="Direct link to 4. Boot from USB and Install Ubuntu (30 minutes)" translate="no">​</a></h4>
+<ol>
+<li class="">Insert USB drive and restart computer</li>
+<li class="">Press boot menu key during startup:<!-- -->
+<ul>
+<li class=""><strong>HP</strong>: F9</li>
+<li class=""><strong>Dell</strong>: F12</li>
+<li class=""><strong>Lenovo</strong>: F12</li>
+<li class=""><strong>ASUS</strong>: Esc or F8</li>
+<li class=""><strong>MSI</strong>: F11</li>
+<li class=""><strong>Acer</strong>: F12</li>
+</ul>
+</li>
+<li class="">Select your USB drive from boot menu (may show as &quot;UEFI: USB Device&quot;)</li>
+<li class="">Ubuntu GRUB menu appears - select <strong>Try or Install Ubuntu</strong></li>
+<li class="">Wait 1-2 minutes for live session to load</li>
+<li class="">Click <strong>Install Ubuntu</strong> icon on desktop</li>
+<li class="">Select language: <strong>English</strong> (or preferred)</li>
+<li class="">Keyboard layout: <strong>English (US)</strong> (or preferred)</li>
+<li class="">Updates and other software:<!-- -->
+<ul>
+<li class="">Select <strong>Normal installation</strong></li>
+<li class="">Check ✅ <strong>Download updates while installing Ubuntu</strong></li>
+<li class="">Check ✅ <strong>Install third-party software</strong> (NVIDIA drivers)</li>
+</ul>
+</li>
+<li class="">Installation type:<!-- -->
+<ul>
+<li class="">Select <strong>Install Ubuntu alongside Windows Boot Manager</strong></li>
+<li class="">Ubuntu installer will auto-detect Windows and unallocated space</li>
+<li class="">Use slider to allocate space (minimum 100 GB for Ubuntu)</li>
+</ul>
+</li>
+<li class="">Click <strong>Install Now</strong></li>
+<li class="">Confirm partition changes (click <strong>Continue</strong>)</li>
+<li class="">Select timezone (click on map or type city name)</li>
+<li class="">Create user account:<!-- -->
+<ul>
+<li class="">Your name: (e.g., &quot;John Doe&quot;)</li>
+<li class="">Computer name: (e.g., &quot;physai-workstation&quot;)</li>
+<li class="">Username: (e.g., &quot;john&quot;)</li>
+<li class="">Password: (strong password, you&#x27;ll use this for sudo)</li>
+<li class="">Select <strong>Require my password to log in</strong></li>
+</ul>
+</li>
+<li class="">Click <strong>Continue</strong> - installation begins (20-25 minutes)</li>
+<li class="">When &quot;Installation Complete&quot; appears, click <strong>Restart Now</strong></li>
+<li class="">Remove USB drive when prompted, press Enter</li>
+</ol>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="5-first-boot-and-dual-boot-configuration-5-minutes">5. First Boot and Dual-Boot Configuration (5 minutes)<a href="#5-first-boot-and-dual-boot-configuration-5-minutes" class="hash-link" aria-label="Direct link to 5. First Boot and Dual-Boot Configuration (5 minutes)" title="Direct link to 5. First Boot and Dual-Boot Configuration (5 minutes)" translate="no">​</a></h4>
+<ol>
+<li class="">Computer restarts - <strong>GRUB bootloader</strong> appears with options:<!-- -->
+<ul>
+<li class=""><strong>Ubuntu</strong></li>
+<li class=""><strong>Advanced options for Ubuntu</strong></li>
+<li class=""><strong>Windows Boot Manager</strong></li>
+</ul>
+</li>
+<li class="">Use arrow keys to select OS, press Enter</li>
+<li class=""><strong>Set Ubuntu as default</strong>:<!-- -->
+<ul>
+<li class="">Boot into Ubuntu (first option)</li>
+<li class="">Open Terminal (<code>Ctrl + Alt + T</code>)</li>
+<li class="">Edit GRUB config:<!-- -->
+<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token function" style="color:#d73a49">sudo</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">nano</span><span class="token plain"> /etc/default/grub</span><br></span></code></pre></div></div>
+</li>
+<li class="">Change <code>GRUB_DEFAULT=0</code> to keep Ubuntu default, or <code>GRUB_DEFAULT=2</code> to set Windows default</li>
+<li class="">Save (<code>Ctrl + X</code>, then <code>Y</code>, then Enter)</li>
+<li class="">Update GRUB:<!-- -->
+<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token function" style="color:#d73a49">sudo</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">update-grub</span><br></span></code></pre></div></div>
+</li>
+</ul>
+</li>
+<li class="">To boot into Windows:<!-- -->
+<ul>
+<li class="">Restart computer</li>
+<li class="">Select <strong>Windows Boot Manager</strong> from GRUB menu</li>
+</ul>
+</li>
+</ol>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="macos-dual-boot-guide-intel-macs-only">MacOS Dual-Boot Guide (Intel Macs Only)<a href="#macos-dual-boot-guide-intel-macs-only" class="hash-link" aria-label="Direct link to MacOS Dual-Boot Guide (Intel Macs Only)" title="Direct link to MacOS Dual-Boot Guide (Intel Macs Only)" translate="no">​</a></h3>
+<p><strong>Apple Silicon (M1/M2/M3) users</strong>: Cannot dual-boot Ubuntu. Use cloud alternatives:</p>
+<ul>
+<li class=""><strong>Lambda Labs</strong> (RTX 6000 Ada): $0.75/hour</li>
+<li class=""><strong>Paperspace Gradient</strong> (A5000): $1.10/hour</li>
+</ul>
+<p><strong>Intel Mac users</strong>:</p>
+<p>The process is similar to Windows dual-boot with these differences:</p>
+<ol>
+<li class=""><strong>Partition disk</strong>:<!-- -->
+<ul>
+<li class="">Open <strong>Disk Utility</strong> (Applications &gt; Utilities)</li>
+<li class="">Select main drive, click <strong>Partition</strong></li>
+<li class="">Click <strong>+</strong>, create <strong>100 GB partition</strong>, name &quot;Ubuntu&quot;, format <strong>MS-DOS (FAT)</strong></li>
+</ul>
+</li>
+<li class=""><strong>Create bootable USB</strong>:<!-- -->
+<ul>
+<li class="">Use <strong>Etcher</strong> (<a href="https://etcher.balena.io/" target="_blank" rel="noopener noreferrer" class="">https://etcher.balena.io/</a>) instead of Rufus</li>
+</ul>
+</li>
+<li class=""><strong>Boot from USB</strong>:<!-- -->
+<ul>
+<li class="">Restart Mac, hold <strong>Option (⌥)</strong> key during startup</li>
+<li class="">Select <strong>EFI Boot</strong> (USB drive)</li>
+</ul>
+</li>
+<li class=""><strong>Installation</strong>:<!-- -->
+<ul>
+<li class="">Select <strong>Install Ubuntu alongside macOS</strong> (installer detects macOS automatically)</li>
+<li class="">Complete steps 7-17 from Windows guide above</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="troubleshooting-common-hardware-issues">Troubleshooting Common Hardware Issues<a href="#troubleshooting-common-hardware-issues" class="hash-link" aria-label="Direct link to Troubleshooting Common Hardware Issues" title="Direct link to Troubleshooting Common Hardware Issues" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="issue-1-nvidia-driver-not-detected-after-ubuntu-install">Issue 1: NVIDIA Driver Not Detected After Ubuntu Install<a href="#issue-1-nvidia-driver-not-detected-after-ubuntu-install" class="hash-link" aria-label="Direct link to Issue 1: NVIDIA Driver Not Detected After Ubuntu Install" title="Direct link to Issue 1: NVIDIA Driver Not Detected After Ubuntu Install" translate="no">​</a></h3>
+<p><strong>Symptom</strong>: <code>nvidia-smi</code> shows &quot;command not found&quot; or &quot;NVIDIA driver not loaded&quot;</p>
+<p><strong>Cause</strong>: Ubuntu installer&#x27;s third-party driver install failed or Nouveau (open-source driver) is active</p>
+<p><strong>Solution</strong>:</p>
+<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token comment" style="color:#999988;font-style:italic"># Check current driver</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">lspci </span><span class="token operator" style="color:#393A34">|</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">grep</span><span class="token plain"> </span><span class="token parameter variable" style="color:#36acaa">-i</span><span class="token plain"> nvidia</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token comment" style="color:#999988;font-style:italic"># Should show your GPU</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token comment" style="color:#999988;font-style:italic"># Install NVIDIA driver (version 550+ for RTX 40-series)</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token function" style="color:#d73a49">sudo</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">apt</span><span class="token plain"> update</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token function" style="color:#d73a49">sudo</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">apt</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">install</span><span class="token plain"> nvidia-driver-550</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token function" style="color:#d73a49">sudo</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">reboot</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token comment" style="color:#999988;font-style:italic"># After reboot, verify</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">nvidia-smi</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token comment" style="color:#999988;font-style:italic"># Should show GPU details</span><br></span></code></pre></div></div>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="issue-2-windows-boot-entry-missing-from-grub">Issue 2: Windows Boot Entry Missing from GRUB<a href="#issue-2-windows-boot-entry-missing-from-grub" class="hash-link" aria-label="Direct link to Issue 2: Windows Boot Entry Missing from GRUB" title="Direct link to Issue 2: Windows Boot Entry Missing from GRUB" translate="no">​</a></h3>
+<p><strong>Symptom</strong>: After Ubuntu install, Windows option doesn&#x27;t appear in GRUB bootloader</p>
+<p><strong>Solution</strong>:</p>
+<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token comment" style="color:#999988;font-style:italic"># Update GRUB to detect Windows</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token function" style="color:#d73a49">sudo</span><span class="token plain"> os-prober</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token function" style="color:#d73a49">sudo</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">update-grub</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token comment" style="color:#999988;font-style:italic"># If os-prober doesn&#x27;t find Windows, enable it:</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token function" style="color:#d73a49">sudo</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">nano</span><span class="token plain"> /etc/default/grub</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token comment" style="color:#999988;font-style:italic"># Add this line:</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token comment" style="color:#999988;font-style:italic"># GRUB_DISABLE_OS_PROBER=false</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token comment" style="color:#999988;font-style:italic"># Save and exit (Ctrl+X, Y, Enter)</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token function" style="color:#d73a49">sudo</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">update-grub</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token function" style="color:#d73a49">sudo</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">reboot</span><br></span></code></pre></div></div>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="issue-3-ubuntu-installer-shows-no-operating-system-found">Issue 3: Ubuntu Installer Shows &quot;No Operating System Found&quot;<a href="#issue-3-ubuntu-installer-shows-no-operating-system-found" class="hash-link" aria-label="Direct link to Issue 3: Ubuntu Installer Shows &quot;No Operating System Found&quot;" title="Direct link to Issue 3: Ubuntu Installer Shows &quot;No Operating System Found&quot;" translate="no">​</a></h3>
+<p><strong>Symptom</strong>: After installation, computer says &quot;No bootable device&quot; or similar error</p>
+<p><strong>Cause</strong>: GRUB installed to wrong drive or BIOS boot order incorrect</p>
+<p><strong>Solution</strong>:</p>
+<ol>
+<li class="">Restart computer, enter BIOS/UEFI (F2/F10/Del during startup)</li>
+<li class="">Go to <strong>Boot</strong> tab</li>
+<li class="">Ensure <strong>ubuntu</strong> (or <strong>GRUB</strong>) is first in boot order</li>
+<li class="">If not visible, check if <strong>Secure Boot</strong> disabled</li>
+<li class="">Save and exit</li>
+</ol>
+<p>If problem persists, boot from Ubuntu USB and reinstall GRUB:</p>
+<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token comment" style="color:#999988;font-style:italic"># Boot from USB, select &quot;Try Ubuntu&quot;</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token function" style="color:#d73a49">sudo</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">fdisk</span><span class="token plain"> </span><span class="token parameter variable" style="color:#36acaa">-l</span><span class="token plain">  </span><span class="token comment" style="color:#999988;font-style:italic"># Find Ubuntu partition (usually /dev/nvme0n1p5 or /dev/sda5)</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token function" style="color:#d73a49">sudo</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">mount</span><span class="token plain"> /dev/nvme0n1p5 /mnt  </span><span class="token comment" style="color:#999988;font-style:italic"># Replace with your partition</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token function" style="color:#d73a49">sudo</span><span class="token plain"> grub-install --root-directory</span><span class="token operator" style="color:#393A34">=</span><span class="token plain">/mnt /dev/nvme0n1  </span><span class="token comment" style="color:#999988;font-style:italic"># Replace with your disk (not partition)</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token function" style="color:#d73a49">sudo</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">reboot</span><br></span></code></pre></div></div>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="issue-4-slow-boot-into-ubuntu-2-minutes">Issue 4: Slow Boot into Ubuntu (2+ minutes)<a href="#issue-4-slow-boot-into-ubuntu-2-minutes" class="hash-link" aria-label="Direct link to Issue 4: Slow Boot into Ubuntu (2+ minutes)" title="Direct link to Issue 4: Slow Boot into Ubuntu (2+ minutes)" translate="no">​</a></h3>
+<p><strong>Symptom</strong>: GRUB menu loads fast but Ubuntu boot takes 2+ minutes with black screen</p>
+<p><strong>Cause</strong>: Usually Nouveau driver conflicting with NVIDIA hardware</p>
+<p><strong>Solution</strong>:</p>
+<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token comment" style="color:#999988;font-style:italic"># Add nomodeset kernel parameter (temporary fix)</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token comment" style="color:#999988;font-style:italic"># In GRUB menu, press &#x27;e&#x27; on Ubuntu entry</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token comment" style="color:#999988;font-style:italic"># Find line starting with &quot;linux&quot;</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token comment" style="color:#999988;font-style:italic"># Add &quot;nomodeset&quot; before &quot;quiet splash&quot;</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token comment" style="color:#999988;font-style:italic"># Press Ctrl+X to boot</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token comment" style="color:#999988;font-style:italic"># After boot, install proper NVIDIA driver (permanent fix)</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token function" style="color:#d73a49">sudo</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">apt</span><span class="token plain"> update</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token function" style="color:#d73a49">sudo</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">apt</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">install</span><span class="token plain"> nvidia-driver-550</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token function" style="color:#d73a49">sudo</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">reboot</span><br></span></code></pre></div></div>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="next-steps-installing-the-software-stack">Next Steps: Installing the Software Stack<a href="#next-steps-installing-the-software-stack" class="hash-link" aria-label="Direct link to Next Steps: Installing the Software Stack" title="Direct link to Next Steps: Installing the Software Stack" translate="no">​</a></h2>
+<p>Now that your hardware is ready and Ubuntu 22.04 is installed, proceed to the software installation covered in research findings (Chapter 02 appendix):</p>
+<ol>
+<li class=""><strong>System updates and prerequisites</strong> (10 min)</li>
+<li class=""><strong>NVIDIA drivers + CUDA 12.4</strong> (20 min)</li>
+<li class=""><strong>ROS 2 Jazzy Jalisco</strong> (30 min)</li>
+<li class=""><strong>Isaac Sim 2024.1</strong> (60 min)</li>
+<li class=""><strong>ROS 2 workspace setup</strong> (15 min)</li>
+<li class=""><strong>Validation testing</strong> (15 min)</li>
+</ol>
+<p><strong>Total time</strong>: 2.5 hours (within 4-hour workstation setup goal ✅)</p>
+<p>For detailed step-by-step commands, see <strong>Appendix A: Lab Build Guides</strong> and proceed to <strong>Chapter 03: ROS 2 Fundamentals</strong>.</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="chapter-summary">Chapter Summary<a href="#chapter-summary" class="hash-link" aria-label="Direct link to Chapter Summary" title="Direct link to Chapter Summary" translate="no">​</a></h2>
+<p>In this chapter, you learned:</p>
+<ul>
+<li class=""><strong>GPU requirements</strong>: RTX 4070 Ti (12 GB) minimum, RTX 4080 (16 GB) recommended, RTX 4090 (24 GB) for research</li>
+<li class=""><strong>VRAM needs</strong>: Most workloads use 8-12 GB (Isaac Sim + VLA inference)</li>
+<li class=""><strong>Three lab tiers</strong>: Economy ($1,460), Mid-Tier ($2,640), Premium ($4,960)</li>
+<li class=""><strong>Cost savings</strong>: Owning hardware saves $4,700-117,000 over 3-5 years vs cloud</li>
+<li class=""><strong>Dual-boot setup</strong>: Ubuntu 22.04 alongside Windows via UEFI partitioning (60-90 min)</li>
+<li class=""><strong>Hardware selection</strong>: Use decision matrix based on budget and workload requirements</li>
+</ul>
+<div class="theme-admonition theme-admonition-tip admonition_xJq3 alert alert--success"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewBox="0 0 12 16"><path fill-rule="evenodd" d="M6.5 0C3.48 0 1 2.19 1 5c0 .92.55 2.25 1 3 1.34 2.25 1.78 2.78 2 4v1h5v-1c.22-1.22.66-1.75 2-4 .45-.75 1-2.08 1-3 0-2.81-2.48-5-5.5-5zm3.64 7.48c-.25.44-.47.8-.67 1.11-.86 1.41-1.25 2.06-1.45 3.23-.02.05-.02.11-.02.17H5c0-.06 0-.13-.02-.17-.2-1.17-.59-1.83-1.45-3.23-.2-.31-.42-.67-.67-1.11C2.44 6.78 2 5.65 2 5c0-2.2 2.02-4 4.5-4 1.22 0 2.36.42 3.22 1.19C10.55 2.94 11 3.94 11 5c0 .66-.44 1.78-.86 2.48zM4 14h5c-.23 1.14-1.3 2-2.5 2s-2.27-.86-2.5-2z"></path></svg></span>Ready to Continue?</div><div class="admonitionContent_BuS1"><p>With your workstation hardware selected or built, move on to <strong>Chapter 03: ROS 2 Fundamentals</strong> to begin software development. If you encounter issues during setup, consult <strong>Appendix B: Troubleshooting Bible</strong> for 100+ common errors and solutions.</p></div></div>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="further-reading">Further Reading<a href="#further-reading" class="hash-link" aria-label="Direct link to Further Reading" title="Direct link to Further Reading" translate="no">​</a></h2>
+<ul>
+<li class=""><strong>NVIDIA GPU Comparison</strong>: <a href="https://www.nvidia.com/en-us/geforce/graphics-cards/compare/" target="_blank" rel="noopener noreferrer" class="">https://www.nvidia.com/en-us/geforce/graphics-cards/compare/</a></li>
+<li class=""><strong>Ubuntu Desktop Installation Guide</strong>: <a href="https://ubuntu.com/tutorials/install-ubuntu-desktop" target="_blank" rel="noopener noreferrer" class="">https://ubuntu.com/tutorials/install-ubuntu-desktop</a></li>
+<li class=""><strong>PCPartPicker (build compatibility checker)</strong>: <a href="https://pcpartpicker.com/" target="_blank" rel="noopener noreferrer" class="">https://pcpartpicker.com/</a></li>
+<li class=""><strong>/r/buildapc community</strong>: <a href="https://reddit.com/r/buildapc" target="_blank" rel="noopener noreferrer" class="">https://reddit.com/r/buildapc</a> (for hardware advice)</li>
+<li class=""><strong>ROS 2 Hardware Requirements</strong>: <a href="https://docs.ros.org/en/jazzy/Installation.html" target="_blank" rel="noopener noreferrer" class="">https://docs.ros.org/en/jazzy/Installation.html</a></li>
+</ul></div><footer class="theme-doc-footer docusaurus-mt-lg"><div class="row margin-top--sm theme-doc-footer-edit-meta-row"><div class="col noPrint_WFHX"><a href="https://github.com/MuhammadWaqasrafiq/HumanoidRoboticsBook/tree/main/docs/hardware-2026/index.mdx" target="_blank" rel="noopener noreferrer" class="theme-edit-this-page"><svg fill="currentColor" height="20" width="20" viewBox="0 0 40 40" class="iconEdit_Z9Sw" aria-hidden="true"><g><path d="m34.5 11.7l-3 3.1-6.3-6.3 3.1-3q0.5-0.5 1.2-0.5t1.1 0.5l3.9 3.9q0.5 0.4 0.5 1.1t-0.5 1.2z m-29.5 17.1l18.4-18.5 6.3 6.3-18.4 18.4h-6.3v-6.2z"></path></g></svg>Edit this page</a></div><div class="col lastUpdated_JAkA"></div></div></footer></article><nav class="docusaurus-mt-lg pagination-nav" aria-label="Docs pages"><a class="pagination-nav__link pagination-nav__link--prev" href="/HumanoidRoboticsBook/docs/why-physical-ai"><div class="pagination-nav__sublabel">Previous</div><div class="pagination-nav__label">01. Why Physical AI Is the Next Frontier</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/HumanoidRoboticsBook/docs/ros2-fundamentals"><div class="pagination-nav__sublabel">Next</div><div class="pagination-nav__label">Overview</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#learning-objectives" class="table-of-contents__link toc-highlight">Learning Objectives</a></li><li><a href="#introduction-why-hardware-matters-for-physical-ai" class="table-of-contents__link toc-highlight">Introduction: Why Hardware Matters for Physical AI</a></li><li><a href="#gpu-requirements-the-heart-of-physical-ai" class="table-of-contents__link toc-highlight">GPU Requirements: The Heart of Physical AI</a><ul><li><a href="#why-nvidia-gpus-are-mandatory-for-now" class="table-of-contents__link toc-highlight">Why NVIDIA GPUs Are Mandatory (For Now)</a></li><li><a href="#gpu-comparison-rtx-4070-ti-vs-4080-vs-4090" class="table-of-contents__link toc-highlight">GPU Comparison: RTX 4070 Ti vs 4080 vs 4090</a></li><li><a href="#vram-requirements-by-workload" class="table-of-contents__link toc-highlight">VRAM Requirements by Workload</a></li><li><a href="#recommended-gpu-by-use-case" class="table-of-contents__link toc-highlight">Recommended GPU by Use Case</a></li></ul></li><li><a href="#three-lab-tiers-pick-your-investment-level" class="table-of-contents__link toc-highlight">Three Lab Tiers: Pick Your Investment Level</a><ul><li><a href="#lab-tier-1-economy-lab-under-1500" class="table-of-contents__link toc-highlight">Lab Tier 1: Economy Lab (under $1,500)</a></li><li><a href="#lab-tier-2-mid-tier-lab-2500-3500" class="table-of-contents__link toc-highlight">Lab Tier 2: Mid-Tier Lab ($2,500-3,500)</a></li><li><a href="#lab-tier-3-premium-lab-6000-8000" class="table-of-contents__link toc-highlight">Lab Tier 3: Premium Lab ($6,000-8,000)</a></li></ul></li><li><a href="#hardware-decision-matrix" class="table-of-contents__link toc-highlight">Hardware Decision Matrix</a></li><li><a href="#cpu-ram-and-storage-requirements" class="table-of-contents__link toc-highlight">CPU, RAM, and Storage Requirements</a><ul><li><a href="#cpu-selection" class="table-of-contents__link toc-highlight">CPU Selection</a></li><li><a href="#ram-requirements" class="table-of-contents__link toc-highlight">RAM Requirements</a></li><li><a href="#storage-requirements" class="table-of-contents__link toc-highlight">Storage Requirements</a></li></ul></li><li><a href="#dual-boot-setup-installing-ubuntu-2204-alongside-windowsmacos" class="table-of-contents__link toc-highlight">Dual-Boot Setup: Installing Ubuntu 22.04 Alongside Windows/MacOS</a><ul><li><a href="#prerequisites" class="table-of-contents__link toc-highlight">Prerequisites</a></li><li><a href="#step-by-step-dual-boot-guide-windows" class="table-of-contents__link toc-highlight">Step-by-Step Dual-Boot Guide (Windows)</a></li><li><a href="#macos-dual-boot-guide-intel-macs-only" class="table-of-contents__link toc-highlight">MacOS Dual-Boot Guide (Intel Macs Only)</a></li></ul></li><li><a href="#troubleshooting-common-hardware-issues" class="table-of-contents__link toc-highlight">Troubleshooting Common Hardware Issues</a><ul><li><a href="#issue-1-nvidia-driver-not-detected-after-ubuntu-install" class="table-of-contents__link toc-highlight">Issue 1: NVIDIA Driver Not Detected After Ubuntu Install</a></li><li><a href="#issue-2-windows-boot-entry-missing-from-grub" class="table-of-contents__link toc-highlight">Issue 2: Windows Boot Entry Missing from GRUB</a></li><li><a href="#issue-3-ubuntu-installer-shows-no-operating-system-found" class="table-of-contents__link toc-highlight">Issue 3: Ubuntu Installer Shows &quot;No Operating System Found&quot;</a></li><li><a href="#issue-4-slow-boot-into-ubuntu-2-minutes" class="table-of-contents__link toc-highlight">Issue 4: Slow Boot into Ubuntu (2+ minutes)</a></li></ul></li><li><a href="#next-steps-installing-the-software-stack" class="table-of-contents__link toc-highlight">Next Steps: Installing the Software Stack</a></li><li><a href="#chapter-summary" class="table-of-contents__link toc-highlight">Chapter Summary</a></li><li><a href="#further-reading" class="table-of-contents__link toc-highlight">Further Reading</a></li></ul></div></div></div></div></main></div></div></div><footer class="theme-layout-footer footer footer--dark"><div class="container container-fluid"><div class="row footer__links"><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Learn</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/HumanoidRoboticsBook/docs/intro">Introduction</a></li><li class="footer__item"><a class="footer__link-item" href="/HumanoidRoboticsBook/docs/why-physical-ai">Why Physical AI</a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Resources</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://github.com/MuhammadWaqasrafiq/HumanoidRoboticsBook" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub Repo<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/MuhammadWaqasrafiq/HumanoidRoboticsBook/tree/main/code-examples" target="_blank" rel="noopener noreferrer" class="footer__link-item">Code Samples<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Connect</div><ul class="footer__items clean-list"><li class="footer__item">
+<div style="display:flex; gap:1.5rem; margin-bottom:1rem;">
+  <a href="https://github.com/MuhammadWaqasrafiq/HumanoidRoboticsBook" target="_blank" rel="noopener noreferrer" aria-label="GitHub" style="color:#fff;font-size:1.6rem;">
+    <i class="fa-brands fa-github"></i>
+  </a>
+  <a href="https://linkedin.com/in/MuhammadWaqasrafiq" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" style="color:#fff;font-size:1.6rem;">
+    <i class="fa-brands fa-linkedin"></i>
+  </a>
+  <a href="https://wa.me/923463033195" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" style="color:#fff;font-size:1.6rem;">
+    <i class="fa-brands fa-whatsapp"></i>
+  </a>
+  <a href="https://www.youtube.com/watch?v=dZTfXiPSZyE" target="_blank" rel="noopener noreferrer" aria-label="YouTube" style="color:#fff;font-size:1.6rem;">
+    <i class="fa-brands fa-youtube"></i>
+  </a>
+</div>
+              </li><li class="footer__item"><a href="https://github.com/MuhammadWaqasrafiq/HumanoidRoboticsBook/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" class="footer__link-item">MIT License<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div></div><div class="footer__bottom text--center"><div class="footer__copyright">© 2025 Embodied AI • Muhammad Waqas Rafiq • MIT & CC-BY-4.0</div></div></div></footer></div>
+</body>
+</html>

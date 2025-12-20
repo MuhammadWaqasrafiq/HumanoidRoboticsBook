@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="docs-wrapper plugin-docs plugin-id-default docs-version-current docs-doc-page docs-doc-id-hardware-2026/hardware-2026-quiz" data-has-hydrated="false">
+<head>
+<meta charset="UTF-8">
+<meta name="generator" content="Docusaurus v3.9.2">
+<title data-rh="true">Chapter 02 Quiz - Hardware Requirements | Embodied AI: The Future of Robotics</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://muhammadwaqasrafiq.github.io/HumanoidRoboticsBook/img/social-card.jpg"><meta data-rh="true" name="twitter:image" content="https://muhammadwaqasrafiq.github.io/HumanoidRoboticsBook/img/social-card.jpg"><meta data-rh="true" property="og:url" content="https://muhammadwaqasrafiq.github.io/HumanoidRoboticsBook/docs/hardware-2026/hardware-2026-quiz"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Chapter 02 Quiz - Hardware Requirements | Embodied AI: The Future of Robotics"><meta data-rh="true" name="description" content="Test your understanding of GPU requirements, lab tiers, and hardware selection for Physical AI"><meta data-rh="true" property="og:description" content="Test your understanding of GPU requirements, lab tiers, and hardware selection for Physical AI"><meta data-rh="true" name="keywords" content="quiz,hardware,gpu,rtx-4070-ti,workstation-setup"><link data-rh="true" rel="icon" href="/HumanoidRoboticsBook/img/new_logo.svg"><link data-rh="true" rel="canonical" href="https://muhammadwaqasrafiq.github.io/HumanoidRoboticsBook/docs/hardware-2026/hardware-2026-quiz"><link data-rh="true" rel="alternate" href="https://muhammadwaqasrafiq.github.io/HumanoidRoboticsBook/docs/hardware-2026/hardware-2026-quiz" hreflang="en"><link data-rh="true" rel="alternate" href="https://muhammadwaqasrafiq.github.io/HumanoidRoboticsBook/docs/hardware-2026/hardware-2026-quiz" hreflang="x-default"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"><link rel="stylesheet" href="/HumanoidRoboticsBook/assets/css/styles.a6d7e190.css">
+<script src="/HumanoidRoboticsBook/assets/js/runtime~main.803ab506.js" defer="defer"></script>
+<script src="/HumanoidRoboticsBook/assets/js/main.a5cf34ea.js" defer="defer"></script>
+</head>
+<body class="navigation-with-keyboard">
+<svg style="display: none;"><defs>
+<symbol id="theme-svg-external-link" viewBox="0 0 24 24"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"/></symbol>
+</defs></svg>
+<script>!function(){var t=function(){try{return new URLSearchParams(window.location.search).get("docusaurus-theme")}catch(t){}}()||function(){try{return window.localStorage.getItem("theme")}catch(t){}}();document.documentElement.setAttribute("data-theme",t||"light"),document.documentElement.setAttribute("data-theme-choice",t||"light")}(),function(){try{const c=new URLSearchParams(window.location.search).entries();for(var[t,e]of c)if(t.startsWith("docusaurus-data-")){var a=t.replace("docusaurus-data-","data-");document.documentElement.setAttribute(a,e)}}catch(t){}}()</script><div id="__docusaurus"><div role="region" aria-label="Skip to main content"><a class="skipToContent_fXgn" href="#__docusaurus_skipToContent_fallback">Skip to main content</a></div><nav aria-label="Main" class="theme-layout-navbar navbar navbar--fixed-top"><div class="navbar__inner"><div class="theme-layout-navbar-left navbar__items"><button aria-label="Toggle navigation bar" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/HumanoidRoboticsBook/"><div class="navbar__logo"><img src="/HumanoidRoboticsBook/img/new_logo.svg" alt="Embodied AI Logo" class="themedComponent_mlkZ themedComponent--light_NVdE"><img src="/HumanoidRoboticsBook/img/new_logo.svg" alt="Embodied AI Logo" class="themedComponent_mlkZ themedComponent--dark_xIcU"></div><b class="navbar__title text--truncate">Embodied AI</b></a><a class="navbar__item navbar__link" href="/HumanoidRoboticsBook/docs/intro">Book</a></div><div class="theme-layout-navbar-right navbar__items navbar__items--right"><a href="https://github.com/MuhammadWaqasrafiq/HumanoidRoboticsBook" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">GitHub<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a><div class="toggle_vylO colorModeToggle_DEke"><button class="clean-btn toggleButton_gllP toggleButtonDisabled_aARS" type="button" disabled="" title="system mode" aria-label="Switch between dark and light mode (currently system mode)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP lightToggleIcon_pyhR"><path fill="currentColor" d="M12,9c1.65,0,3,1.35,3,3s-1.35,3-3,3s-3-1.35-3-3S10.35,9,12,9 M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5 S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1 s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0 c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95 c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41 L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41 s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06 c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP darkToggleIcon_wfgR"><path fill="currentColor" d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP systemToggleIcon_QzmC"><path fill="currentColor" d="m12 21c4.971 0 9-4.029 9-9s-4.029-9-9-9-9 4.029-9 9 4.029 9 9 9zm4.95-13.95c1.313 1.313 2.05 3.093 2.05 4.95s-0.738 3.637-2.05 4.95c-1.313 1.313-3.093 2.05-4.95 2.05v-14c1.857 0 3.637 0.737 4.95 2.05z"></path></svg></button></div><div class="navbarSearchContainer_Bca1"></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="__docusaurus_skipToContent_fallback" class="theme-layout-main main-wrapper mainWrapper_z2l0"><div class="docsWrapper_hBAB"><button aria-label="Scroll back to top" class="clean-btn theme-back-to-top-button backToTopButton_sjWU" type="button"></button><div class="docRoot_UBD9"><main class="docMainContainer_TBSr docMainContainerEnhanced_lQrH"><div class="container padding-top--md padding-bottom--lg"><div class="row"><div class="col docItemCol_VOVn"><div class="docItemContainer_Djhp"><article><div class="tocCollapsible_ETCw theme-doc-toc-mobile tocMobile_ITEo"><button type="button" class="clean-btn tocCollapsibleButton_TO0P">On this page</button></div><div class="theme-doc-markdown markdown"><header><h1>Chapter 02 Quiz: The Hardware You Actually Need in 2026</h1></header>
+<p>Test your understanding of GPU requirements, workstation configurations, and hardware selection strategies for Physical AI development.</p>
+<div class="theme-admonition theme-admonition-tip admonition_xJq3 alert alert--success"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewBox="0 0 12 16"><path fill-rule="evenodd" d="M6.5 0C3.48 0 1 2.19 1 5c0 .92.55 2.25 1 3 1.34 2.25 1.78 2.78 2 4v1h5v-1c.22-1.22.66-1.75 2-4 .45-.75 1-2.08 1-3 0-2.81-2.48-5-5.5-5zm3.64 7.48c-.25.44-.47.8-.67 1.11-.86 1.41-1.25 2.06-1.45 3.23-.02.05-.02.11-.02.17H5c0-.06 0-.13-.02-.17-.2-1.17-.59-1.83-1.45-3.23-.2-.31-.42-.67-.67-1.11C2.44 6.78 2 5.65 2 5c0-2.2 2.02-4 4.5-4 1.22 0 2.36.42 3.22 1.19C10.55 2.94 11 3.94 11 5c0 .66-.44 1.78-.86 2.48zM4 14h5c-.23 1.14-1.3 2-2.5 2s-2.27-.86-2.5-2z"></path></svg></span>How to Use This Quiz</div><div class="admonitionContent_BuS1"><ul>
+<li class="">Answer all 7 questions honestly (don&#x27;t peek at the answers!)</li>
+<li class="">Each question has one correct answer</li>
+<li class="">Explanations are provided after each answer</li>
+<li class="">Aim for 5/7 or better to demonstrate mastery</li>
+</ul></div></div>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="question-1-gpu-selection-fundamentals">Question 1: GPU Selection Fundamentals<a href="#question-1-gpu-selection-fundamentals" class="hash-link" aria-label="Direct link to Question 1: GPU Selection Fundamentals" title="Direct link to Question 1: GPU Selection Fundamentals" translate="no">​</a></h2>
+<p><strong>What is the MOST critical GPU specification for Physical AI development in 2026?</strong></p>
+<p>A) CUDA core count (determines parallel processing power)
+B) VRAM capacity (determines max model size you can run)
+C) Base clock speed (determines raw compute performance)
+D) TDP (thermal design power, affects cooling requirements)</p>
+<details class="details_lb9f alert alert--info details_b_Ee" data-collapsed="true"><summary>Click to reveal answer</summary><div><div class="collapsibleContent_i85q"><p><strong>Answer: B) VRAM capacity (determines max model size you can run)</strong></p><p><strong>Explanation</strong>: While all specifications matter, <strong>VRAM is the hard bottleneck</strong>. If a VLA model requires 14 GB VRAM and your GPU only has 12 GB, the model simply won&#x27;t run - no amount of CUDA cores or clock speed can fix this.</p><p><strong>VRAM requirements hierarchy</strong>:</p><ul>
+<li class=""><strong>Isaac Sim (complex scenes)</strong>: 10-12 GB</li>
+<li class=""><strong>OpenVLA 7B inference</strong>: 8-12 GB (16-bit precision)</li>
+<li class=""><strong>Pi0 14B inference</strong>: 14-16 GB (16-bit precision)</li>
+<li class=""><strong>VLA fine-tuning (7B)</strong>: 12-16 GB (with LoRA + gradient checkpointing)</li>
+</ul><p><strong>Real-world example</strong>: RTX 4070 Ti (12 GB) can run OpenVLA 7B comfortably but requires 8-bit quantization for Pi0 14B. RTX 4080 (16 GB) runs Pi0 14B at full 16-bit precision.</p><p><strong>Key takeaway</strong>: Always check VRAM requirements first, then evaluate CUDA cores and clock speeds.</p></div></div></details>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="question-2-lab-tier-selection">Question 2: Lab Tier Selection<a href="#question-2-lab-tier-selection" class="hash-link" aria-label="Direct link to Question 2: Lab Tier Selection" title="Direct link to Question 2: Lab Tier Selection" translate="no">​</a></h2>
+<p><strong>A professional developer building commercial Physical AI applications has a $3,000 budget. Which lab tier should they choose?</strong></p>
+<p>A) Economy Lab ($1,460) - save money, invest in cloud credits
+B) Mid-Tier Lab ($2,640) - optimal for professional work
+C) Premium Lab ($4,960) - stretch budget with financing
+D) Cloud-only approach - no hardware purchase</p>
+<details class="details_lb9f alert alert--info details_b_Ee" data-collapsed="true"><summary>Click to reveal answer</summary><div><div class="collapsibleContent_i85q"><p><strong>Answer: B) Mid-Tier Lab ($2,640) - optimal for professional work</strong></p><p><strong>Explanation</strong>: The Mid-Tier Lab fits the budget ($2,640 &lt; $3,000) and provides <strong>production-grade hardware</strong> perfectly suited for professional developers:</p><p><strong>Why Mid-Tier is optimal</strong>:</p><ul>
+<li class=""><strong>RTX 4080 (16 GB)</strong>: Runs Pi0 14B at full precision (critical for commercial apps)</li>
+<li class=""><strong>64 GB RAM</strong>: Supports multi-session workflows (Isaac Sim + VSCode + browser + Jupyter)</li>
+<li class=""><strong>2-3x faster than Economy</strong>: Faster iteration = more productivity</li>
+<li class=""><strong>24/7 operation</strong>: Better cooling prevents thermal throttling</li>
+<li class=""><strong>Future-proof</strong>: 1000W PSU supports future RTX 5090 upgrade</li>
+</ul><p><strong>Why NOT other options</strong>:</p><ul>
+<li class=""><strong>Economy Lab</strong>: 12 GB VRAM limits to 8-bit quantization for Pi0 14B (lower quality outputs)</li>
+<li class=""><strong>Premium Lab</strong>: $4,960 exceeds budget; overkill for commercial work (unless training custom models)</li>
+<li class=""><strong>Cloud-only</strong>: $3,000/year in cloud credits ≈ 4,000 hours on Lambda Labs ($0.75/hr). Only makes sense if usage &lt; 5h/week.</li>
+</ul><p><strong>ROI calculation</strong>: Mid-Tier saves $18,500 over 5 years vs equivalent cloud (AWS g5.2xlarge).</p></div></div></details>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="question-3-vram-workload-estimation">Question 3: VRAM Workload Estimation<a href="#question-3-vram-workload-estimation" class="hash-link" aria-label="Direct link to Question 3: VRAM Workload Estimation" title="Direct link to Question 3: VRAM Workload Estimation" translate="no">​</a></h2>
+<p><strong>You&#x27;re developing a Physical AI pipeline that runs Isaac Sim (complex warehouse scene with 3 robots) and OpenVLA 7B inference simultaneously. What is the MINIMUM VRAM required?</strong></p>
+<p>A) 8 GB (sufficient for basic workloads)
+B) 12 GB (minimum for this combined workload)
+C) 16 GB (recommended for comfortable headroom)
+D) 24 GB (overkill, only needed for research)</p>
+<details class="details_lb9f alert alert--info details_b_Ee" data-collapsed="true"><summary>Click to reveal answer</summary><div><div class="collapsibleContent_i85q"><p><strong>Answer: B) 12 GB (minimum for this combined workload)</strong></p><p><strong>Explanation</strong>: Let&#x27;s break down VRAM usage:</p><p><strong>Isaac Sim (complex warehouse, 3 robots)</strong>:</p><ul>
+<li class="">Base scene rendering: 4 GB</li>
+<li class="">Photorealistic assets: +2 GB</li>
+<li class="">3 humanoid robots (articulated, collision meshes): +3 GB</li>
+<li class=""><strong>Subtotal</strong>: ~9-10 GB</li>
+</ul><p><strong>OpenVLA 7B inference (16-bit precision)</strong>:</p><ul>
+<li class="">Model weights: 7B parameters × 2 bytes = 14 GB</li>
+<li class="">With 8-bit quantization: ~7-8 GB</li>
+<li class=""><strong>Subtotal</strong>: 8 GB (quantized)</li>
+</ul><p><strong>Combined workload</strong>: 10 GB (Isaac Sim) + 8 GB (OpenVLA quantized) = <strong>18 GB theoretical</strong></p><p>However, with GPU memory optimizations (shared memory, dynamic allocation), this fits in <strong>12 GB</strong> by:</p><ol>
+<li class="">Using 8-bit quantization for OpenVLA (reduces to 7-8 GB)</li>
+<li class="">Reducing Isaac Sim asset quality slightly (reduces to 8-9 GB)</li>
+</ol><p><strong>Why 12 GB is the minimum</strong>:</p><ul>
+<li class="">RTX 4070 Ti (12 GB): Tight fit, requires tuning, occasional OOM (out of memory) errors</li>
+<li class="">RTX 4080 (16 GB): Comfortable, no optimization needed, headroom for debugging</li>
+</ul><p><strong>Key insight</strong>: Real-world VRAM usage varies 10-20% based on scene complexity. Always budget 20% headroom above calculated minimum.</p></div></div></details>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="question-4-cpu-vs-gpu-priority">Question 4: CPU vs GPU Priority<a href="#question-4-cpu-vs-gpu-priority" class="hash-link" aria-label="Direct link to Question 4: CPU vs GPU Priority" title="Direct link to Question 4: CPU vs GPU Priority" translate="no">​</a></h2>
+<p><strong>You have $2,000 budget and must choose between two configurations. Which is better for Physical AI development?</strong></p>
+<p>A) AMD Ryzen 9 7950X (16-core, $600) + RTX 4070 Ti (12 GB, $800) = $1,400 + $600 other
+B) AMD Ryzen 5 7600 (6-core, $200) + RTX 4080 (16 GB, $1,150) = $1,350 + $650 other</p>
+<details class="details_lb9f alert alert--info details_b_Ee" data-collapsed="true"><summary>Click to reveal answer</summary><div><div class="collapsibleContent_i85q"><p><strong>Answer: B) AMD Ryzen 5 7600 (6-core) + RTX 4080 (16 GB)</strong></p><p><strong>Explanation</strong>: Physical AI workloads are <strong>GPU-bound</strong>, not CPU-bound. Investing more in GPU delivers better performance.</p><p><strong>Performance comparison</strong>:</p><table><thead><tr><th>Workload</th><th>Config A (7950X + 4070 Ti)</th><th>Config B (7600 + 4080)</th><th>Winner</th></tr></thead><tbody><tr><td>Isaac Sim rendering</td><td>45 FPS</td><td>60 FPS</td><td><strong>B</strong> (+33%)</td></tr><tr><td>VLA inference (Pi0 14B)</td><td>8-bit quantization required</td><td>16-bit full precision</td><td><strong>B</strong></td></tr><tr><td>Fine-tuning (7B model)</td><td>2.5 hours/epoch</td><td>1.8 hours/epoch</td><td><strong>B</strong> (-28%)</td></tr><tr><td>ROS 2 package build</td><td>45 seconds</td><td>60 seconds</td><td>A (+25%)</td></tr></tbody></table><p><strong>Key findings</strong>:</p><ul>
+<li class="">GPU-heavy tasks (simulation, inference, training): <strong>Config B wins 3/4 workloads</strong></li>
+<li class="">CPU-heavy task (ROS 2 builds): Config A is 15 seconds faster (marginal)</li>
+<li class=""><strong>Critical difference</strong>: Config B&#x27;s 16 GB VRAM enables full-precision Pi0 14B (better outputs)</li>
+</ul><p><strong>When to prioritize CPU</strong>:</p><ul>
+<li class="">Parallel experimentation (running 10+ models simultaneously)</li>
+<li class="">Training from scratch (requires feeding data to GPU quickly)</li>
+<li class="">CI/CD pipelines (many parallel builds)</li>
+</ul><p>For typical Physical AI development (simulation + inference + occasional fine-tuning), <strong>GPU &gt; CPU</strong>.</p></div></div></details>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="question-5-dual-boot-vs-alternatives">Question 5: Dual-Boot vs Alternatives<a href="#question-5-dual-boot-vs-alternatives" class="hash-link" aria-label="Direct link to Question 5: Dual-Boot vs Alternatives" title="Direct link to Question 5: Dual-Boot vs Alternatives" translate="no">​</a></h2>
+<p><strong>Why is dual-booting Ubuntu 22.04 alongside Windows the ONLY practical option for Physical AI development in 2026?</strong></p>
+<p>A) WSL2 and VMs work fine but are slightly slower
+B) Isaac Sim requires native GPU drivers which WSL2/VMs cannot provide
+C) Dual-boot is just a personal preference, not a technical requirement
+D) Cloud instances are too expensive for any budget</p>
+<details class="details_lb9f alert alert--info details_b_Ee" data-collapsed="true"><summary>Click to reveal answer</summary><div><div class="collapsibleContent_i85q"><p><strong>Answer: B) Isaac Sim requires native GPU drivers which WSL2/VMs cannot provide</strong></p><p><strong>Explanation</strong>: Isaac Sim relies on <strong>NVIDIA OptiX ray tracing</strong> and <strong>CUDA GPU acceleration</strong>, which require:</p><ol>
+<li class="">Direct GPU access (no virtualization layer)</li>
+<li class="">Native NVIDIA drivers (version 535+)</li>
+<li class="">X11 or Wayland display server (Linux GUI)</li>
+</ol><p><strong>Why alternatives fail</strong>:</p><p><strong>WSL2 (Windows Subsystem for Linux)</strong>:</p><ul>
+<li class="">❌ GPU passthrough for GUI apps not supported (as of 2026)</li>
+<li class="">❌ Isaac Sim window crashes or shows black screen</li>
+<li class="">✅ ROS 2 CLI tools work fine (but insufficient for Physical AI)</li>
+</ul><p><strong>Virtual Machines (VirtualBox, VMware)</strong>:</p><ul>
+<li class="">❌ GPU passthrough extremely complex (requires VT-d, IOMMU configuration)</li>
+<li class="">❌ 20-30% performance penalty even when working</li>
+<li class="">❌ Photorealistic rendering broken (no OptiX support)</li>
+</ul><p><strong>Cloud instances (AWS, Lambda, Paperspace)</strong>:</p><ul>
+<li class="">✅ Technically works perfectly</li>
+<li class="">❌ Cost: $1,000-6,000/year for 8-12h/day usage</li>
+<li class="">❌ Latency: 50-150ms input lag (frustrating for development)</li>
+<li class="">❌ No offline work (requires internet)</li>
+</ul><p><strong>Dual-boot advantages</strong>:</p><ul>
+<li class="">✅ Native GPU performance (100% speed)</li>
+<li class="">✅ Full Isaac Sim compatibility</li>
+<li class="">✅ One-time hardware cost ($1,460-4,960)</li>
+<li class="">✅ Offline development possible</li>
+</ul><p><strong>Exception</strong>: Apple Silicon (M1/M2/M3) Macs cannot dual-boot Ubuntu. Cloud is the only option.</p></div></div></details>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="question-6-total-cost-of-ownership-tco">Question 6: Total Cost of Ownership (TCO)<a href="#question-6-total-cost-of-ownership-tco" class="hash-link" aria-label="Direct link to Question 6: Total Cost of Ownership (TCO)" title="Direct link to Question 6: Total Cost of Ownership (TCO)" translate="no">​</a></h2>
+<p><strong>An Economy Lab ($1,460 initial cost) saves approximately how much over 3 years compared to AWS g5.xlarge cloud instances (assuming 8h/day usage)?</strong></p>
+<p>A) $1,000-2,000 (minimal savings)
+B) $2,500-3,500 (modest savings)
+C) $4,700-6,950 (substantial savings)
+D) $10,000+ (extreme savings)</p>
+<details class="details_lb9f alert alert--info details_b_Ee" data-collapsed="true"><summary>Click to reveal answer</summary><div><div class="collapsibleContent_i85q"><p><strong>Answer: C) $4,700-6,950 (substantial savings)</strong></p><p><strong>Explanation</strong>: Let&#x27;s calculate the full 3-year TCO:</p><p><strong>Economy Lab owned hardware</strong>:</p><ul>
+<li class="">Initial build: $1,460</li>
+<li class="">Electricity (250W avg, 8h/day, $0.12/kWh): $90/year × 3 = $270</li>
+<li class="">Optional RAM upgrade (year 3): $120</li>
+<li class=""><strong>Total 3-year</strong>: $1,460 + $270 + $120 = <strong>$1,850</strong></li>
+</ul><p><strong>AWS g5.xlarge (A10G GPU, 24 GB VRAM)</strong>:</p><ul>
+<li class="">Hourly rate: $1.006</li>
+<li class="">Daily usage: 8 hours</li>
+<li class="">Annual cost: $1.006 × 8h × 365 days = $2,937</li>
+<li class=""><strong>Total 3-year</strong>: $2,937 × 3 = <strong>$8,811</strong></li>
+</ul><p><strong>Savings</strong>: $8,811 - $1,850 = <strong>$6,961</strong></p><p><strong>Lambda Labs (RTX 6000 Ada, cheaper alternative)</strong>:</p><ul>
+<li class="">Hourly rate: $0.75</li>
+<li class="">Annual cost: $0.75 × 8h × 365 = $2,190</li>
+<li class=""><strong>Total 3-year</strong>: $2,190 × 3 = <strong>$6,570</strong></li>
+<li class=""><strong>Savings</strong>: $6,570 - $1,850 = <strong>$4,720</strong></li>
+</ul><p><strong>Breakeven point</strong>: After <strong>6-9 months</strong> of 8h/day usage, owned hardware pays for itself.</p><p><strong>When cloud makes sense</strong>:</p><ul>
+<li class="">Sporadic usage (under 5 hours/week = 260 hours/year)</li>
+<li class="">260h × $1.006 = $261/year (cheaper than $1,850 upfront)</li>
+<li class="">Short-term projects (under 6 months)</li>
+<li class="">Testing before committing to hardware purchase</li>
+</ul><p><strong>Key insight</strong>: If you&#x27;ll use Physical AI tools <strong>consistently</strong> (5+ hours/week), owning hardware saves thousands over 3-5 years.</p></div></div></details>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="question-7-hardware-decision-matrix">Question 7: Hardware Decision Matrix<a href="#question-7-hardware-decision-matrix" class="hash-link" aria-label="Direct link to Question 7: Hardware Decision Matrix" title="Direct link to Question 7: Hardware Decision Matrix" translate="no">​</a></h2>
+<p><strong>You&#x27;re a student with a $1,200 budget. You plan to complete this book (6 months) and then build a capstone project (3 months). What should you do?</strong></p>
+<p>A) Buy Economy Lab ($1,460) - stretch budget with student loan
+B) Buy used RTX 3090 (24 GB) workstation (~$1,200) - older but more VRAM
+C) Use cloud (Lambda Labs) for 9 months, then decide ($0.75/hr × 500 hours = $375)
+D) Wait and save more money before starting</p>
+<details class="details_lb9f alert alert--info details_b_Ee" data-collapsed="true"><summary>Click to reveal answer</summary><div><div class="collapsibleContent_i85q"><p><strong>Answer: C) Use cloud (Lambda Labs) for 9 months, then decide</strong></p><p><strong>Explanation</strong>: This is the <strong>only scenario where cloud is optimal</strong>:</p><p><strong>Time-limited project (9 months)</strong>:</p><ul>
+<li class="">Estimated usage: 4-6 hours/day × 180 days (6 months book) = 720-1,080 hours</li>
+<li class="">Add capstone (3 months): +300 hours</li>
+<li class=""><strong>Total</strong>: ~1,000-1,400 hours</li>
+</ul><p><strong>Cloud cost</strong>:</p><ul>
+<li class="">Lambda Labs RTX 6000 Ada ($0.75/hr): $750-1,050 total</li>
+<li class="">Paperspace A5000 ($1.10/hr): $1,100-1,540 total</li>
+<li class=""><strong>Average</strong>: ~$900-1,200 for 9 months</li>
+</ul><p><strong>Why NOT buy hardware</strong>:</p><ul>
+<li class="">Economy Lab ($1,460) exceeds budget by $260</li>
+<li class="">Used RTX 3090: Risk of no warranty, potential GPU degradation, driver issues</li>
+<li class="">After 9 months, you might not need Physical AI tools anymore (graduation, career change)</li>
+</ul><p><strong>Why cloud is better for short-term</strong>:</p><ul>
+<li class="">Pay only for hours used (no upfront cost)</li>
+<li class="">No electricity or maintenance costs</li>
+<li class="">Can stop anytime (flexibility)</li>
+<li class="">Access to latest GPUs (Lambda Labs upgrades hardware regularly)</li>
+</ul><p><strong>Decision framework</strong>:</p><ul>
+<li class=""><strong>Under 6 months usage</strong>: Always cloud</li>
+<li class=""><strong>6-12 months usage</strong>: Cloud if budget under $1,500, hardware if budget over $2,000</li>
+<li class=""><strong>12+ months usage</strong>: Always buy hardware (ROI breakeven at 9-12 months)</li>
+</ul><p><strong>Student-specific tip</strong>: Many universities offer free GPU cloud credits (Google Cloud Education, AWS Educate). Check with your CS department before paying out of pocket.</p></div></div></details>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="scoring-guide">Scoring Guide<a href="#scoring-guide" class="hash-link" aria-label="Direct link to Scoring Guide" title="Direct link to Scoring Guide" translate="no">​</a></h2>
+<p><strong>7/7 correct</strong>: Hardware expert! You understand GPU requirements, TCO analysis, and decision trade-offs.
+<strong>5-6 correct</strong>: Strong understanding. Review the concepts you missed.
+<strong>3-4 correct</strong>: Good start. Re-read the sections corresponding to incorrect answers.
+<strong>0-2 correct</strong>: Go back and re-read Chapter 02 carefully, especially GPU comparison and lab tier sections.</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="key-takeaways-to-remember">Key Takeaways to Remember<a href="#key-takeaways-to-remember" class="hash-link" aria-label="Direct link to Key Takeaways to Remember" title="Direct link to Key Takeaways to Remember" translate="no">​</a></h2>
+<ol>
+<li class=""><strong>VRAM is the hard bottleneck</strong> - 12 GB minimum for most Physical AI workloads</li>
+<li class=""><strong>GPU &gt; CPU</strong> for Physical AI - invest more in GPU, less in CPU</li>
+<li class=""><strong>Three lab tiers</strong>: Economy ($1,460), Mid-Tier ($2,640), Premium ($4,960)</li>
+<li class=""><strong>TCO savings</strong>: Owning hardware saves $4,700-117,000 over 3-5 years vs cloud</li>
+<li class=""><strong>Dual-boot required</strong> - WSL2 and VMs cannot run Isaac Sim properly</li>
+<li class=""><strong>RTX 4070 Ti (12 GB)</strong>: Best price/performance for students and hobbyists</li>
+<li class=""><strong>RTX 4080 (16 GB)</strong>: Optimal for professional developers and commercial projects</li>
+<li class=""><strong>Cloud makes sense</strong> only for under 5h/week usage or under 6 month projects</li>
+</ol>
+<hr>
+<div class="theme-admonition theme-admonition-note admonition_xJq3 alert alert--secondary"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewBox="0 0 14 16"><path fill-rule="evenodd" d="M6.3 5.69a.942.942 0 0 1-.28-.7c0-.28.09-.52.28-.7.19-.18.42-.28.7-.28.28 0 .52.09.7.28.18.19.28.42.28.7 0 .28-.09.52-.28.7a1 1 0 0 1-.7.3c-.28 0-.52-.11-.7-.3zM8 7.99c-.02-.25-.11-.48-.31-.69-.2-.19-.42-.3-.69-.31H6c-.27.02-.48.13-.69.31-.2.2-.3.44-.31.69h1v3c.02.27.11.5.31.69.2.2.42.31.69.31h1c.27 0 .48-.11.69-.31.2-.19.3-.42.31-.69H8V7.98v.01zM7 2.3c-3.14 0-5.7 2.54-5.7 5.68 0 3.14 2.56 5.7 5.7 5.7s5.7-2.55 5.7-5.7c0-3.15-2.56-5.69-5.7-5.69v.01zM7 .98c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.12-7-7 3.14-7 7-7z"></path></svg></span>Next Steps</div><div class="admonitionContent_BuS1"><p>Ready to install the software stack? Move on to <strong>Chapter 03: ROS 2 Fundamentals</strong> to begin setting up ROS 2 Jazzy, Isaac Sim, and your development environment. Make sure you&#x27;ve chosen your lab tier (or cloud provider) before proceeding.</p></div></div></div><footer class="theme-doc-footer docusaurus-mt-lg"><div class="row margin-top--sm theme-doc-footer-edit-meta-row"><div class="col noPrint_WFHX"><a href="https://github.com/MuhammadWaqasrafiq/HumanoidRoboticsBook/tree/main/docs/hardware-2026/quiz.mdx" target="_blank" rel="noopener noreferrer" class="theme-edit-this-page"><svg fill="currentColor" height="20" width="20" viewBox="0 0 40 40" class="iconEdit_Z9Sw" aria-hidden="true"><g><path d="m34.5 11.7l-3 3.1-6.3-6.3 3.1-3q0.5-0.5 1.2-0.5t1.1 0.5l3.9 3.9q0.5 0.4 0.5 1.1t-0.5 1.2z m-29.5 17.1l18.4-18.5 6.3 6.3-18.4 18.4h-6.3v-6.2z"></path></g></svg>Edit this page</a></div><div class="col lastUpdated_JAkA"></div></div></footer></article><nav class="docusaurus-mt-lg pagination-nav" aria-label="Docs pages"></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#question-1-gpu-selection-fundamentals" class="table-of-contents__link toc-highlight">Question 1: GPU Selection Fundamentals</a></li><li><a href="#question-2-lab-tier-selection" class="table-of-contents__link toc-highlight">Question 2: Lab Tier Selection</a></li><li><a href="#question-3-vram-workload-estimation" class="table-of-contents__link toc-highlight">Question 3: VRAM Workload Estimation</a></li><li><a href="#question-4-cpu-vs-gpu-priority" class="table-of-contents__link toc-highlight">Question 4: CPU vs GPU Priority</a></li><li><a href="#question-5-dual-boot-vs-alternatives" class="table-of-contents__link toc-highlight">Question 5: Dual-Boot vs Alternatives</a></li><li><a href="#question-6-total-cost-of-ownership-tco" class="table-of-contents__link toc-highlight">Question 6: Total Cost of Ownership (TCO)</a></li><li><a href="#question-7-hardware-decision-matrix" class="table-of-contents__link toc-highlight">Question 7: Hardware Decision Matrix</a></li><li><a href="#scoring-guide" class="table-of-contents__link toc-highlight">Scoring Guide</a></li><li><a href="#key-takeaways-to-remember" class="table-of-contents__link toc-highlight">Key Takeaways to Remember</a></li></ul></div></div></div></div></main></div></div></div><footer class="theme-layout-footer footer footer--dark"><div class="container container-fluid"><div class="row footer__links"><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Learn</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/HumanoidRoboticsBook/docs/intro">Introduction</a></li><li class="footer__item"><a class="footer__link-item" href="/HumanoidRoboticsBook/docs/why-physical-ai">Why Physical AI</a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Resources</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://github.com/MuhammadWaqasrafiq/HumanoidRoboticsBook" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub Repo<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/MuhammadWaqasrafiq/HumanoidRoboticsBook/tree/main/code-examples" target="_blank" rel="noopener noreferrer" class="footer__link-item">Code Samples<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Connect</div><ul class="footer__items clean-list"><li class="footer__item">
+<div style="display:flex; gap:1.5rem; margin-bottom:1rem;">
+  <a href="https://github.com/MuhammadWaqasrafiq/HumanoidRoboticsBook" target="_blank" rel="noopener noreferrer" aria-label="GitHub" style="color:#fff;font-size:1.6rem;">
+    <i class="fa-brands fa-github"></i>
+  </a>
+  <a href="https://linkedin.com/in/MuhammadWaqasrafiq" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" style="color:#fff;font-size:1.6rem;">
+    <i class="fa-brands fa-linkedin"></i>
+  </a>
+  <a href="https://wa.me/923463033195" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" style="color:#fff;font-size:1.6rem;">
+    <i class="fa-brands fa-whatsapp"></i>
+  </a>
+  <a href="https://www.youtube.com/watch?v=dZTfXiPSZyE" target="_blank" rel="noopener noreferrer" aria-label="YouTube" style="color:#fff;font-size:1.6rem;">
+    <i class="fa-brands fa-youtube"></i>
+  </a>
+</div>
+              </li><li class="footer__item"><a href="https://github.com/MuhammadWaqasrafiq/HumanoidRoboticsBook/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" class="footer__link-item">MIT License<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div></div><div class="footer__bottom text--center"><div class="footer__copyright">© 2025 Embodied AI • Muhammad Waqas Rafiq • MIT & CC-BY-4.0</div></div></div></footer></div>
+</body>
+</html>
