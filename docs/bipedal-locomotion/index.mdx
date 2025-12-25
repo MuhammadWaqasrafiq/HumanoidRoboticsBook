@@ -46,6 +46,7 @@ Before starting this chapter, you should:
 ## Why Bipedal Locomotion is Hard
 
 **Challenges unique to two-legged walking:**
+
 1. **Underactuated system:** Fewer contact points than wheels/legs (unstable equilibrium)
 2. **Hybrid dynamics:** Continuous (swing phase) + discrete (foot contact) transitions
 3. **Balance constraints:** Center of Mass (`COM`) must stay within support polygon
@@ -53,6 +54,7 @@ Before starting this chapter, you should:
 5. **Terrain adaptation:** Uneven surfaces require continuous adjustment
 
 **Why solve it anyway?**
+
 - Navigate human environments (stairs, narrow spaces)
 - Energy efficiency (walking vs. wheeled on rough terrain)
 - Social acceptance (human-like appearance)
@@ -89,6 +91,7 @@ stateDiagram-v2
 ```
 
 **Key parameters:**
+
 - **Step length:** 0.3-0.6m (typical adult walking)
 - **Step width:** 0.1-0.15m (lateral stability)
 - **Step height:** 0.05-0.08m (foot clearance)
@@ -100,6 +103,7 @@ stateDiagram-v2
 **Definition:** Point on the ground where the net moment from ground reaction forces is zero.
 
 **Physical intuition:**
+
 - If ZMP is inside the support polygon → robot is stable
 - If ZMP reaches polygon edge → robot begins to tip
 - If ZMP is outside polygon → robot is falling (unrecoverable)
@@ -114,6 +118,7 @@ ZMP_y = y_com - (z_com / (g + z_com_ddot)) * y_com_ddot
 ```
 
 Where:
+
 - `g = 9.81 m/s²` (gravity)
 - `x_com_ddot`, `y_com_ddot`, `z_com_ddot` = `COM` accelerations
 
@@ -174,6 +179,7 @@ flowchart LR
 **Linear Inverted Pendulum Model (LIPM):**
 
 Simplified humanoid dynamics:
+
 ```
 x_com_ddot = (g / z_com) * (x_com - ZMP_x)
 y_com_ddot = (g / z_com) * (y_com - ZMP_y)
@@ -186,12 +192,14 @@ This allows solving for `COM` trajectory that produces desired ZMP.
 See `code-examples/locomotion/gait_generator.py` for complete implementation.
 
 **Key algorithms:**
+
 1. **Footstep planner:** Generate foot positions for N steps ahead
 2. **ZMP reference:** Define desired ZMP trajectory (center of support polygon)
 3. **Preview controller:** Solve for `COM` trajectory (quadratic optimization)
 4. **Swing foot trajectory:** Polynomial interpolation for smooth foot motion
 
 **Expected outputs:**
+
 - `COM` trajectory: 100 Hz
 - Foot trajectories: 100 Hz
 - Joint angles: via whole-body inverse kinematics
@@ -203,6 +211,7 @@ See `code-examples/locomotion/gait_generator.py` for complete implementation.
 ### Center of Mass (`COM`) Stabilization
 
 **Problem:** Real robot deviates from planned trajectory due to:
+
 - Model errors (unmodeled dynamics)
 - External disturbances (push, uneven terrain)
 - Sensor noise (IMU drift, encoder backlash)
@@ -252,6 +261,7 @@ flowchart TB
 ```
 
 **COM PID controller:**
+
 ```python
 # Position error
 e_pos = com_desired - com_actual
@@ -264,6 +274,7 @@ delta_com = Kp * e_pos + Kd * e_vel + Ki * integral(e_pos)
 ```
 
 **Typical gains for humanoid (mass ~50kg, height ~1.5m):**
+
 - `Kp = 200-400` (position gain)
 - `Kd = 40-80` (velocity gain)
 - `Ki = 5-15` (integral gain)
@@ -281,11 +292,13 @@ Ankle_torque = -K_ankle * (theta - theta_desired)
 ```
 
 **Advantages:**
+
 - Fast response (50-100ms)
 - Minimal energy
 - No foot movement
 
 **Limitations:**
+
 - Small workspace (ankle ROM ±15°)
 - Cannot handle large disturbances
 
@@ -296,16 +309,19 @@ Ankle_torque = -K_ankle * (theta - theta_desired)
 **How:** Generate large angular momentum with hip motion
 
 **Execution:**
+
 1. Detect `COM` near stability boundary
 2. Swing hip opposite to disturbance
 3. Generate counter-moment
 4. Return to nominal posture
 
 **Advantages:**
+
 - Larger workspace than ankle strategy
 - No stepping required
 
 **Limitations:**
+
 - Slower than ankle (200-400ms)
 - Higher energy cost
 
@@ -316,10 +332,12 @@ Ankle_torque = -K_ankle * (theta - theta_desired)
 **How:** Take step to create new support polygon under `COM`
 
 **Capture Point Theory:**
+
 - **Capture point:** Location where robot must step to stop `COM` motion
 - **Formula:** `x_capture = x_com + v_com / sqrt(g/z_com)`
 
 **Execution:**
+
 1. Compute capture point
 2. Plan foot placement at capture point
 3. Execute rapid step (swing time &lt;0.3s)
@@ -336,16 +354,19 @@ Ankle_torque = -K_ankle * (theta - theta_desired)
 **Goal:** Compute joint torques to achieve desired task-space motions (`COM`, feet, arms).
 
 **Humanoid has:**
+
 - n_q = 30-40 degrees of freedom (joints)
 - n_c = 6-12 contacts (feet on ground)
 - n_t = 12-18 task variables (`COM`, swing foot, arms)
 
 **Equations of motion:**
+
 ```
 M(q) * q_ddot + C(q, q_dot) * q_dot + G(q) = τ + J_c^T * F_c
 ```
 
 Where:
+
 - `M(q)` = inertia matrix
 - `C(q, q_dot)` = Coriolis/centrifugal matrix
 - `G(q)` = gravity vector
@@ -367,6 +388,7 @@ subject to:
 ```
 
 **Variables:**
+
 - `q_ddot` = joint accelerations (n_q)
 - `τ` = joint torques (n_q)
 - `F_c` = contact forces (n_c)
@@ -378,11 +400,13 @@ See `code-examples/locomotion/whole_body_controller.py` for complete QP formulat
 ### Task Hierarchy
 
 **Priority levels:**
+
 1. **High priority:** Balance (`COM` position/velocity)
 2. **Medium priority:** Swing foot trajectory
 3. **Low priority:** Arm posture
 
 **Hierarchical controller:**
+
 ```python
 # Solve QP with task prioritization
 def solve_wbc_hierarchical(tasks, contacts):
@@ -412,12 +436,14 @@ def solve_wbc_hierarchical(tasks, contacts):
 ### Terrain Sensing
 
 **Perception requirements:**
+
 - Elevation map (height field)
 - Surface normals (slope estimation)
 - Obstacle detection (step height)
 - Friction coefficient estimation
 
 **Sources:**
+
 - Point clouds (from Chapter 07)
 - Stereo depth
 - Heightmap from SLAM
@@ -425,12 +451,14 @@ def solve_wbc_hierarchical(tasks, contacts):
 ### Adaptive Footstep Planning
 
 **Challenges on uneven terrain:**
+
 - Support polygon is not flat
 - Foot orientation must match terrain
 - Step height varies
 - `COM` trajectory must account for elevation changes
 
 **Algorithm:**
+
 ```python
 def plan_footstep_uneven(terrain_map, current_pose, target_velocity):
     # Sample candidate foot positions
@@ -465,11 +493,13 @@ def plan_footstep_uneven(terrain_map, current_pose, target_velocity):
 ### Balance on Slopes
 
 **ZMP on inclined terrain:**
+
 - Support polygon rotates with terrain
 - Gravity projection changes
 - `COM` must shift to maintain ZMP inside polygon
 
 **Modified ZMP calculation:**
+
 ```python
 def compute_zmp_on_slope(com_pos, com_accel, terrain_normal):
     # Rotate gravity to terrain frame
@@ -516,6 +546,7 @@ stateDiagram-v2
 ```
 
 **State transitions:**
+
 - **Idle → Standing:** Activate joint position control, lift `COM`
 - **Standing → Walking:** Start gait generator, first step
 - **Walking → Running:** Switch to dynamic walking (flight phase)
@@ -523,6 +554,7 @@ stateDiagram-v2
 - **Balancing → Walking:** `COM` stabilized, return to nominal gait
 
 **Implementation:**
+
 ```python
 class GaitStateMachine:
     def __init__(self):
@@ -556,20 +588,25 @@ class GaitStateMachine:
 ### Success Criteria
 
 **1. Walking Speed:** 0.5 m/s on flat terrain (SC-004)
+
 - Measured: Average `COM` velocity over 10 steps
 - Target: 0.45-0.55 m/s
 
 **2. Balance Recovery:** Within 1.5 seconds from perturbation (SC-004)
+
 - Test: Apply 100N lateral push
 - Measure: Time from push to stable `COM` (&lt; 5cm deviation)
 
 **3. Stability:** No falls over 50 walking cycles
+
 - Metric: Success rate &gt; 95%
 
 **4. Energy Efficiency:** Cost of Transport (COT)
+
 ```
 COT = Energy / (Weight * Distance)
 ```
+
 Target: COT &lt; 0.2 (comparable to human walking)
 
 ### Debugging Common Failures
@@ -577,15 +614,18 @@ Target: COT &lt; 0.2 (comparable to human walking)
 **1. Tipping Forward/Backward**
 
 **Symptoms:**
+
 - Robot falls in sagittal plane
 - Cannot recover balance
 
 **Causes:**
+
 - ZMP reaching front/back edge of foot
 - `COM` moving too fast
 - Incorrect footstep timing
 
 **Solutions:**
+
 - Reduce walking speed
 - Increase double support time
 - Tune ZMP margin (keep 2cm from edge)
@@ -593,15 +633,18 @@ Target: COT &lt; 0.2 (comparable to human walking)
 **2. Lateral Instability**
 
 **Symptoms:**
+
 - Swaying side-to-side
 - Eventually tips laterally
 
 **Causes:**
+
 - Insufficient step width
 - `COM` not centered over support polygon
 - Hip joint compliance
 
 **Solutions:**
+
 - Increase step width (0.1m → 0.15m)
 - Add lateral `COM` offset during single support
 - Increase hip joint stiffness
@@ -609,16 +652,19 @@ Target: COT &lt; 0.2 (comparable to human walking)
 **3. Foot Slip**
 
 **Symptoms:**
+
 - Foot slides on contact
 - Loss of balance
 - Jerky motion
 
 **Causes:**
+
 - Excessive ground reaction forces
 - Low friction surface
 - Incorrect contact detection
 
 **Solutions:**
+
 - Limit `COM` acceleration
 - Use rubber foot pads
 - Implement contact force sensing
@@ -626,15 +672,18 @@ Target: COT &lt; 0.2 (comparable to human walking)
 **4. Oscillations (Limit Cycles)**
 
 **Symptoms:**
+
 - Robot bounces/oscillates
 - Cannot settle to stable gait
 
 **Causes:**
+
 - PID gains too high
 - Coupling between `COM` and swing foot controllers
 - Unmodeled leg dynamics
 
 **Solutions:**
+
 - Reduce Kd gain (damping)
 - Add low-pass filter on control output
 - Increase simulation timestep resolution
@@ -648,12 +697,14 @@ Target: COT &lt; 0.2 (comparable to human walking)
 **Use case:** Navigate to table while avoiding obstacles
 
 **Pipeline:**
+
 1. **Perception:** Generate occupancy grid from point cloud
 2. **Path planning:** A* or RRT to find collision-free path
 3. **Footstep planning:** Place feet along path, respecting obstacles
 4. **Gait execution:** Walk along planned footsteps
 
 **Code example:**
+
 ```python
 # Perception provides obstacles
 obstacles = perception_module.get_obstacles()
@@ -671,11 +722,13 @@ gait_controller.execute_footsteps(footsteps)
 ### Manipulation While Walking
 
 **Challenges:**
+
 - Arm motion affects `COM` (dynamic coupling)
 - Reduced stability margin (arms not available for balance)
 - Coordination of locomotion and manipulation timing
 
 **Whole-body coordination:**
+
 ```python
 def walk_and_manipulate(walk_trajectory, arm_trajectory):
     # Compute combined COM accounting for arm mass
@@ -741,11 +794,13 @@ In this chapter, you learned:
 - ✅ **Integration** with perception and manipulation systems
 
 **Next steps:**
+
 - **Chapter 09:** Dexterous Manipulation (grasp planning, IK, force control)
 - **Chapter 13:** Capstone Project (integrate locomotion + perception + manipulation)
 
 :::tip Practical Exercise
 **Implement stable walking in Isaac Sim:**
+
 1. Create humanoid URDF with 12-DOF legs
 2. Implement ZMP-based gait generator
 3. Add `COM` balance controller (PID)

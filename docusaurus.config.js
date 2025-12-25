@@ -7,7 +7,7 @@ const darkCodeTheme = themes.dracula;
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Embodied AI: The Future of Robotics',
+  title: 'HUMANOID AI: The Future of Robotics',
   tagline: 'Crafting the Future of Intelligent Machines',
   favicon: 'img/new_logo.svg',
 
@@ -19,7 +19,7 @@ const config = {
 
   organizationName: 'MuhammadWaqasrafiq',
   projectName: 'HumanoidRoboticsBook',
-  trailingSlash: false, // Ye line zaroor add karen
+  trailingSlash: false, 
 
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
@@ -135,7 +135,7 @@ const config = {
   <a href="https://wa.me/923463033195" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" style="color:#fff;font-size:1.6rem;">
     <i class="fa-brands fa-whatsapp"></i>
   </a>
-  <a href="https://www.youtube.com/watch?v=dZTfXiPSZyE" target="_blank" rel="noopener noreferrer" aria-label="YouTube" style="color:#fff;font-size:1.6rem;">
+  <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" aria-label="YouTube" style="color:#fff;font-size:1.6rem;">
     <i class="fa-brands fa-youtube"></i>
   </a>
 </div>

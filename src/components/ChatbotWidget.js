@@ -14,7 +14,36 @@ function ChatbotWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const [sessionId, setSessionId] = useState(null);
+  const [selectedText, setSelectedText] = useState('');
+  const [buttonPosition, setButtonPosition] = useState({ top: 0, left: 0, display: 'none' });
   const endOfMessagesRef = useRef(null);
+
+  useEffect(() => {
+    if (ExecutionEnvironment.canUseDOM) {
+      const { v4: uuidv4 } = require('uuid');
+      setSessionId(uuidv4());
+
+      const handleMouseUp = () => {
+        const selection = window.getSelection();
+        if (selection.toString().length > 0) {
+          const range = selection.getRangeAt(0);
+          const rect = range.getBoundingClientRect();
+          setSelectedText(selection.toString());
+          setButtonPosition({
+            top: rect.bottom + window.scrollY,
+            left: rect.left + window.scrollX + rect.width / 2,
+            display: 'block',
+          });
+        } else {
+          setButtonPosition({ display: 'none' });
+        }
+      };
+
+      document.addEventListener('mouseup', handleMouseUp);
+      return () => document.removeEventListener('mouseup', handleMouseUp);
+    }
+  }, []);
 
   const scrollToBottom = () => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -29,8 +58,13 @@ function ChatbotWidget() {
       setInput('');
 
       try {
-        const response = await axios.post('http://127.0.0.1:8000/api/chat', { message: input });
-        const botMessage = { sender: 'bot', text: response.data.response };
+        const response = await axios.post('/api/chat', { 
+          message: input,
+          session_id: sessionId,
+          context: selectedText
+        });
+        setSelectedText(''); // Clear selected text after sending
+        const botMessage = { sender: 'bot', text: response.data.answer };
         setMessages((prev) => [...prev, botMessage]);
       } catch (error) {
         console.error('Error sending message:', error);
@@ -44,16 +78,41 @@ function ChatbotWidget() {
     if (event.key === 'Enter') handleSend();
   };
 
+  const handleAskAboutSelection = () => {
+    setIsOpen(true);
+    setInput(`What does this mean: "${selectedText}"?`);
+    setSelectedText('');
+    setButtonPosition({ display: 'none' });
+  };
+
   if (!isOpen) {
     return (
-      <Fab
-        color="primary"
-        aria-label="chat"
-        onClick={() => setIsOpen(true)}
-        sx={{ position: 'fixed', bottom: 24, right: 24, zIndex: 1000 }}
-      >
-        <ChatIcon />
-      </Fab>
+      <>
+        <Fab
+          color="primary"
+          aria-label="chat"
+          onClick={() => setIsOpen(true)}
+          sx={{ position: 'fixed', bottom: 24, right: 24, zIndex: 1000 }}
+        >
+          <ChatIcon />
+        </Fab>
+        <Fab
+          color="secondary"
+          aria-label="ask"
+          onClick={handleAskAboutSelection}
+          sx={{
+            position: 'absolute',
+            top: buttonPosition.top,
+            left: buttonPosition.left,
+            display: buttonPosition.display,
+            zIndex: 1001,
+            transform: 'translate(-50%, -120%)',
+          }}
+          size="small"
+        >
+          <ChatIcon fontSize="small" />
+        </Fab>
+      </>
     );
   }
 

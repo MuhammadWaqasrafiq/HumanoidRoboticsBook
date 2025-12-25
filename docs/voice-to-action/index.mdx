@@ -134,12 +134,14 @@ flowchart LR
 ### Microphone Setup
 
 **Requirements:**
+
 - **Sample Rate:** 16 kHz (Whisper's native rate)
 - **Channels:** Mono (single microphone)
 - **Format:** 16-bit PCM WAV
 - **Latency:** &lt;100ms buffering
 
 **Hardware recommendations:**
+
 - **Budget:** Built-in laptop mic or USB webcam
 - **Mid-range:** Blue Yeti USB microphone ($100)
 - **Professional:** Audio-Technica AT2020 + audio interface ($150-300)
@@ -203,6 +205,7 @@ class AudioCapture:
 ```
 
 **Usage:**
+
 ```python
 mic = AudioCapture()
 audio = mic.record(duration=3.0)
@@ -286,6 +289,7 @@ class WhisperASR:
 ```
 
 **Usage:**
+
 ```python
 asr = WhisperASR(model_size="base")
 text, conf = asr.transcribe("robot_command.wav")
@@ -295,6 +299,7 @@ print(f"🎯 Confidence: {conf:.2%}")
 ```
 
 **Example output:**
+
 ```
 📝 Transcription: 'pick up the red cup and place it on the table'
 🎯 Confidence: 94.3%
@@ -308,6 +313,7 @@ print(f"🎯 Confidence: {conf:.2%}")
 
 **Raw:** `"pick up the red cup and place it on the table"`
 **Structured:**
+
 ```json
 {
   "action": "pick_and_place",
@@ -385,6 +391,7 @@ Output only valid JSON, nothing else. [/INST]"""
 ```
 
 **Usage:**
+
 ```python
 parser = CommandParser()
 command = parser.parse_command("pick up the red cup")
@@ -393,6 +400,7 @@ print(json.dumps(command, indent=2))
 ```
 
 **Output:**
+
 ```json
 {
   "action": "pick_up",
@@ -659,6 +667,7 @@ if __name__ == '__main__':
 Test with 20 diverse voice commands:
 
 **Pick & Place:**
+
 1. "Pick up the red cup"
 2. "Place the book on the table"
 3. "Grab the blue block"
@@ -687,6 +696,7 @@ Test with 20 diverse voice commands:
 18. [Silent - no speech]
 
 **Success Criteria (SC-003):**
+
 - ✅ **16/20 commands succeed** (80% success rate)
 - ✅ **End-to-end latency &lt;3 seconds**
 - ✅ **Graceful error handling** (low confidence, no camera, etc.)

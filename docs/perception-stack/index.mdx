@@ -46,12 +46,14 @@ Before starting this chapter, you should:
 ## Why Perception Matters
 
 Humanoid robots operate in **unstructured, dynamic environments** - homes, offices, warehouses - where:
+
 - Objects move and change position
 - Lighting conditions vary (shadows, reflections, darkness)
 - Obstacles appear unexpectedly (pets, humans, furniture)
 - No pre-mapped environments available
 
 **Perception systems enable robots to:**
+
 1. **Localize** themselves in 3D space (SLAM)
 2. **Detect** objects, people, obstacles (object detection)
 3. **Segment** scenes for manipulation planning (instance segmentation)
@@ -128,6 +130,7 @@ flowchart TB
 ```
 
 **Key Design Principles:**
+
 - **Modularity**: Each component can be swapped independently
 - **Redundancy**: Multiple sensors provide robustness
 - **Real-time**: &lt;100ms latency from sensor to output
@@ -172,6 +175,7 @@ ros2 launch realsense2_camera rs_launch.py \
 ```
 
 **Verify camera topics:**
+
 ```bash
 ros2 topic list | grep camera
 # Expected output:
@@ -184,6 +188,7 @@ ros2 topic list | grep camera
 ### Camera Calibration
 
 **Why calibration matters:**
+
 - Corrects lens distortion (barrel, pincushion)
 - Aligns RGB and depth images
 - Improves depth accuracy by 10-20%
@@ -208,6 +213,7 @@ ros2 run camera_calibration cameracalibrator \
 ```
 
 **Save calibration file:**
+
 ```yaml
 # ~/.ros/camera_info/camera.yaml
 image_width: 1280
@@ -243,6 +249,7 @@ Where `(cx, cy)` is principal point and `(fx, fy)` is focal length from calibrat
 See `code-examples/perception/depth_processor.py` for complete implementation:
 
 **Key steps:**
+
 1. Align depth to RGB camera frame
 2. Convert depth image to XYZ coordinates
 3. Filter invalid points (Z=0, Z&gt;max_range)
@@ -251,6 +258,7 @@ See `code-examples/perception/depth_processor.py` for complete implementation:
 6. Publish as `sensor_msgs/PointCloud2`
 
 **Expected performance:**
+
 - **Input:** 1280x720 depth image (921,600 pixels)
 - **Output:** 50,000-100,000 3D points
 - **Latency:** 20-30ms on RTX 4070 Ti
@@ -278,6 +286,7 @@ ros2 run pcl_ros pointcloud_to_pcd input:=/camera/pointcloud
 ### What is VSLAM?
 
 **Simultaneous Localization and Mapping (SLAM)** solves two problems simultaneously:
+
 1. **Localization:** Where is the robot? (6-DoF pose: x, y, z, roll, pitch, yaw)
 2. **Mapping:** What does the environment look like? (3D point cloud map)
 
@@ -320,12 +329,14 @@ flowchart LR
 ### ORB-SLAM3 Setup (Recommended)
 
 **Why ORB-SLAM3?**
+
 - State-of-the-art accuracy (ATE &lt;0.1m on TUM dataset)
 - Supports monocular, stereo, RGB-D, multi-camera
 - Active loop closure detection
 - Real-time performance (30+ FPS on laptop CPU)
 
 **Installation:**
+
 ```bash
 # Dependencies
 sudo apt install libeigen3-dev libopencv-dev libpangolin-dev
@@ -350,6 +361,7 @@ source install/setup.bash
 ```
 
 **Run ORB-SLAM3 with RealSense:**
+
 ```bash
 # Terminal 1: Launch camera
 ros2 launch realsense2_camera rs_launch.py enable_depth:=true
@@ -363,6 +375,7 @@ ros2 run orbslam3 rgbd \
 ```
 
 **Check SLAM output:**
+
 ```bash
 # Robot pose published to /tf
 ros2 run tf2_ros tf2_echo map camera_link
@@ -389,6 +402,7 @@ ros2 topic echo /orbslam3/map_points --no-arr
 ### YOLOv8: Real-Time Object Detection
 
 **YOLOv8 (2023) improvements over YOLOv5:**
+
 - +3.7 mAP on COCO dataset (53.9% vs 50.2%)
 - 2x faster training convergence
 - Anchor-free design (simpler, more robust)
@@ -411,11 +425,13 @@ ros2 topic echo /orbslam3/map_points --no-arr
 See `code-examples/perception/yolo_detector.py` for complete implementation.
 
 **Installation:**
+
 ```bash
 pip install ultralytics>=8.0.0
 ```
 
 **Test YOLOv8 inference:**
+
 ```python
 from ultralytics import YOLO
 
@@ -436,6 +452,7 @@ for result in results:
 ```
 
 **Expected performance:**
+
 - **COCO classes:** 80 objects (person, car, cup, bottle, etc.)
 - **Accuracy:** 52.9% mAP (YOLOv8l)
 - **Latency:** 16ms (60 FPS on RTX 4070 Ti)
@@ -444,22 +461,26 @@ for result in results:
 ### SAM 2: Segment Anything Model
 
 **SAM 2 (2024)** is Meta's foundation model for segmentation:
+
 - Zero-shot segmentation (no fine-tuning needed)
 - Supports points, boxes, masks as prompts
 - Works on images AND videos
 - 6x faster than SAM 1
 
 **Use cases for humanoids:**
+
 - Segment unknown objects (not in COCO dataset)
 - Generate precise masks for grasp planning
 - Track objects across video frames
 
 **Installation:**
+
 ```bash
 pip install segment-anything-2
 ```
 
 **Usage:**
+
 ```python
 from sam2.build_sam import build_sam2
 from sam2.sam2_image_predictor import SAM2ImagePredictor
@@ -485,11 +506,13 @@ masks, scores, _ = predictor.predict(
 ```
 
 **YOLOv8 + SAM 2 Pipeline:**
+
 1. YOLOv8 detects objects → bounding boxes
 2. For each box, run SAM 2 → precise segmentation mask
 3. Use mask for grasp planning or obstacle avoidance
 
 **Expected performance:**
+
 - **Latency:** 50-80ms per object (SAM 2 Large)
 - **Accuracy:** 95%+ IoU (Intersection over Union)
 - **VRAM:** 4.5 GB (SAM 2 Large)
@@ -499,16 +522,19 @@ masks, scores, _ = predictor.predict(
 **Problem with YOLOv8:** Only detects 80 pre-defined COCO classes.
 
 **Grounding DINO (2023)** detects ANY object from text prompt:
+
 - "red cup" → detects red cups specifically
 - "smartphone" → detects phones (not in COCO)
 - "potted plant with yellow flowers" → fine-grained queries
 
 **Installation:**
+
 ```bash
 pip install groundingdino-py
 ```
 
 **Usage:**
+
 ```python
 from groundingdino.util.inference import Model
 
@@ -532,6 +558,7 @@ detections = model.predict_with_classes(
 ```
 
 **When to use Grounding DINO:**
+
 - Detecting objects not in COCO (tools, specific products)
 - Fine-grained queries ("red cup" vs "blue cup")
 - Dynamic task specifications ("pick up the tallest bottle")
@@ -545,6 +572,7 @@ detections = model.predict_with_classes(
 ### Why Fuse Multiple Sensors?
 
 Single sensor limitations:
+
 - **Camera:** Fails in low light, affected by motion blur
 - **LiDAR:** No color/texture information, expensive
 - **IMU:** Drifts over time without visual correction
@@ -597,6 +625,7 @@ flowchart LR
 ```
 
 **Key idea:**
+
 - **Prediction:** IMU provides high-frequency pose estimates (200 Hz)
 - **Update:** Camera corrects accumulated IMU drift (30 Hz)
 - **Result:** Smooth, drift-free pose at 200 Hz
@@ -606,11 +635,13 @@ flowchart LR
 **robot_localization** implements EKF/UKF for multi-sensor fusion:
 
 **Installation:**
+
 ```bash
 sudo apt install ros-iron-robot-localization
 ```
 
 **Configuration (`ekf_config.yaml`):**
+
 ```yaml
 ekf_filter_node:
   ros__parameters:
@@ -641,11 +672,13 @@ ekf_filter_node:
 ```
 
 **Launch EKF:**
+
 ```bash
 ros2 run robot_localization ekf_node --ros-args --params-file ekf_config.yaml
 ```
 
 **Output:**
+
 - Fused odometry published to `/odometry/filtered`
 - TF published: `odom → base_link`
 
@@ -667,6 +700,7 @@ ros2 run robot_localization ekf_node --ros-args --params-file ekf_config.yaml
 ### Optimization Strategies
 
 **1. GPU Acceleration**
+
 ```python
 # Use TensorRT for YOLOv8 (2-3x speedup)
 from ultralytics import YOLO
@@ -678,6 +712,7 @@ trt_model = YOLO('yolov8l.engine')  # Load TensorRT model
 ```
 
 **2. Asynchronous Processing**
+
 ```python
 import threading
 
@@ -700,6 +735,7 @@ class PerceptionPipeline:
 ```
 
 **3. Reduce Resolution for Detection**
+
 ```python
 # YOLOv8 accepts 640x640 input (not 1280x720)
 # Downsampling reduces computation by 3-4x
@@ -708,6 +744,7 @@ results = model(image, imgsz=640)  # Faster than imgsz=1280
 ```
 
 **4. Skip Frames for Slow Models**
+
 ```python
 frame_count = 0
 for frame in camera_stream:
@@ -730,11 +767,13 @@ for frame in camera_stream:
 **1. Low Detection Accuracy (&lt;60%)**
 
 **Symptoms:**
+
 - Objects not detected
 - Many false positives
 - Bounding boxes incorrect
 
 **Debugging steps:**
+
 ```bash
 # Check image quality
 ros2 topic hz /camera/color/image_raw  # Should be 30 Hz
@@ -748,6 +787,7 @@ python yolo_detector.py --image test.jpg --visualize
 ```
 
 **Common causes:**
+
 - **Poor lighting:** Add auxiliary lighting or use auto-exposure
 - **Motion blur:** Increase camera shutter speed
 - **Wrong model:** Use YOLOv8l instead of YOLOv8n for better accuracy
@@ -756,11 +796,13 @@ python yolo_detector.py --image test.jpg --visualize
 **2. VSLAM Tracking Lost**
 
 **Symptoms:**
+
 - Robot pose jumps erratically
 - Map points disappear
 - "Tracking lost" warnings in ORB-SLAM3
 
 **Debugging steps:**
+
 ```bash
 # Check feature density
 ros2 topic echo /orbslam3/tracking_state
@@ -771,6 +813,7 @@ ros2 topic echo /orbslam3/tracking_state
 ```
 
 **Common causes:**
+
 - **Low-texture scenes:** Add visual markers (AprilTags, posters)
 - **Fast motion:** Reduce robot speed during navigation
 - **Camera motion blur:** Use global shutter camera (avoid rolling shutter)
@@ -779,11 +822,13 @@ ros2 topic echo /orbslam3/tracking_state
 **3. Depth Noise and Holes**
 
 **Symptoms:**
+
 - Depth image has black holes (no data)
 - Noisy point clouds (scattered points)
 - Depth values jump erratically
 
 **Debugging:**
+
 ```bash
 # Visualize depth image
 ros2 run rqt_image_view rqt_image_view /camera/depth/image_rect_raw
@@ -793,12 +838,14 @@ ros2 topic hz /camera/depth/image_rect_raw  # Should be 30 Hz
 ```
 
 **Common causes:**
+
 - **Infrared interference:** Avoid sunlight, multiple RealSense cameras
 - **Reflective surfaces:** Glass, mirrors, polished metal (no depth return)
 - **Transparent objects:** Water, clear plastic (infrared passes through)
 - **Distance limits:** Objects &gt;6m (D455 max range)
 
 **Solutions:**
+
 - Use depth hole filling (OpenCV inpainting)
 - Switch to stereo depth (ZED 2i) for outdoor use
 - Add texture to reflective surfaces (masking tape, stickers)
@@ -806,10 +853,12 @@ ros2 topic hz /camera/depth/image_rect_raw  # Should be 30 Hz
 **4. High Latency (&gt;200ms)**
 
 **Symptoms:**
+
 - Robot reacts slowly to obstacles
 - VLA pipeline timeout errors
 
 **Profiling:**
+
 ```python
 import time
 
@@ -823,6 +872,7 @@ print(f"Depth processing: {(time.time() - start) * 1000:.1f}ms")
 ```
 
 **Solutions:**
+
 - Use TensorRT for YOLOv8 (2-3x speedup)
 - Reduce image resolution (1280x720 → 640x480)
 - Use smaller model (YOLOv8l → YOLOv8m)
@@ -859,6 +909,7 @@ sequenceDiagram
 ```
 
 **Code example:**
+
 ```python
 # 1. Detect all cups with YOLOv8
 results = yolo_model(rgb_image)
@@ -932,12 +983,14 @@ In this chapter, you learned:
 - ✅ **Debugging strategies** for common perception failures
 
 **Next steps:**
+
 - **Chapter 08:** Bipedal Locomotion (gait generation, balance control)
 - **Chapter 09:** Dexterous Manipulation (grasp planning, IK, force control)
 - **Capstone Project:** Integrate perception with VLA for autonomous butler
 
 :::tip Practical Exercise
 **Build your own perception pipeline:**
+
 1. Set up RealSense D455 camera on ROS 2
 2. Run ORB-SLAM3 for real-time localization
 3. Deploy YOLOv8 for object detection

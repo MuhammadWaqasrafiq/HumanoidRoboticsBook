@@ -3,7 +3,7 @@ fastapi
 uvicorn[standard]
 
 # Google Gemini
-google-generativeai
+google-genai
 
 # Vector Database
 qdrant-client
@@ -17,6 +17,9 @@ pydantic-settings
 
 # Database (as requested)
 sqlalchemy
+psycopg2-binary
+asyncpg
+sqlalchemy-utils
 
 # Environment variables
 python-dotenv

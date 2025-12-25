@@ -14,12 +14,14 @@ Test your knowledge of grasp planning, inverse kinematics, impedance control, an
 **You're evaluating two antipodal grasps for a cylindrical object (radius 0.04m, mass 0.5kg):**
 
 **Grasp A:**
+
 - Contact points: p1=(0.04, 0, 0), p2=(-0.04, 0, 0)
 - Normals: n1=(1, 0, 0), n2=(-1, 0, 0) (perfectly opposing)
 - Grasp width: 0.08m (gripper fully open)
 - Friction coefficient: μ=0.7
 
 **Grasp B:**
+
 - Contact points: p1=(0.028, 0.028, 0), p2=(-0.028, -0.028, 0)
 - Normals: n1=(0.707, 0.707, 0), n2=(-0.707, -0.707, 0) (opposing)
 - Grasp width: 0.056m (70% open)
@@ -57,6 +59,7 @@ def ferrari_canny_quality(grasp):
 ```
 
 **Key Insight:** Width utilization is critical - grasps near maximum gripper width are vulnerable to:
+
 - Object shifting under external forces
 - Limited force margin (can't squeeze tighter)
 - Higher slip probability
@@ -69,6 +72,7 @@ def ferrari_canny_quality(grasp):
 <summary>C) Equal quality - both achieve force closure</summary>
 
 **Incorrect.** While both grasps achieve force closure (can resist arbitrary wrenches), Ferrari-Canny quality also considers:
+
 - **Wrench space volume**: Larger convex hull = more robust
 - **Distance to singularity**: How close to losing force closure
 - **Width margin**: Safety factor against disturbances
@@ -110,6 +114,7 @@ A) Target is actually unreachable - increase joint limits
 **Diagnosis:**
 
 The solver converged (error stopped decreasing) but to the wrong solution. This indicates:
+
 1. **Jacobian rank deficiency** at the converged configuration (near singularity)
 2. **Null space trap** - redundant arm "stuck" in poor posture
 3. **Local minimum** of error function
@@ -156,11 +161,13 @@ def robust_ik(target, robot, n_attempts=10):
 **Why This Happens:**
 
 Home position [0, 0, 0, ...] often places the arm in a **singular configuration** (e.g., elbow fully extended, shoulder at 0°). The Jacobian has reduced rank, causing:
+
 - Large joint motions for small Cartesian steps
 - Damping term dominates, slowing convergence
 - Local minimum away from true solution
 
 **Alternative Fixes:**
+
 1. **Better initial guess**: Use current joint state instead of home
 2. **Lower damping**: λ=0.01 for targets far from singularities
 3. **Optimization-based IK**: CasADi/IPOPT handles local minima better
@@ -178,10 +185,12 @@ Home position [0, 0, 0, ...] often places the arm in a **singular configuration*
 Reducing λ would help convergence speed but won't escape the local minimum. The solver would still get stuck near the same point, just slightly faster.
 
 **When to reduce damping:**
+
 - Targets far from singularities
 - Fast convergence required (&lt;10 iterations)
 
 **When to increase damping:**
+
 - Near singularities (Jacobian rank &lt; 6)
 - Noisy measurements
 - Redundant arms (7+ DOF)
@@ -196,6 +205,7 @@ Reducing λ would help convergence speed but won't escape the local minimum. The
 More iterations won't help if the solver is stuck in a local minimum. You'd just waste computation (500 iterations × 5ms = 2.5 seconds) without improving the solution.
 
 **When max_iter helps:**
+
 - Slow but steady convergence (error decreasing linearly)
 - High-DOF robots (10+ joints)
 - Tight tolerances (sub-millimeter)
@@ -209,6 +219,7 @@ More iterations won't help if the solver is stuck in a local minimum. You'd just
 **You're programming a humanoid to insert a USB cable into a port (2mm clearance). The robot repeatedly breaks the connector due to excessive force.**
 
 **Current impedance parameters:**
+
 ```python
 K_position = diag([1000, 1000, 1000])  # N/m (stiff)
 D_position = diag([50, 50, 50])        # Ns/m
@@ -223,6 +234,7 @@ F/T sensor reading at failure: [120N, 15N, 200N, ...]  # Force spike
 **Suboptimal** - you'd lose precision in the XY plane (parallel to port face) where high stiffness is needed for alignment.
 
 USB insertion requires:
+
 - **High XY stiffness** (500-1000 N/m): Maintain lateral alignment
 - **Low Z stiffness** (50-100 N/m): Compliant insertion along axis
 
@@ -238,6 +250,7 @@ Uniformly soft impedance would cause the cable to wander laterally and miss the 
 **Task Analysis: USB Insertion**
 
 The USB port defines a **constrained task space**:
+
 - **XY plane** (lateral): Position-controlled (must align with port)
 - **Z axis** (insertion): Force-controlled (compliant insertion)
 
@@ -299,14 +312,17 @@ u_total = u_position + u_force
 **Incorrect** - high damping reduces oscillation but doesn't prevent force spikes.
 
 Damping only affects **velocity-dependent** forces:
+
 - F_damping = D · v
 
 During insertion, velocity is already low (typically 1-5 cm/s). Increasing D from 50 to 200 Ns/m would only add:
+
 - ΔF = (200 - 50) · 0.02 m/s = 3N (negligible)
 
 The 200N force spike comes from **position error** (stiffness term), not velocity. You need to reduce K_z, not increase D.
 
 **When to increase damping:**
+
 - Oscillations during free-space motion
 - Contact chatter (stick-slip)
 - High-frequency vibrations
@@ -321,6 +337,7 @@ The 200N force spike comes from **position error** (stiffness term), not velocit
 USB insertion inherently requires contact force (friction, alignment correction). A 20N threshold would trigger constantly, preventing successful insertion.
 
 **Better approach:** Combine compliant control + force monitoring:
+
 ```python
 # Allow higher forces temporarily during insertion
 if task_phase == 'insertion':
@@ -346,6 +363,7 @@ else:
 **Incorrect for in-hand manipulation** - power grasps immobilize the object.
 
 **Synergy 1 (Flexion):** All fingers close uniformly
+
 - **Use case:** Power grasp (holding heavy/large objects)
 - **Degrees of freedom:** 1 (aperture only)
 - **In-hand manipulation:** Impossible (object locked by all fingers)
@@ -414,6 +432,7 @@ def rotate_screwdriver(target_angle):
 4. **Human-like:** Mimics natural precision manipulation
 
 **Dexterity Metrics:**
+
 - **Manipulability:** 3/4 fingers available for actuation
 - **Grasp stability:** Force closure maintained during rotation
 - **Control bandwidth:** 10-20 Hz rotation rate achievable
@@ -426,6 +445,7 @@ def rotate_screwdriver(target_angle):
 **Suboptimal** - lateral grasp (thumb-pinky) provides poor dexterity for screwdrivers.
 
 **Synergy 3 (Lateral):** Thumb opposes pinky
+
 - **Use case:** Grasping flat objects (cards, keys)
 - **Screwdriver problem:** Long moment arm → unstable grasp, high torque on pinky (weakest finger)
 
@@ -439,15 +459,18 @@ For cylindrical objects like screwdrivers, thumb-index opposition (S2) provides 
 **Theoretically optimal but practically challenging:**
 
 **Pros:**
+
 - Maximum control authority (16 independent DOFs)
 - Arbitrary contact configurations
 
 **Cons:**
+
 - **High computational cost:** 16D IK + contact planning
 - **Control complexity:** Coordinating 16 joints in real-time (1kHz)
 - **Calibration sensitivity:** Tiny errors amplified across many DOFs
 
 **Synergies reduce dimensionality:** 16 DOF → 2-3 synergy weights
+
 - Easier optimization
 - More robust to calibration errors
 - Still achieves 80-90% of full dexterity
@@ -481,6 +504,7 @@ A) Damped LS with 1 seed - fastest (12ms)
 **Decision Analysis:**
 
 **Production Requirements:**
+
 1. **Cycle time:** 200 picks/hour → 18 seconds/pick → IK budget ~500ms (2.8% of cycle)
 2. **Reliability:** &gt;95% success (max 10 failures/hour acceptable)
 3. **Real-time:** &lt;100ms response for reactive planning
@@ -569,11 +593,13 @@ def robust_ik_solve(target):
 **Reliable but too slow** - 95ms violates real-time constraint.
 
 At 95ms per IK solve:
+
 - Motion planning requires 5-10 IK calls → 475-950ms
 - **Total cycle:** 1-2 seconds for planning alone
 - **Throughput:** Reduced to ~150 picks/hour (25% slower)
 
 **When 10-seed DLS is appropriate:**
+
 - Offline planning (not time-critical)
 - High-accuracy requirements (surgical, assembly)
 - No TRAC-IK available (custom robot)
@@ -586,6 +612,7 @@ At 95ms per IK solve:
 **Over-engineered** - 98% vs 96% success doesn't justify 2.5× slowdown.
 
 **Diminishing returns:**
+
 - TRAC-IK: 96% success, 31ms → 1.2 failures/pick/hour
 - IPOPT: 98% success, 78ms → 0.4 failures/pick/hour
 
@@ -593,6 +620,7 @@ At 95ms per IK solve:
 **Cost:** 47ms × 200 picks = 2.6 hours lost per day to IK computation
 
 **Use IPOPT when:**
+
 - Extremely tight constraints (collision avoidance)
 - Multi-objective optimization (minimize joint limits + singularities)
 - Complex cost functions (energy minimization)
@@ -714,11 +742,13 @@ def update_collision_scene(object_id, new_pose):
 **Wasteful** - if 3/10 grasps have feasible IK but 0/10 motion plans succeed, the problem isn't grasp diversity.
 
 Generating 100 grasps would:
+
 - ✅ Find more IK-feasible grasps (maybe 30/100)
 - ❌ Still have 0/100 motion plans succeed (collision issue persists)
 - ⏱️ Waste computation (grasp planning: 10× slower)
 
 **When to increase grasp candidates:**
+
 - IK success rate &lt;30% (need more options)
 - Object has complex geometry (many local optima)
 - Multi-modal grasps required (top vs side approaches)
@@ -731,6 +761,7 @@ Generating 100 grasps would:
 **Incorrect understanding** - Cartesian paths still check collisions.
 
 Cartesian planning computes a straight-line path in task space:
+
 ```python
 # Cartesian path: move gripper in straight line
 waypoints = [start_pose, grasp_pose]
@@ -741,11 +772,13 @@ trajectory = compute_cartesian_path(waypoints, step_size=0.01)
 ```
 
 **When Cartesian paths help:**
+
 - Avoid joint-space detours (faster convergence)
 - Maintain end-effector orientation (pouring task)
 - Predictable motion (human safety)
 
 **When they don't help:**
+
 - Collision avoidance (same checks apply)
 - Unreachable straight-line path (IK fails mid-trajectory)
 
@@ -763,6 +796,7 @@ trajectory = compute_cartesian_path(waypoints, step_size=0.01)
 **Incorrect** - independent control doesn't enforce relative pose.
 
 If left and right arms track separate trajectories:
+
 ```python
 # Left arm: follow left_tray_corner trajectory
 # Right arm: follow right_tray_corner trajectory
@@ -772,6 +806,7 @@ If left and right arms track separate trajectories:
 ```
 
 **Failure modes:**
+
 - **Drift accumulation:** Small tracking errors → tray twist
 - **Singularity desync:** One arm hits singularity, slows down → tray tilts
 - **Force imbalance:** Unequal tracking stiffness → tray compression
@@ -784,10 +819,12 @@ If left and right arms track separate trajectories:
 **Suboptimal** - wastes left arm's DOFs, poor load sharing.
 
 Leader-follower assigns roles:
+
 - **Leader (left):** Free to move
 - **Follower (right):** Slave to leader's motion
 
 **Problems:**
+
 1. **Reduced workspace:** Right arm limits left arm's reach
 2. **Uneven load:** Right arm bears more weight (static hold)
 3. **No redundancy:** Can't use null space for obstacle avoidance
@@ -894,6 +931,7 @@ def compute_relative_jacobian(J_left, J_right):
 **Incorrect approach** - force control doesn't ensure levelness.
 
 Applying equal upward forces (10N each) would:
+
 - ✅ Support tray weight (2kg × 9.81 ≈ 20N)
 - ❌ Not prevent tilt (force vectors could be misaligned)
 - ❌ Not maintain distance (hands could drift together/apart)
@@ -927,6 +965,7 @@ A) Increase stiffness to K=[1000, 1000, 1000] for more force authority
 **Problem Diagnosis:**
 
 Impedance control generates force proportional to position error:
+
 ```python
 # Impedance: F = K · Δx
 
@@ -943,6 +982,7 @@ F = 300 · [0.5, 0, 0] = [150N, 0, 0]
 **Why Higher Stiffness Doesn't Help:**
 
 Even with K=1000 N/m:
+
 - F = 1000 × 0.5 = 500N (still saturates at 100N)
 - Robot pushes with max force but door is mechanically stuck (30Nm friction &gt; 100N × gripper_lever_arm)
 
@@ -1052,11 +1092,13 @@ def pi_impedance(x_error, x_error_integral, dt):
 ```
 
 **Issues:**
+
 1. **Integral wind-up:** Error accumulates while door stuck → force spikes when door opens
 2. **Overshoot:** High integral term → robot slams door open
 3. **Instability:** Contact dynamics + integral → oscillations
 
 **When to use PI:**
+
 - Steady-state error in free space (gravity compensation)
 - Slow disturbances (thermal drift)
 - **Not** for contact-rich tasks
@@ -1069,11 +1111,13 @@ def pi_impedance(x_error, x_error_integral, dt):
 **Incorrect** - lower frequency worsens performance.
 
 Control frequency affects:
+
 - **Stability:** Lower frequency → larger discrete steps → instability
 - **Bandwidth:** 50Hz → max 25Hz tracking (Nyquist) → sluggish response
 - **Force measurement:** F/T sensor sampled at 1kHz → downsampled to 50Hz → noisy
 
 **Door opening needs:**
+
 - High frequency (200-1000Hz) for stable contact
 - Fast force feedback for adaptive motion
 
@@ -1093,6 +1137,7 @@ Reducing frequency would make the robot **less** responsive to door friction, no
 **Too late** - object already fell by the time force drops.
 
 Force magnitude drops **after** slip is complete:
+
 ```
 t=0s: Grasp established, F=20N (holding force)
 t=1s: Object starts slipping (friction reduces)
@@ -1112,6 +1157,7 @@ t=1.5s: Object fell, F=2N (gripper empty) ← Detected here (too late)
 **Slip Physics:**
 
 Slip occurs when friction transitions from **static** to **kinetic**:
+
 - **Static friction:** Object stuck to gripper, no relative motion
 - **Kinetic friction:** Object sliding, generates stick-slip vibrations
 
@@ -1219,10 +1265,12 @@ def analyze_slip_spectrum(force_signal, fs=1000):
 **Calibration:**
 
 Different objects/grippers have different slip characteristics:
+
 - **Smooth surfaces** (glass, metal): Higher frequency (200-400 Hz)
 - **Textured surfaces** (rubber, fabric): Lower frequency (50-150 Hz)
 
 Calibrate threshold by:
+
 1. Induce controlled slip (reduce grip force gradually)
 2. Record force signal during slip
 3. Compute RMS in slip frequency band
@@ -1236,6 +1284,7 @@ Calibrate threshold by:
 **Unreliable** - force derivative is noisy and slip onset is gradual.
 
 Force derivative issues:
+
 ```python
 # Numerical derivative of noisy force signal
 dF_dt = np.diff(force_signal) / dt
@@ -1247,6 +1296,7 @@ dF_dt = np.diff(force_signal) / dt
 ```
 
 **When derivative helps:**
+
 - Impact detection (sudden force spike, dF/dt &gt; 100 N/s)
 - Fast collision events (&lt;10ms duration)
 
@@ -1260,6 +1310,7 @@ For slip (gradual process), frequency analysis is superior.
 **Ideal but requires additional hardware** - tactile arrays directly measure slip.
 
 **BioTac/SynTouch sensors:**
+
 - Measure contact geometry, force distribution, vibration
 - Direct slip detection via relative motion sensing
 - High cost ($2k-5k per finger)
@@ -1282,12 +1333,14 @@ For slip (gradual process), frequency analysis is superior.
 **You're comparing two strategies for rotating a screwdriver 90° in-hand with an Allegro Hand (16 DOF, 4 fingers). Which is more energy-efficient and why?**
 
 **Strategy A: Finger Gaiting**
+
 - Release middle + ring fingers
 - Rotate thumb-index pivot 90°
 - Regrasp with middle + ring at new position
 - Time: 2.5s, Motor current: 1.2A average
 
 **Strategy B: Continuous Rolling**
+
 - All fingers remain in contact
 - Coordinated sliding along screwdriver surface
 - Time: 1.8s, Motor current: 1.8A average
@@ -1315,6 +1368,7 @@ E_B = P × t = 21.6W × 1.8s = 38.9J
 ```
 
 **However, this ignores:**
+
 - **Regrasping force spikes:** Gaiting requires high force pulses to re-establish grip
 - **Gravity compensation:** Holding screwdriver with 2 fingers (vs 4) requires higher normal force
 - **Computation cost:** Grasp planning + IK for regrasp pose
@@ -1404,6 +1458,7 @@ E_B_total = 3.6 + 34.6 = 38.2J
 **Incorrect** - work done on object is same, but motor losses differ.
 
 **Object energy** (conservative force field):
+
 ```python
 # Work to rotate screwdriver against friction
 W_object = τ_friction × θ = (0.05 Nm) × (π/2 rad) = 0.08J
@@ -1412,6 +1467,7 @@ W_object = τ_friction × θ = (0.05 Nm) × (π/2 rad) = 0.08J
 ```
 
 **Motor energy** (includes losses):
+
 ```python
 # Motor efficiency ≈ 60-80% (heat, friction, back-EMF)
 # E_motor = W_object / η + E_control

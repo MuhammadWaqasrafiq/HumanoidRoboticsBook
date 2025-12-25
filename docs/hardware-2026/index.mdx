@@ -20,6 +20,7 @@ By the end of this chapter, you will be able to:
 
 :::tip Prerequisites
 Before reading this chapter, you should:
+
 - Have completed Chapter 01 to understand Physical AI fundamentals
 - Have a basic understanding of computer hardware (CPU, GPU, RAM, storage)
 - Know your budget range for hardware investment
@@ -90,24 +91,28 @@ Understanding VRAM needs is critical for avoiding bottlenecks:
 ### Recommended GPU by Use Case
 
 #### **Hobbyist/Student**: RTX 4070 Ti (12 GB)
+
 - **Best for**: Learning, prototyping, single-robot simulation
 - **Can do**: Run OpenVLA 7B, moderate Isaac Sim scenes, basic fine-tuning
 - **Cannot do**: Train models from scratch, run Pi0 14B at full precision
 - **Price**: $750-850 (best performance per dollar)
 
 #### **Professional Developer**: RTX 4080 (16 GB)
+
 - **Best for**: Production pipelines, multi-robot scenarios, commercial projects
 - **Can do**: Run Pi0 14B, complex Isaac Sim scenes, full VLA fine-tuning
 - **Cannot do**: Train large models (30B+) without quantization
 - **Price**: $1,100-1,200 (balanced power and cost)
 
 #### **Research/Enterprise**: RTX 4090 (24 GB)
+
 - **Best for**: Cutting-edge research, training custom VLA models, 24/7 workloads
 - **Can do**: Everything, including multi-GPU scaling preparation
 - **Cannot do**: Nothing in the Physical AI domain (as of 2026)
 - **Price**: $1,600-1,800 (overkill for most, essential for research)
 
 :::warning Power Supply Requirements
+
 - **RTX 4070 Ti**: Requires 700W PSU minimum (850W recommended)
 - **RTX 4080**: Requires 850W PSU minimum (1000W recommended)
 - **RTX 4090**: Requires 1000W PSU minimum (1200W recommended)
@@ -144,6 +149,7 @@ We present three hardware configurations optimized for different budgets and use
 #### What This Lab Can Do
 
 ✅ **Supported workloads**:
+
 - Complete all 13 chapters of this book
 - Run OpenVLA 7B inference (16-bit precision)
 - Isaac Sim scenes with 1-2 humanoid robots
@@ -152,6 +158,7 @@ We present three hardware configurations optimized for different budgets and use
 - Develop and test ROS 2 packages
 
 ❌ **Limitations**:
+
 - Cannot run Pi0 14B at full precision (requires 8-bit quantization)
 - Isaac Sim scenes with 5+ robots will lag (30-40 FPS)
 - Fine-tuning takes 2-3x longer than Premium lab
@@ -169,6 +176,7 @@ We present three hardware configurations optimized for different budgets and use
 | **Total 3-Year TCO** | | **$1,850** | $51/month amortized |
 
 **Comparison to cloud alternatives**:
+
 - **AWS g5.xlarge** (A10G GPU, 24 GB VRAM): $1.006/hour × 8h/day × 365 days × 3 years = **$8,816**
 - **Lambda Labs** (RTX 6000 Ada): $0.75/hour × 8h/day × 365 days × 3 years = **$6,570**
 
@@ -199,6 +207,7 @@ We present three hardware configurations optimized for different budgets and use
 #### What This Lab Can Do
 
 ✅ **Supported workloads**:
+
 - Everything from Economy Lab, **2-3x faster**
 - Run Pi0 14B at 16-bit precision (no quantization)
 - Isaac Sim scenes with 5+ robots at 60+ FPS
@@ -207,11 +216,13 @@ We present three hardware configurations optimized for different budgets and use
 - Parallel experimentation (multiple model variants simultaneously)
 
 ✅ **Additional capabilities**:
+
 - 24/7 operation without thermal throttling (better cooling)
 - Headroom for future GPU upgrades (1000W PSU supports RTX 5090)
 - 64 GB RAM supports larger datasets in memory
 
 ❌ **Limitations**:
+
 - Cannot train 30B+ models from scratch at full precision
 - Multi-GPU scaling requires motherboard upgrade
 
@@ -225,6 +236,7 @@ We present three hardware configurations optimized for different budgets and use
 | **Total 5-Year TCO** | | **$3,590** | $60/month amortized |
 
 **Comparison to cloud alternatives**:
+
 - **AWS g5.2xlarge** (A10G GPU, 24 GB VRAM): $1.212/hour × 10h/day × 365 days × 5 years = **$22,119**
 
 **Savings**: $18,500 over 5 years.
@@ -254,12 +266,14 @@ We present three hardware configurations optimized for different budgets and use
 | **Total** | | **$4,960** | Excludes peripherals |
 
 **Optional upgrades**:
+
 - **Second RTX 4090** (+$1,700): For multi-GPU training (requires NVLink bridge)
 - **Dual Xeon workstation** (+$3,000): For compute clusters (overkill for most)
 
 #### What This Lab Can Do
 
 ✅ **Supported workloads**:
+
 - Everything from Mid-Tier Lab, **5x faster**
 - Train VLA models from scratch (7-14B parameters)
 - Isaac Sim scenes with 10+ robots + photorealistic rendering at 60 FPS
@@ -268,11 +282,13 @@ We present three hardware configurations optimized for different budgets and use
 - Gen5 SSD enables 10 GB/s dataset loading (no I/O bottlenecks)
 
 ✅ **Enterprise features**:
+
 - UPS (uninterruptible power supply) prevents data corruption during power loss
 - 10 Gbps Ethernet for fast remote access and dataset transfers
 - Sound-dampened case for office environments (quieter operation)
 
 ❌ **Limitations**:
+
 - None for Physical AI development as of 2026
 - Overkill for individual learners (diminishing returns)
 
@@ -286,6 +302,7 @@ We present three hardware configurations optimized for different budgets and use
 | **Total 5-Year TCO** | | **$6,340** | $105/month amortized |
 
 **Comparison to cloud alternatives**:
+
 - **AWS g5.12xlarge** (4x A10G GPUs, 96 GB VRAM): $5.672/hour × 12h/day × 365 days × 5 years = **$124,306**
 
 **Savings**: $117,000 over 5 years. Premium lab pays for itself in 2 weeks of equivalent cloud usage.
@@ -331,6 +348,7 @@ graph TD
 
 :::tip Component Priority
 For Physical AI development, prioritize in this order:
+
 1. **GPU** (Most Critical) - VRAM determines max model size, CUDA/Tensor cores determine speed
 2. **RAM** (Second Priority) - 32 GB minimum for Isaac Sim + VLA, 64 GB recommended
 3. **CPU** (Third Priority) - Affects ROS 2 build speed and physics simulation
@@ -340,6 +358,7 @@ For Physical AI development, prioritize in this order:
 ### CPU Selection
 
 **Why CPU matters less than GPU**: Most Physical AI workloads are GPU-bound (simulation rendering, neural network inference). However, CPU still affects:
+
 - **Build times**: Compiling ROS 2 packages, PyTorch from source
 - **Parallel data loading**: Feeding training data to GPU
 - **Isaac Sim physics**: CPU handles some physics calculations
@@ -348,6 +367,7 @@ For Physical AI development, prioritize in this order:
 **Recommended**: 8-core, 3.5 GHz base clock (AMD Ryzen 7 7800X3D, Intel i7-13700K)
 
 **AMD vs Intel (2026)**:
+
 - **AMD**: Better price/performance, lower power consumption, PCIe 5.0 support
 - **Intel**: Slightly better single-thread (marginal), more expensive
 
@@ -363,6 +383,7 @@ For Physical AI development, prioritize in this order:
 | **Multi-session workflows** | 64 GB | 128 GB | Isaac Sim + Jupyter + VSCode + Chrome |
 
 **DDR4 vs DDR5 (2026)**:
+
 - **DDR5**: Required for Ryzen 7000 and Intel 13th+ gen, 20% faster, same price as DDR4 in 2026
 - **DDR4**: Legacy, only if using older CPUs (not recommended)
 
@@ -381,6 +402,7 @@ For Physical AI development, prioritize in this order:
 | **Total** | **230 GB** | **750 GB** | 1 TB minimum, 2 TB recommended |
 
 **NVMe Gen3 vs Gen4 vs Gen5**:
+
 - **Gen3**: 3.5 GB/s read, sufficient for basic use, cheapest
 - **Gen4**: 7 GB/s read, recommended for Economy/Mid labs
 - **Gen5**: 12 GB/s read, overkill except for Premium (dataset-heavy workflows)
@@ -392,11 +414,13 @@ For Physical AI development, prioritize in this order:
 ## Dual-Boot Setup: Installing Ubuntu 22.04 Alongside Windows/MacOS
 
 **Why dual-boot?**
+
 - **Preserve existing OS**: Keep Windows for gaming, MacOS for daily work
 - **Hardware access**: Native GPU drivers (no virtualization overhead)
 - **Best performance**: Direct hardware access vs 20-30% VM penalty
 
 **Alternatives**:
+
 - **WSL2 (Windows Subsystem for Linux)**: ❌ Cannot run Isaac Sim (no GPU passthrough for GUI apps)
 - **Virtual machines (VirtualBox, VMware)**: ❌ Poor GPU performance, complex setup
 - **Cloud instances**: ❌ Expensive ($1,000+ annually), latency issues
@@ -424,8 +448,8 @@ For Physical AI development, prioritize in this order:
 
 **On Windows:**
 
-1. Download **Ubuntu 22.04.3 LTS** ISO from https://ubuntu.com/download/desktop (3.5 GB)
-2. Download **Rufus** from https://rufus.ie/ (portable version, no install needed)
+1. Download **Ubuntu 22.04.3 LTS** ISO from &lt;https://ubuntu.com/download/desktop&gt; (3.5 GB)
+2. Download **Rufus** from &lt;https://rufus.ie/&gt; (portable version, no install needed)
 3. Insert USB drive (8 GB minimum, **all data will be erased**)
 4. Launch Rufus:
    - Device: Select your USB drive
@@ -521,15 +545,19 @@ Ubuntu 22.04 supports Secure Boot, but disabling it can avoid issues during inst
    - Boot into Ubuntu (first option)
    - Open Terminal (`Ctrl + Alt + T`)
    - Edit GRUB config:
+
      ```bash
      sudo nano /etc/default/grub
      ```
+
    - Change `GRUB_DEFAULT=0` to keep Ubuntu default, or `GRUB_DEFAULT=2` to set Windows default
    - Save (`Ctrl + X`, then `Y`, then Enter)
    - Update GRUB:
+
      ```bash
      sudo update-grub
      ```
+
 4. To boot into Windows:
    - Restart computer
    - Select **Windows Boot Manager** from GRUB menu
@@ -537,6 +565,7 @@ Ubuntu 22.04 supports Secure Boot, but disabling it can avoid issues during inst
 ### MacOS Dual-Boot Guide (Intel Macs Only)
 
 **Apple Silicon (M1/M2/M3) users**: Cannot dual-boot Ubuntu. Use cloud alternatives:
+
 - **Lambda Labs** (RTX 6000 Ada): $0.75/hour
 - **Paperspace Gradient** (A5000): $1.10/hour
 
@@ -549,7 +578,7 @@ The process is similar to Windows dual-boot with these differences:
    - Select main drive, click **Partition**
    - Click **+**, create **100 GB partition**, name "Ubuntu", format **MS-DOS (FAT)**
 2. **Create bootable USB**:
-   - Use **Etcher** (https://etcher.balena.io/) instead of Rufus
+   - Use **Etcher** (&lt;https://etcher.balena.io/&gt;) instead of Rufus
 3. **Boot from USB**:
    - Restart Mac, hold **Option (⌥)** key during startup
    - Select **EFI Boot** (USB drive)
@@ -568,6 +597,7 @@ The process is similar to Windows dual-boot with these differences:
 **Cause**: Ubuntu installer's third-party driver install failed or Nouveau (open-source driver) is active
 
 **Solution**:
+
 ```bash
 # Check current driver
 lspci | grep -i nvidia
@@ -588,6 +618,7 @@ nvidia-smi
 **Symptom**: After Ubuntu install, Windows option doesn't appear in GRUB bootloader
 
 **Solution**:
+
 ```bash
 # Update GRUB to detect Windows
 sudo os-prober
@@ -610,6 +641,7 @@ sudo reboot
 **Cause**: GRUB installed to wrong drive or BIOS boot order incorrect
 
 **Solution**:
+
 1. Restart computer, enter BIOS/UEFI (F2/F10/Del during startup)
 2. Go to **Boot** tab
 3. Ensure **ubuntu** (or **GRUB**) is first in boot order
@@ -617,6 +649,7 @@ sudo reboot
 5. Save and exit
 
 If problem persists, boot from Ubuntu USB and reinstall GRUB:
+
 ```bash
 # Boot from USB, select "Try Ubuntu"
 sudo fdisk -l  # Find Ubuntu partition (usually /dev/nvme0n1p5 or /dev/sda5)
@@ -632,6 +665,7 @@ sudo reboot
 **Cause**: Usually Nouveau driver conflicting with NVIDIA hardware
 
 **Solution**:
+
 ```bash
 # Add nomodeset kernel parameter (temporary fix)
 # In GRUB menu, press 'e' on Ubuntu entry
@@ -683,8 +717,8 @@ With your workstation hardware selected or built, move on to **Chapter 03: ROS 2
 
 ## Further Reading
 
-- **NVIDIA GPU Comparison**: https://www.nvidia.com/en-us/geforce/graphics-cards/compare/
-- **Ubuntu Desktop Installation Guide**: https://ubuntu.com/tutorials/install-ubuntu-desktop
-- **PCPartPicker (build compatibility checker)**: https://pcpartpicker.com/
-- **/r/buildapc community**: https://reddit.com/r/buildapc (for hardware advice)
-- **ROS 2 Hardware Requirements**: https://docs.ros.org/en/jazzy/Installation.html
+- **NVIDIA GPU Comparison**: &lt;https://www.nvidia.com/en-us/geforce/graphics-cards/compare/&gt;
+- **Ubuntu Desktop Installation Guide**: &lt;https://ubuntu.com/tutorials/install-ubuntu-desktop&gt;
+- **PCPartPicker (build compatibility checker)**: &lt;https://pcpartpicker.com/&gt;
+- **/r/buildapc community**: &lt;https://reddit.com/r/buildapc&gt; (for hardware advice)
+- **ROS 2 Hardware Requirements**: &lt;https://docs.ros.org/en/jazzy/Installation.html&gt;

@@ -28,6 +28,7 @@ What is the correct order of operations for a ROS 2 node's lifecycle?
 **Correct Answer**: `rclpy.init()` → Create node instance → `rclpy.spin()` → `destroy_node()` → `rclpy.shutdown()`
 
 **Explanation**:
+
 1. `rclpy.init()` initializes the ROS 2 context
 2. Node instance is created (inherits from `Node` class)
 3. `rclpy.spin()` processes callbacks and keeps node running
@@ -77,6 +78,7 @@ D) BEST_EFFORT reliability + TRANSIENT_LOCAL durability
 **Correct Answer**: B) BEST_EFFORT reliability + VOLATILE durability
 
 **Explanation**:
+
 - **BEST_EFFORT**: No retransmission of lost packets = lower latency (good for sensor data at 30 Hz, 60 Hz, etc.)
 - **VOLATILE**: Late subscribers only get new messages (no need to cache old sensor readings)
 
@@ -104,6 +106,7 @@ D) Parameter
 **Correct Answer**: C) Action (goal-feedback-result)
 
 **Explanation**: Use actions for long-running tasks (>1 second) that need:
+
 - **Feedback**: Progress updates during execution
 - **Cancellation**: Ability to abort mid-execution
 - **Result**: Final outcome when complete
@@ -120,6 +123,7 @@ Services are for quick operations (under 1 second) with no feedback. Topics are 
 ### Question 5: Service Definition
 
 Given this service definition:
+
 ```
 int64 a
 int64 b
@@ -140,10 +144,12 @@ D) Marks the end of the file
 **Correct Answer**: B) Separates request (above) from response (below)
 
 **Explanation**: In ROS 2 service definitions (`.srv` files):
+
 - **Above `---`**: Request fields (what the client sends)
 - **Below `---`**: Response fields (what the server returns)
 
 For actions (`.action` files), there are **two** `---` separators:
+
 1. Goal (top)
 2. Result (middle)
 3. Feedback (bottom)
@@ -172,6 +178,7 @@ D) Uses a random default value
 **Explanation**: ROS 2 requires explicit parameter declaration before use. This prevents typos and ensures all parameters are documented with defaults.
 
 **Correct pattern**:
+
 ```python
 # Declare first
 self.declare_parameter('speed', 1.0)
@@ -192,6 +199,7 @@ speed = self.get_parameter('speed').value
 Which YAML structure is **correct** for ROS 2 parameter files?
 
 **Option A**:
+
 ```yaml
 my_node:
   speed: 1.0
@@ -199,6 +207,7 @@ my_node:
 ```
 
 **Option B**:
+
 ```yaml
 my_node:
   ros__parameters:
@@ -279,12 +288,14 @@ D) QoS settings are incompatible
 **Correct Answer**: C) The subscriber code has a bug
 
 **Explanation**: If `ros2 topic echo` can receive messages, it proves:
+
 - ✅ Publisher is working
 - ✅ Topic name is correct
 - ✅ Messages are being sent
 - ✅ QoS is compatible (echo uses default settings)
 
 The problem must be in the **subscriber code**:
+
 - Callback function not registered correctly
 - Subscriber not being spun (`rclpy.spin()` missing)
 - Exception in callback silently failing
@@ -318,6 +329,7 @@ D) All of the above
 4. **Dataset creation**: Record training data for machine learning
 
 **Advanced usage**:
+
 - Replay at different speeds: `ros2 bag play -r 2.0` (2x speed)
 - Replay in loop: `ros2 bag play -l`
 - Replay specific topics: `ros2 bag play my_bag --topics /cmd_vel`
@@ -332,6 +344,7 @@ D) All of the above
 ### Bonus: Complete System Design
 
 Design a system with these requirements:
+
 - 2 robots operating simultaneously
 - Each robot has a lidar sensor publishing at 10 Hz
 - Each robot has a velocity controller
@@ -353,6 +366,7 @@ E) Services for sensor configuration
 **Explanation**:
 
 **Architecture**:
+
 ```python
 # Launch file structure
 for robot in ['robot1', 'robot2']:
@@ -382,6 +396,7 @@ for robot in ['robot1', 'robot2']:
 ```
 
 **Topics created**:
+
 - `/robot1/scan` (lidar data) - D: Topic
 - `/robot1/mobile_base/cmd_vel` (velocity commands) - D: Topic
 - `/robot2/scan`
@@ -399,35 +414,43 @@ for robot in ['robot1', 'robot2']:
 ## Quiz Results Interpretation
 
 ### 9-10 Correct: Excellent! 🎉
+
 You have a strong grasp of ROS 2 fundamentals. You're ready to move on to Chapter 04 (URDF Modeling).
 
 **Next steps**:
+
 - Build a custom URDF humanoid model
 - Integrate with Isaac Sim simulator
 - Implement advanced ROS 2 patterns
 
 ### 7-8 Correct: Good! 👍
+
 You understand the core concepts but may benefit from reviewing specific sections.
 
 **Review**:
+
 - Section 1 if you missed Q1-Q3 (topics and QoS)
 - Section 2 if you missed Q4-Q5 (services vs actions)
 - Section 3 if you missed Q6-Q8 (parameters and launch files)
 - Section 4 if you missed Q9-Q10 (debugging)
 
 ### 5-6 Correct: Needs Improvement 📚
+
 Review the chapter sections you struggled with before continuing.
 
 **Action plan**:
+
 1. Re-read sections where you missed questions
 2. Complete the exercises at the end of each section
 3. Run the code examples hands-on
 4. Retake the quiz
 
 ### 0-4 Correct: Review Required ⚠️
+
 Revisit the entire chapter with hands-on practice.
 
 **Recommended approach**:
+
 1. Read each section carefully
 2. Type and run every code example
 3. Use `ros2 topic`, `ros2 node`, `rqt_graph` to explore
@@ -441,6 +464,7 @@ Revisit the entire chapter with hands-on practice.
 Ready to continue? Proceed to **[Chapter 04: URDF & Digital Twins](../urdf-digital-twins)** to learn robot modeling and simulation.
 
 **What you'll learn**:
+
 - URDF XML format for robot description
 - Links, joints, and kinematic chains
 - Visual vs collision geometry
@@ -452,6 +476,6 @@ Ready to continue? Proceed to **[Chapter 04: URDF & Digital Twins](../urdf-digit
 ## Review Resources
 
 - **Hands-on practice**: Run all code examples in `code-examples/ros2/`
-- **ROS 2 Tutorials**: https://docs.ros.org/en/jazzy/Tutorials.html
-- **Community**: https://discourse.ros.org/ (ask questions)
+- **ROS 2 Tutorials**: &lt;https://docs.ros.org/en/jazzy/Tutorials.html&gt;
+- **Community**: &lt;https://discourse.ros.org/&gt; (ask questions)
 - **Troubleshooting**: Revisit Section 4 (Debugging Tools) when stuck

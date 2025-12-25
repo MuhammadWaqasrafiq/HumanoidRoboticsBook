@@ -11,6 +11,7 @@ description: "Master grasp planning, inverse kinematics, force control, and mult
 Dexterous manipulation is the ability to skillfully interact with objects using robotic hands and arms. While locomotion gets a humanoid from point A to B, manipulation enables it to perform useful tasks: opening doors, picking packages, assembling components, or pouring drinks. This chapter covers the complete manipulation stack from grasp planning to force-controlled execution.
 
 **What You'll Learn:**
+
 - Grasp planning algorithms (force closure, quality metrics)
 - Inverse kinematics solvers (analytic, numerical, optimization-based)
 - Force/impedance control for compliant interaction
@@ -18,6 +19,7 @@ Dexterous manipulation is the ability to skillfully interact with objects using 
 - Object manipulation pipelines
 
 **Prerequisites:**
+
 - Chapter 04 (ROS 2 fundamentals)
 - Chapter 05 (URDF and forward kinematics)
 - Chapter 07 (perception for object detection)
@@ -41,12 +43,14 @@ Force closure ⟺ rank(G) = 6 AND wrench space spans ℝ⁶
 **Form Closure**: Stricter condition - the grasp prevents any object motion even without friction. Requires 7+ contacts for general 3D objects.
 
 **Grasp Quality Indices:**
+
 1. **Largest Minimum Wrench (LMW)**: Maximum disturbance the grasp can resist
 2. **Volume of Grasp Wrench Space**: Larger = more robust
 3. **Distance to Force Closure Boundary**: Safety margin
 4. **Task-specific metrics**: Alignment with manipulation goal (e.g., torque capacity for twisting a lid)
 
 **Ferrari-Canny Metric** (most common):
+
 ```python
 def ferrari_canny_metric(contact_points, contact_normals, friction_coeff=0.7):
     """
@@ -64,16 +68,19 @@ def ferrari_canny_metric(contact_points, contact_normals, friction_coeff=0.7):
 ### 9.1.2 Grasp Synthesis Methods
 
 **Analytic Approaches:**
+
 - **Antipodal Grasps**: Two-finger grasps with contact normals opposing through object center of mass
 - **Force Closure Test**: Check if contact forces span 6D wrench space
 - **Parallel-Jaw Optimization**: Find best finger positions for gripper
 
 **Sampling-Based Approaches:**
+
 1. Generate candidate grasps (e.g., sample points on object mesh)
 2. Evaluate quality metric for each
 3. Rank and return top-k grasps
 
 **Example: Antipodal Grasp Generation**
+
 ```python
 import numpy as np
 from scipy.spatial.distance import cdist
@@ -128,6 +135,7 @@ def generate_antipodal_grasps(point_cloud, normals, gripper_width=0.08):
 ```
 
 **Learning-Based Approaches:**
+
 - **GraspNet**: Neural network predicts grasp quality from RGB-D images
 - **Contact-GraspNet**: Predicts contact points and approach directions
 - **DexNet**: Large-scale dataset (millions of grasps) for training
@@ -149,6 +157,7 @@ Inverse Kinematics: X → θ
 ```
 
 **Challenges:**
+
 - **Non-unique**: Redundant robots (7+ DOF arms) have infinite solutions
 - **No closed-form**: Most robots require numerical methods
 - **Singularities**: Jacobian rank drops, losing DOFs
@@ -159,6 +168,7 @@ Inverse Kinematics: X → θ
 For specific robot geometries (e.g., 6-DOF arms with spherical wrist), closed-form solutions exist.
 
 **Example: 6-DOF Anthropomorphic Arm**
+
 ```python
 def analytic_ik_6dof(target_pose, shoulder_offset, elbow_offset, wrist_offset):
     """
@@ -202,6 +212,7 @@ def analytic_ik_6dof(target_pose, shoulder_offset, elbow_offset, wrist_offset):
 ### 9.2.3 Numerical IK (Iterative)
 
 **Jacobian-Based Newton-Raphson:**
+
 ```
 Iterate: θ_{k+1} = θ_k + J⁺(θ_k) · ΔX
 
@@ -211,6 +222,7 @@ Where:
 ```
 
 **Implementation with Damped Least Squares** (avoids singularities):
+
 ```python
 def numerical_ik_damped_ls(robot, target_pose, q_init, max_iter=100, tol=1e-4):
     """
@@ -261,6 +273,7 @@ def numerical_ik_damped_ls(robot, target_pose, q_init, max_iter=100, tol=1e-4):
 ### 9.2.4 Optimization-Based IK
 
 **Formulate as constrained optimization:**
+
 ```python
 import casadi as ca
 
@@ -308,6 +321,7 @@ def optimization_ik(robot, target_pose, q_init, weights={'position': 100, 'orien
 ### 9.2.5 Production IK: TRAC-IK
 
 **TRAC-IK** (TracLabs Inverse Kinematics) combines speed and reliability:
+
 - Runs numerical IK and nonlinear optimization in parallel
 - Returns fastest solution
 - Widely used in ROS 2 MoveIt 2
@@ -341,6 +355,7 @@ Example: Wiping a table
 ```
 
 **Implementation:**
+
 ```python
 class HybridController:
     def __init__(self, robot, selection_matrix):
@@ -379,6 +394,7 @@ class HybridController:
 ```
 
 **Selection Matrix Example (Table Wiping):**
+
 ```python
 S = np.diag([0, 0, 1, 0, 0, 0])  # Force control in Z only
 # XY position controlled, Z force controlled
@@ -396,6 +412,7 @@ High K → Stiff (position control)
 ```
 
 **Cartesian Impedance Controller:**
+
 ```python
 class CartesianImpedanceController:
     def __init__(self, stiffness, damping):
@@ -432,6 +449,7 @@ class CartesianImpedanceController:
 ```
 
 **Tuning Impedance Parameters:**
+
 - **Stiff** (K=1000): Precise positioning (pick small objects)
 - **Compliant** (K=50): Safe contact (human handover, exploration)
 - **Variable**: Adapt based on task (stiff in free space, soft at contact)
@@ -447,11 +465,13 @@ else:
 ### 9.3.3 Force/Torque Sensing
 
 **Hardware Requirements:**
+
 - **6-axis F/T sensor** at wrist (measures Fx, Fy, Fz, Tx, Ty, Tz)
 - Typical specs: ±200N force, ±20Nm torque, 1000Hz sampling
 - Examples: ATI Mini45, Robotiq FT-300, OnRobot HEX-E
 
 **ROS 2 Integration:**
+
 ```python
 from geometry_msgs.msg import WrenchStamped
 
@@ -493,20 +513,24 @@ class ForceTorqueSensor(Node):
 ### 9.4.1 Hand Platforms
 
 **Allegro Hand** (16 DOF, 4 fingers):
+
 - Torque-controlled, dexterous manipulation
 - $10k-15k, research/education
 - ROS 2 support: `ros2 launch allegro_hand allegro_hand.launch.py`
 
 **Shadow Dexterous Hand** (20-24 DOF):
+
 - Human-like kinematics, tactile sensors
 - $100k+, high-end research
 - Air muscle or electric actuation
 
 **Barrett Hand** (4 DOF, 3 fingers):
+
 - Underactuated, adaptive grasping
 - $25k, industrial reliability
 
 **Robotiq 2F-85/2F-140** (Parallel-jaw grippers):
+
 - Simple, robust, $5k-10k
 - Force control, object detection
 - Best for pick-and-place tasks
@@ -537,6 +561,7 @@ def execute_grasp(object_size, grasp_type='power'):
 ```
 
 **Tactile Feedback** (if available):
+
 ```python
 def grasp_with_tactile_feedback(object_pose):
     """
@@ -562,11 +587,13 @@ def grasp_with_tactile_feedback(object_pose):
 **Task**: Reorient object within hand (e.g., rotate screwdriver).
 
 **Approaches:**
+
 1. **Finger Gaiting**: Sequentially release/regrasp fingers
 2. **Rolling**: Controlled sliding along finger surfaces
 3. **Pivoting**: Rotate around fixed contact point
 
 **Simple Pivot Controller:**
+
 ```python
 def pivot_object(target_angle, pivot_finger=0):
     """
@@ -621,6 +648,7 @@ graph TD
 ```
 
 **ROS 2 Action Server:**
+
 ```python
 from manipulation_interfaces.action import PickAndPlace
 
@@ -699,12 +727,14 @@ class PickAndPlaceServer(Node):
 ### 9.5.2 Failure Recovery
 
 **Common Failures:**
+
 1. **Grasp failure** (object slips)
 2. **IK failure** (target unreachable)
 3. **Collision** (obstacle in path)
 4. **Perception failure** (object not detected)
 
 **Recovery Strategies:**
+
 ```python
 def execute_pick_with_retry(object_pose, max_attempts=3):
     for attempt in range(max_attempts):
@@ -745,6 +775,7 @@ def execute_pick_with_retry(object_pose, max_attempts=3):
 **Bimanual manipulation**: Two arms work together (e.g., opening a jar, folding cloth).
 
 **Relative Jacobian Approach:**
+
 ```python
 def dual_arm_coordination(left_target, right_target, relative_constraint):
     """
@@ -808,6 +839,7 @@ q_solution = ik_solver.solve(T_base_tool, tool_transform=T_wrist_tool)
 ## Summary
 
 **Key Takeaways:**
+
 1. **Grasp Planning**: Ferrari-Canny metric balances quality vs speed; antipodal grasps work for 80% of objects
 2. **IK Solvers**: Use TRAC-IK for speed + reliability; numerical methods handle redundancy
 3. **Force Control**: Impedance control (K=50-300 N/m) enables safe, compliant manipulation
@@ -815,6 +847,7 @@ q_solution = ik_solver.solve(T_base_tool, tool_transform=T_wrist_tool)
 5. **Production Pipeline**: Perception → Grasp Planning → IK → Motion Planning → Force-Controlled Execution
 
 **Recommended Stack:**
+
 - **Perception**: YOLOv8 + SAM 2 (Chapter 07)
 - **Grasp Planning**: GraspNet or antipodal sampling
 - **IK**: TRAC-IK (ROS 2 MoveIt 2)
@@ -823,12 +856,14 @@ q_solution = ik_solver.solve(T_base_tool, tool_transform=T_wrist_tool)
 - **Gripper**: Robotiq 2F-85 (simple) or Allegro Hand (dexterous)
 
 **Next Steps:**
+
 - Implement grasp planner from code example (`grasp_planner.py`)
 - Test IK solver on your robot URDF
 - Set up F/T sensor and tune impedance controller
 - Integrate with Chapter 07 perception for autonomous pick-and-place
 
 **Performance Targets:**
+
 - Grasp planning: &lt;500ms (antipodal), &lt;2s (GraspNet)
 - IK solve: &lt;50ms (TRAC-IK)
 - Grasp success rate: &gt;85% (known objects), &gt;60% (novel objects)

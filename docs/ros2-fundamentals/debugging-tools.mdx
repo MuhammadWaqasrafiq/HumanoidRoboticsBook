@@ -11,6 +11,7 @@ keywords: [ros2-debugging, rqt, rviz2, ros2-cli, troubleshooting, logging]
 ## Introduction
 
 Debugging distributed robotic systems is challenging:
+
 - **10+ nodes running simultaneously** - Which one is failing?
 - **Async communication** - Why isn't my subscriber receiving messages?
 - **Complex state** - What are the current parameter values?
@@ -276,12 +277,14 @@ rqt_graph
 ```
 
 **Features**:
+
 - **Nodes** - Circles or boxes representing nodes
 - **Topics** - Arrows showing publish/subscribe relationships
 - **Filters** - Hide debug topics, group by namespace
 - **Real-time updates** - Graph updates as nodes start/stop
 
 **Use case**: "Why isn't my subscriber receiving messages?"
+
 - Check if both nodes are connected to the same topic
 - Verify topic name matches exactly
 
@@ -293,6 +296,7 @@ rqt_console
 ```
 
 **Features**:
+
 - **Severity filtering** - Show only WARN/ERROR/FATAL messages
 - **Node filtering** - Show logs from specific nodes
 - **Message search** - Filter by keyword
@@ -300,6 +304,7 @@ rqt_console
 - **Real-time** - Updates live as nodes log
 
 **Use case**: "Find all error messages in the last 5 minutes"
+
 - Filter by severity: ERROR
 - Sort by timestamp
 - Search for specific keywords
@@ -312,18 +317,21 @@ rqt_plot
 ```
 
 **Features**:
+
 - **Real-time graphs** - Plot numeric message fields
 - **Multiple topics** - Compare different data sources
 - **Custom time windows** - Zoom to specific ranges
 - **Export** - Save plots as images
 
 **Example usage**:
+
 ```
 Topic: /cmd_vel/linear/x
 Topic: /odom/pose/pose/position/x
 ```
 
 **Use case**: "Is the robot actually moving when I send velocity commands?"
+
 - Plot `/cmd_vel/linear/x` (commanded velocity)
 - Plot `/odom/twist/twist/linear/x` (actual velocity)
 - Verify they correlate
@@ -336,12 +344,14 @@ rqt_topic
 ```
 
 **Features**:
+
 - **Topic list** - See all topics with types
 - **Publishing rate** - Real-time Hz measurement
 - **Bandwidth** - See data throughput
 - **Message inspection** - View latest message content
 
 **Use case**: "Check if sensor is publishing at expected rate"
+
 - Find `/scan` topic
 - Verify it's publishing at 10 Hz (not 0.1 Hz due to bug)
 
@@ -353,12 +363,14 @@ rqt_service_caller
 ```
 
 **Features**:
+
 - **Service list** - All available services
 - **Request builder** - GUI form for request parameters
 - **Response viewer** - See service response
 - **History** - Previous calls saved
 
 **Use case**: "Test if my service works without writing client code"
+
 - Select `/add_two_ints`
 - Fill in a=5, b=3
 - Click "Call"
@@ -372,12 +384,14 @@ rqt_reconfigure
 ```
 
 **Features**:
+
 - **Slider controls** - Adjust numeric parameters
 - **Real-time updates** - Changes apply immediately
 - **Value ranges** - Respects parameter constraints
 - **Save/load configs** - Export parameter sets
 
 **Use case**: "Tune PID controller gains without restarting node"
+
 - Select `/controller` node
 - Adjust `kp`, `ki`, `kd` sliders
 - Observe robot behavior changes live
@@ -390,6 +404,7 @@ rqt
 ```
 
 All plugins available in one window:
+
 - **Plugins** → **Introspection** → Node Graph, Topic Monitor
 - **Plugins** → **Visualization** → Plot, Image View
 - **Plugins** → **Configuration** → Dynamic Reconfigure
@@ -415,6 +430,7 @@ rviz2 -d my_config.rviz
 #### 1. RobotModel - Visualize URDF
 
 **Setup**:
+
 1. Add → RobotModel
 2. Set "Robot Description" topic to `/robot_description`
 3. Robot appears in 3D view
@@ -424,6 +440,7 @@ rviz2 -d my_config.rviz
 #### 2. TF - Coordinate Frames
 
 **Setup**:
+
 1. Add → TF
 2. See all coordinate frames as axes
 3. Enable "Show Names" to label frames
@@ -433,6 +450,7 @@ rviz2 -d my_config.rviz
 #### 3. LaserScan - Lidar Visualization
 
 **Setup**:
+
 1. Add → LaserScan
 2. Set Topic to `/scan`
 3. Adjust Size and Color
@@ -442,6 +460,7 @@ rviz2 -d my_config.rviz
 #### 4. Image - Camera Feeds
 
 **Setup**:
+
 1. Add → Image
 2. Set Topic to `/camera/image_raw`
 3. View live camera feed
@@ -451,6 +470,7 @@ rviz2 -d my_config.rviz
 #### 5. Path - Planned Trajectories
 
 **Setup**:
+
 1. Add → Path
 2. Set Topic to `/plan`
 3. See planned robot path
@@ -460,6 +480,7 @@ rviz2 -d my_config.rviz
 #### 6. Marker - Custom Visualizations
 
 **Setup**:
+
 1. Add → Marker
 2. Set Topic to `/visualization_marker`
 3. Display custom shapes (arrows, spheres, text)
@@ -556,6 +577,7 @@ ros2 run my_package my_node --ros-args \
 ```
 
 **Launch file configuration**:
+
 ```python
 Node(
     package='my_package',
@@ -575,12 +597,14 @@ Node(
 **Debug steps**:
 
 1. **Check if both nodes are running**:
+
    ```bash
    ros2 node list
    # Verify both publisher and subscriber are listed
    ```
 
 2. **Check topic names**:
+
    ```bash
    ros2 topic info /my_topic -v
    # Verify Publisher count: 1, Subscription count: 1
@@ -588,6 +612,7 @@ Node(
    ```
 
 3. **Visualize with rqt_graph**:
+
    ```bash
    rqt_graph
    # Look for arrow connecting publisher to subscriber
@@ -595,18 +620,21 @@ Node(
    ```
 
 4. **Check message types**:
+
    ```bash
    ros2 topic type /my_topic
    # Verify publisher and subscriber use same type
    ```
 
 5. **Check QoS compatibility**:
+
    ```bash
    ros2 topic info /my_topic -v
    # Check QoS profiles match (Reliability, Durability)
    ```
 
 6. **Test with echo**:
+
    ```bash
    ros2 topic echo /my_topic
    # If you see messages here, problem is in subscriber code
@@ -620,27 +648,32 @@ Node(
 **Debug steps**:
 
 1. **Check if service exists**:
+
    ```bash
    ros2 service list | grep my_service
    ```
 
 2. **Check if server node is running**:
+
    ```bash
    ros2 node list | grep my_server
    ```
 
 3. **Check service type matches**:
+
    ```bash
    ros2 service type /my_service
    ```
 
 4. **Check server logs**:
+
    ```bash
    ros2 run my_package my_server
    # Look for error messages when service is called
    ```
 
 5. **Test with simple request**:
+
    ```bash
    ros2 service call /my_service std_srvs/srv/Trigger
    ```
@@ -652,18 +685,21 @@ Node(
 **Debug steps**:
 
 1. **Check publishing rates**:
+
    ```bash
    ros2 topic hz /my_topic
    # Verify not publishing at excessive rate (e.g., 10000 Hz)
    ```
 
 2. **Check callback frequency**:
+
    ```bash
    # Add logging to callback with timestamps
    self.get_logger().info('Callback fired')
    ```
 
 3. **Profile with top**:
+
    ```bash
    top -p $(pgrep my_node)
    # See CPU% usage over time
@@ -674,6 +710,7 @@ Node(
    - Ensure timer callbacks aren't blocking
 
 5. **Use rqt_top**:
+
    ```bash
    ros2 run rqt_top rqt_top
    # See CPU/memory usage per node
@@ -686,12 +723,14 @@ Node(
 **Debug steps**:
 
 1. **Check if frames exist**:
+
    ```bash
    ros2 run tf2_ros tf2_echo base_link camera
    # Shows transform if available, error if not
    ```
 
 2. **View TF tree**:
+
    ```bash
    ros2 run tf2_tools view_frames
    # Generates frames.pdf showing transform tree
@@ -699,6 +738,7 @@ Node(
    ```
 
 3. **Visualize in rviz2**:
+
    ```bash
    rviz2
    # Add → TF
@@ -706,6 +746,7 @@ Node(
    ```
 
 4. **Check who publishes transforms**:
+
    ```bash
    ros2 topic info /tf
    ros2 topic info /tf_static
@@ -759,8 +800,8 @@ Try these debugging challenges:
 
 ## Further Reading
 
-- **ROS 2 CLI Reference**: https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools.html
-- **rqt Documentation**: https://docs.ros.org/en/jazzy/Concepts/About-RQt.html
-- **rviz2 User Guide**: https://github.com/ros2/rviz/blob/ros2/README.md
-- **Logging**: https://docs.ros.org/en/jazzy/Concepts/About-Logging.html
-- **ros2 bag**: https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Recording-And-Playing-Back-Data.html
+- **ROS 2 CLI Reference**: &lt;https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools.html&gt;
+- **rqt Documentation**: &lt;https://docs.ros.org/en/jazzy/Concepts/About-RQt.html&gt;
+- **rviz2 User Guide**: &lt;https://github.com/ros2/rviz/blob/ros2/README.md&gt;
+- **Logging**: &lt;https://docs.ros.org/en/jazzy/Concepts/About-Logging.html&gt;
+- **ros2 bag**: &lt;https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Recording-And-Playing-Back-Data.html&gt;

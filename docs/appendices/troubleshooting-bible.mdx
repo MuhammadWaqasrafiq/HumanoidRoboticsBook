@@ -19,6 +19,7 @@ This appendix is your guide to resolving the most common errors encountered whil
 
 **Symptom**:
 You run `colcon build` in your workspace, and it fails with an error message like:
+
 ```bash
 --- stderr: your_package_name
 CMake Error at CMakeLists.txt:21 (find_package):
@@ -31,32 +32,39 @@ CMake Error at CMakeLists.txt:21 (find_package):
 
 **Root Cause**:
 This is one of the most common ROS 2 errors. It means your current workspace or your base ROS 2 installation does not know where to find the dependency package (`another_package`) that your code needs. This can happen for a few reasons:
-1.  You haven't sourced your ROS 2 environment.
-2.  You have sourced your main ROS 2 environment, but the dependency is in another custom workspace that you haven't sourced.
-3.  The dependency is a system package that you haven't installed yet.
+
+1. You haven't sourced your ROS 2 environment.
+2. You have sourced your main ROS 2 environment, but the dependency is in another custom workspace that you haven't sourced.
+3. The dependency is a system package that you haven't installed yet.
 
 **Solution**:
 Follow these steps in order:
 
-1.  **Source your main ROS 2 installation**: Make sure you have sourced your ROS 2 distro's setup file.
+1. **Source your main ROS 2 installation**: Make sure you have sourced your ROS 2 distro's setup file.
+
     ```bash
     source /opt/ros/jazzy/setup.bash
     ```
+
     It's best practice to have this in your `~/.bashrc` file.
 
-2.  **Install the missing package**: If it's a public ROS package, you likely need to install it via `rosdep` or `apt`.
+2. **Install the missing package**: If it's a public ROS package, you likely need to install it via `rosdep` or `apt`.
+
     ```bash
     # First, update rosdep
     rosdep update
     # Then, install dependencies for all packages in your src directory
     rosdep install -i --from-path src --rosdistro jazzy -y
     ```
+
     If `rosdep` doesn't find it, you may need to install it directly:
+
     ```bash
     sudo apt-get install ros-jazzy-another-package
     ```
 
-3.  **Source overlay workspaces**: If `another_package` is in a different local workspace (e.g., `~/ros2_ws`), you must source that workspace's `install/setup.bash` *before* building your new package. This is called "overlaying".
+3. **Source overlay workspaces**: If `another_package` is in a different local workspace (e.g., `~/ros2_ws`), you must source that workspace's `install/setup.bash` *before* building your new package. This is called "overlaying".
+
     ```bash
     source ~/ros2_ws/install/setup.bash
     cd ~/my_new_ws/
@@ -70,25 +78,30 @@ You have a publisher node running and it reports that it's publishing messages. 
 
 **Root Cause**:
 This is a classic ROS 2 networking or configuration issue.
-1.  **DDS Mismatch**: Different nodes are using incompatible DDS (Data Distribution Service) implementations.
-2.  **QoS Incompatibility**: The publisher and subscriber have incompatible Quality of Service (QoS) settings. For example, a reliable publisher cannot connect to a best-effort subscriber.
-3.  **Network Issues**: The nodes are on different network interfaces or a firewall is blocking communication.
-4.  **Wrong Topic Name**: A simple typo in the topic name.
+
+1. **DDS Mismatch**: Different nodes are using incompatible DDS (Data Distribution Service) implementations.
+2. **QoS Incompatibility**: The publisher and subscriber have incompatible Quality of Service (QoS) settings. For example, a reliable publisher cannot connect to a best-effort subscriber.
+3. **Network Issues**: The nodes are on different network interfaces or a firewall is blocking communication.
+4. **Wrong Topic Name**: A simple typo in the topic name.
 
 **Solution**:
 
-1.  **Check Topic Name**: Use `ros2 topic list` to see the exact topic name being published. Check for typos.
+1. **Check Topic Name**: Use `ros2 topic list` to see the exact topic name being published. Check for typos.
 
-2.  **Check QoS Settings**: Use the `-v` flag with `ros2 topic info` to see the QoS settings for publishers and subscribers on that topic.
+2. **Check QoS Settings**: Use the `-v` flag with `ros2 topic info` to see the QoS settings for publishers and subscribers on that topic.
+
     ```bash
     ros2 topic info /my_topic -v
     ```
+
     If they differ, adjust the QoS profile in your C++ or Python code to be compatible.
 
-3.  **Standardize DDS**: The most reliable fix is to force all terminals and nodes to use the same DDS implementation. CycloneDDS is a good default.
+3. **Standardize DDS**: The most reliable fix is to force all terminals and nodes to use the same DDS implementation. CycloneDDS is a good default.
+
     ```bash
     export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     ```
+
     Add this to your `~/.bashrc` to make it permanent. You must restart your nodes and any new terminals for this to take effect.
 
 ### 3. `ros2 launch` Command Not Found
@@ -101,14 +114,18 @@ Your environment is not properly sourced. The `ros2` command is the entry point,
 
 **Solution**:
 
-1.  **Source ROS 2**: You have forgotten to source the main ROS 2 setup file.
+1. **Source ROS 2**: You have forgotten to source the main ROS 2 setup file.
+
     ```bash
     source /opt/ros/jazzy/setup.bash
     ```
-2.  **Source Workspace**: If the launch file is in your own workspace, you must source that workspace's `install` directory.
+
+2. **Source Workspace**: If the launch file is in your own workspace, you must source that workspace's `install` directory.
+
     ```bash
     source ~/ros2_ws/install/setup.bash
     ```
+
     A common mistake is to only source the main ROS 2 distro, which doesn't know about your local packages.
 
 ### 4. RQt Graph Does Not Show All Nodes/Topics
@@ -121,12 +138,14 @@ This is often related to the same DDS or network issues as the `ros2 topic echo`
 
 **Solution**:
 
-1.  **Set DDS Implementation**: Ensure your terminal running `rqt_graph` is using the same DDS implementation as your other nodes.
+1. **Set DDS Implementation**: Ensure your terminal running `rqt_graph` is using the same DDS implementation as your other nodes.
+
     ```bash
     export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     rqt_graph
     ```
-2.  **Check for Hidden Nodes**: Some nodes are intentionally hidden (e.g., nodes starting with an underscore). Check the "Debug" options in RQt Graph to show all nodes.
+
+2. **Check for Hidden Nodes**: Some nodes are intentionally hidden (e.g., nodes starting with an underscore). Check the "Debug" options in RQt Graph to show all nodes.
 
 ### 5. Failed to Create Node: Name Resolution Failed
 
@@ -147,16 +166,18 @@ You launch RViz2 and add a `RobotModel` display, but your robot model does not a
 
 **Root Cause**:
 RViz2 requires a `robot_description` topic and a valid TF (Transform) tree to display a model.
-1.  **Missing `robot_state_publisher`**: This node is responsible for reading the `/robot_description` topic and publishing the TF transforms based on the URDF's joint states.
-2.  **Missing `joint_state_publisher`**: For non-fixed joints, something needs to publish their state (e.g., position). The `joint_state_publisher_gui` is often used for this.
-3.  **Incorrect Fixed Frame**: The "Fixed Frame" in RViz2's Global Options is set to a frame that doesn't exist in your TF tree (e.g., `map`), but your robot's root is `base_link`.
+
+1. **Missing `robot_state_publisher`**: This node is responsible for reading the `/robot_description` topic and publishing the TF transforms based on the URDF's joint states.
+2. **Missing `joint_state_publisher`**: For non-fixed joints, something needs to publish their state (e.g., position). The `joint_state_publisher_gui` is often used for this.
+3. **Incorrect Fixed Frame**: The "Fixed Frame" in RViz2's Global Options is set to a frame that doesn't exist in your TF tree (e.g., `map`), but your robot's root is `base_link`.
 
 **Solution**:
 A minimal launch file for displaying a URDF should include:
-1.  A node that loads your URDF file content into the `/robot_description` parameter.
-2.  The `robot_state_publisher` node.
-3.  The `joint_state_publisher` node (or `joint_state_publisher_gui`).
-4.  An RViz2 instance with a config file.
+
+1. A node that loads your URDF file content into the `/robot_description` parameter.
+2. The `robot_state_publisher` node.
+3. The `joint_state_publisher` node (or `joint_state_publisher_gui`).
+4. An RViz2 instance with a config file.
 
 In RViz2, set the **Fixed Frame** to the root link of your URDF (e.g., `base_link`).
 
@@ -170,6 +191,7 @@ This almost always means your URDF is missing `<inertia>` tags for one or more l
 
 **Solution**:
 For every `<link>` in your URDF, you must add a valid `<inertial>` tag.
+
 ```xml
 <link name="my_link">
   <visual>
@@ -185,6 +207,7 @@ For every `<link>` in your URDF, you must add a valid `<inertial>` tag.
   </inertial>
 </link>
 ```
+
 You don't need perfect values to start, but you do need the tags to be present.
 
 ### 8. `check_urdf` Reports "has no inertia"
@@ -205,14 +228,17 @@ You try to launch a file that uses a `.xacro` file and get an error like: `inval
 
 **Root Cause**:
 Xacro is a macro language for URDF. These errors are syntax errors in your `.xacro` file.
+
 - **Invalid expression**: A math expression inside `${...}` is incorrect.
 - **Property not found**: You are trying to use a variable (`<xacro:property name="my_var" ... />`) before it was defined or with a typo in the name.
 - **Unknown macro**: You are calling a macro that wasn't defined or imported.
 
 **Solution**:
-1.  **Check Order**: Ensure properties are defined before they are used.
-2.  **Check Includes**: If you are using macros from another file, make sure you've included it, e.g., `<xacro:include filename="$(find my_pkg)/urdf/common.xacro" />`.
-3.  **Debug with `xacro` command**: Manually convert your xacro to a URDF to get more specific error messages.
+
+1. **Check Order**: Ensure properties are defined before they are used.
+2. **Check Includes**: If you are using macros from another file, make sure you've included it, e.g., `<xacro:include filename="$(find my_pkg)/urdf/common.xacro" />`.
+3. **Debug with `xacro` command**: Manually convert your xacro to a URDF to get more specific error messages.
+
     ```bash
     ros2 run xacro xacro my_robot.xacro > out.urdf
     ```
@@ -224,14 +250,16 @@ In RViz2, you get status errors for some links saying `No transform from [link_a
 
 **Root Cause**:
 Your URDF's `<joint>` definitions are incorrect, resulting in a broken kinematic chain.
-1.  **Wrong Parent/Child**: A `<joint>` tag has the wrong `<parent link="..."/>` or `<child link="..."/>`.
-2.  **Mismatched Names**: The link name in a `<parent>` or `<child>` tag has a typo and doesn't match any existing `<link name="..."/>`.
-3.  **Missing Joint**: You have defined two links that should be connected, but have forgotten to define the `<joint>` that connects them.
+
+1. **Wrong Parent/Child**: A `<joint>` tag has the wrong `<parent link="..."/>` or `<child link="..."/>`.
+2. **Mismatched Names**: The link name in a `<parent>` or `<child>` tag has a typo and doesn't match any existing `<link name="..."/>`.
+3. **Missing Joint**: You have defined two links that should be connected, but have forgotten to define the `<joint>` that connects them.
 
 **Solution**:
-1.  Use `rqt_tf_tree` to visualize the TF tree and identify exactly where the break is.
-2.  Carefully review your URDF file. Go joint by joint, and for each one, confirm that the parent link exists and is the correct parent for that child.
-3.  A good strategy is to start from the root link (`base_link`) and trace the chain of children down to the leaves of your kinematic tree, ensuring every link is correctly parented.
+
+1. Use `rqt_tf_tree` to visualize the TF tree and identify exactly where the break is.
+2. Carefully review your URDF file. Go joint by joint, and for each one, confirm that the parent link exists and is the correct parent for that child.
+3. A good strategy is to start from the root link (`base_link`) and trace the chain of children down to the leaves of your kinematic tree, ensuring every link is correctly parented.
 
 ---
 
@@ -244,12 +272,15 @@ When you try to load or run inference with a VLA model (like OpenVLA), your prog
 
 **Root Cause**:
 VLAs are massive models and consume a large amount of GPU VRAM. An RTX 4070 Ti with 12GB is the recommended minimum, but even that can be tight.
-1.  You are loading the model in full precision (float32).
-2.  Other applications (like Isaac Sim, or even your desktop environment) are consuming a significant portion of VRAM.
-3.  The input image resolution is too high.
+
+1. You are loading the model in full precision (float32).
+2. Other applications (like Isaac Sim, or even your desktop environment) are consuming a significant portion of VRAM.
+3. The input image resolution is too high.
 
 **Solution**:
-1.  **Load in a Lower Precision**: Use 8-bit or 4-bit quantization to dramatically reduce VRAM usage.
+
+1. **Load in a Lower Precision**: Use 8-bit or 4-bit quantization to dramatically reduce VRAM usage.
+
     ```python
     # Example for a Hugging Face model
     from transformers import BitsAndBytesConfig
@@ -260,8 +291,9 @@ VLAs are massive models and consume a large amount of GPU VRAM. An RTX 4070 Ti w
         quantization_config=quantization_config
     )
     ```
-2.  **Close Other GPU-Intensive Applications**: Shut down Isaac Sim, Gazebo, and any other 3D applications before running VLA inference if you are just testing the model in isolation.
-3.  **Reduce Image Resolution**: Downsample input camera images to the resolution the model was trained on (e.g., 224x224 or 512x512).
+
+2. **Close Other GPU-Intensive Applications**: Shut down Isaac Sim, Gazebo, and any other 3D applications before running VLA inference if you are just testing the model in isolation.
+3. **Reduce Image Resolution**: Downsample input camera images to the resolution the model was trained on (e.g., 224x224 or 512x512).
 
 ### 12. VLA Inference is Very Slow
 
@@ -269,20 +301,24 @@ VLAs are massive models and consume a large amount of GPU VRAM. An RTX 4070 Ti w
 The time between sending an image/prompt to the model and receiving an action is several seconds, making real-time control impossible.
 
 **Root Cause**:
-1.  **Model is too large for the GPU**: Running a 55B parameter model on a consumer GPU will be slow.
-2.  **Inefficient code**: You may be moving data between CPU and GPU unnecessarily in your inference loop.
-3.  **Full precision**: Running in float32 is slower than lower precisions like float16 or int8.
+
+1. **Model is too large for the GPU**: Running a 55B parameter model on a consumer GPU will be slow.
+2. **Inefficient code**: You may be moving data between CPU and GPU unnecessarily in your inference loop.
+3. **Full precision**: Running in float32 is slower than lower precisions like float16 or int8.
 
 **Solution**:
-1.  **Use a Smaller Model**: Choose a model designed for real-time inference, like `π0-FAST` or a quantized version of `OpenVLA`.
-2.  **Use Float16**: If you have the VRAM, running in float16 (half-precision) is much faster than float32.
+
+1. **Use a Smaller Model**: Choose a model designed for real-time inference, like `π0-FAST` or a quantized version of `OpenVLA`.
+2. **Use Float16**: If you have the VRAM, running in float16 (half-precision) is much faster than float32.
+
     ```python
     model = AutoModelForVision2Seq.from_pretrained(
         "openvla/openvla-7b",
         torch_dtype=torch.float16
     ).to("cuda")
     ```
-3.  **Optimize Your Loop**: Ensure all tensors (images, prompts) are moved to the GPU *once* and stay there during the inference process.
+
+3. **Optimize Your Loop**: Ensure all tensors (images, prompts) are moved to the GPU *once* and stay there during the inference process.
 
 ### 13. VLA Output Actions are Erratic
 
@@ -290,14 +326,16 @@ The time between sending an image/prompt to the model and receiving an action is
 The model outputs actions that are nonsensical, jerky, or cause the robot to collide with objects.
 
 **Root Cause**:
-1.  **Prompt Engineering**: Your text prompt is ambiguous or poorly formatted.
-2.  **Observation Mismatch**: The input image from your robot's camera is significantly different from the data the model was trained on (different lighting, camera angle, etc.).
-3.  **Action Space Mismatch**: The model's output action format (e.g., 7-DoF end-effector velocity) does not match what your robot controller expects.
+
+1. **Prompt Engineering**: Your text prompt is ambiguous or poorly formatted.
+2. **Observation Mismatch**: The input image from your robot's camera is significantly different from the data the model was trained on (different lighting, camera angle, etc.).
+3. **Action Space Mismatch**: The model's output action format (e.g., 7-DoF end-effector velocity) does not match what your robot controller expects.
 
 **Solution**:
-1.  **Improve Your Prompt**: Be very specific. Instead of "pick up cup", use "grasp the red mug by its handle and lift it up".
-2.  **Image Preprocessing**: Normalize your input images to match the model's training data. Check the model's documentation for normalization parameters (mean, std dev).
-3.  **Action Transformation**: Write a utility function to transform the model's output into the correct format and scale for your robot's controller. You may need to clip action values to prevent jerky movements.
+
+1. **Improve Your Prompt**: Be very specific. Instead of "pick up cup", use "grasp the red mug by its handle and lift it up".
+2. **Image Preprocessing**: Normalize your input images to match the model's training data. Check the model's documentation for normalization parameters (mean, std dev).
+3. **Action Transformation**: Write a utility function to transform the model's output into the correct format and scale for your robot's controller. You may need to clip action values to prevent jerky movements.
 
 ### 14. `safetensors` Deserialization Error
 
@@ -308,13 +346,16 @@ When loading a model from Hugging Face, you get an error: `safetensors_rust.Safe
 The model file you downloaded is corrupted or incomplete. This often happens due to an interrupted internet connection during the download.
 
 **Solution**:
-1.  **Clear Hugging Face Cache**: The corrupted file is stored locally. You need to delete it to force a re-download. The cache is usually located at `~/.cache/huggingface/hub/`.
+
+1. **Clear Hugging Face Cache**: The corrupted file is stored locally. You need to delete it to force a re-download. The cache is usually located at `~/.cache/huggingface/hub/`.
+
     ```bash
     # Be careful with this command!
     # It will remove all your cached models.
     rm -rf ~/.cache/huggingface/hub/
     ```
-2.  **Retry**: Run your script again. It will re-download the model files from scratch.
+
+2. **Retry**: Run your script again. It will re-download the model files from scratch.
 
 ### 15. `ConnectionError` When Downloading Model
 
@@ -322,14 +363,16 @@ The model file you downloaded is corrupted or incomplete. This often happens due
 Your script fails with a `ConnectionError` or `HTTPError` when trying to download a model from the Hugging Face Hub.
 
 **Root Cause**:
-1.  **No Internet**: Your machine has lost internet connectivity.
-2.  **Firewall/Proxy**: A firewall or corporate proxy is blocking access to `huggingface.co`.
-3.  **Hugging Face Outage**: The Hub itself may be temporarily down.
+
+1. **No Internet**: Your machine has lost internet connectivity.
+2. **Firewall/Proxy**: A firewall or corporate proxy is blocking access to `huggingface.co`.
+3. **Hugging Face Outage**: The Hub itself may be temporarily down.
 
 **Solution**:
-1.  **Check Connectivity**: `ping google.com` to check your internet.
-2.  **Configure Proxy**: If you are behind a proxy, set the `HTTP_PROXY` and `HTTPS_PROXY` environment variables.
-3.  **Check Status Page**: Visit `status.huggingface.co` to see if the service is operational.
+
+1. **Check Connectivity**: `ping google.com` to check your internet.
+2. **Configure Proxy**: If you are behind a proxy, set the `HTTP_PROXY` and `HTTPS_PROXY` environment variables.
+3. **Check Status Page**: Visit `status.huggingface.co` to see if the service is operational.
 
 ### 16. Whisper Transcription is Inaccurate
 
@@ -337,14 +380,16 @@ Your script fails with a `ConnectionError` or `HTTPError` when trying to downloa
 Your voice commands are consistently misinterpreted by the Whisper model (e.g., "pick up the can" becomes "pick up the cat").
 
 **Root Cause**:
-1.  **Noisy Audio**: Background noise is confusing the model.
-2.  **Wrong Model Size**: You are using a smaller, less accurate Whisper model (like `tiny` or `base`).
-3.  **Microphone Quality**: Your microphone is low quality or too far away.
+
+1. **Noisy Audio**: Background noise is confusing the model.
+2. **Wrong Model Size**: You are using a smaller, less accurate Whisper model (like `tiny` or `base`).
+3. **Microphone Quality**: Your microphone is low quality or too far away.
 
 **Solution**:
-1.  **Use a Better Microphone**: A headset or a dedicated USB microphone will provide a much cleaner signal.
-2.  **Use a Larger Model**: Switch to `whisper-medium` or `whisper-large`. They are much more accurate, though they require more resources.
-3.  **Pre-process Audio**: Use a library like `webrtcvad` to implement Voice Activity Detection (VAD) and only transcribe audio when someone is actually speaking.
+
+1. **Use a Better Microphone**: A headset or a dedicated USB microphone will provide a much cleaner signal.
+2. **Use a Larger Model**: Switch to `whisper-medium` or `whisper-large`. They are much more accurate, though they require more resources.
+3. **Pre-process Audio**: Use a library like `webrtcvad` to implement Voice Activity Detection (VAD) and only transcribe audio when someone is actually speaking.
 
 ### 17. LLM Fails to Parse Intent Correctly
 
@@ -356,6 +401,7 @@ The prompt you are using to instruct the LLM is not constrained enough. A genera
 
 **Solution**:
 **Use Function Calling / Tool Use**: Modern LLMs can be constrained to output a specific JSON format.
+
 - Instruct the LLM that it has access to a "tool" called `execute_robot_action` which takes parameters `action` and `target`.
 - Provide a JSON schema for the tool's parameters.
 - The LLM will then be forced to output a JSON object like `{"action": "bring", "target": "blue block"}`, which is much easier and more reliable to parse.
@@ -367,15 +413,17 @@ From the time you finish speaking a command to the time the robot starts moving,
 
 **Root Cause**:
 The latency is the sum of all parts of the pipeline:
-1.  **Audio Buffering**: Waiting for silence before starting transcription.
-2.  **Whisper Inference**: Can be slow for larger models.
-3.  **LLM Inference**: API calls to cloud LLMs add network latency.
-4.  **VLA Inference**: Can be slow depending on the model and GPU.
+
+1. **Audio Buffering**: Waiting for silence before starting transcription.
+2. **Whisper Inference**: Can be slow for larger models.
+3. **LLM Inference**: API calls to cloud LLMs add network latency.
+4. **VLA Inference**: Can be slow depending on the model and GPU.
 
 **Solution**:
-1.  **Use a local LLM**: For intent parsing, a small, local LLM (like `Gemma-2B`) is much faster than a cloud API.
-2.  **Optimize Whisper**: Use a faster implementation like `whisper.cpp` or a distilled version of Whisper.
-3.  **Overlap Processes**: Start VLA inference on the camera image *while* Whisper and the LLM are processing the voice command. The processes can run in parallel until the final action needs to be chosen.
+
+1. **Use a local LLM**: For intent parsing, a small, local LLM (like `Gemma-2B`) is much faster than a cloud API.
+2. **Optimize Whisper**: Use a faster implementation like `whisper.cpp` or a distilled version of Whisper.
+3. **Overlap Processes**: Start VLA inference on the camera image *while* Whisper and the LLM are processing the voice command. The processes can run in parallel until the final action needs to be chosen.
 
 ### 19. Microphone Not Detected
 
@@ -386,12 +434,15 @@ Your Python script using `sounddevice` or a similar library crashes with an erro
 Your system cannot find any audio input devices, or the user running the script does not have permission.
 
 **Solution**:
-1.  **Check Hardware**: Make sure your microphone is physically connected.
-2.  **Check System Settings**: In your OS (Ubuntu), go to Sound settings and ensure the correct microphone is selected as the default input device.
-3.  **Permissions**: On Linux, you may need to add your user to the `audio` group.
+
+1. **Check Hardware**: Make sure your microphone is physically connected.
+2. **Check System Settings**: In your OS (Ubuntu), go to Sound settings and ensure the correct microphone is selected as the default input device.
+3. **Permissions**: On Linux, you may need to add your user to the `audio` group.
+
     ```bash
     sudo usermod -aG audio $USER
     ```
+
     You will need to log out and log back in for this to take effect.
 
 ### 20. `ImportError: No module named 'sounddevice'`
@@ -404,12 +455,15 @@ You have not installed the required Python library for audio input.
 
 **Solution**:
 Install the necessary packages. `sounddevice` is a common choice.
+
 ```bash
 pip install sounddevice
 # You might also need soundfile for saving audio
 pip install soundfile
 ```
+
 On Linux, you may also need to install the PortAudio development libraries at the system level.
+
 ```bash
 sudo apt-get install libportaudio2 libportaudiocpp0 portaudio19-dev
 
@@ -903,4 +957,3 @@ The robot arm tries to reach a target but consistently stops short, overshoots, 
 2.  **Tune Joint Controllers**: Ensure your joint controllers have minimal steady-state error. You may need to add some Integral (I) gain to eliminate small, persistent errors.
 3.  **Perform Camera-Robot Calibration**: Use a calibration pattern (like a checkerboard) to precisely determine the transform between your camera's optical frame and the robot's base frame.
 ```
-

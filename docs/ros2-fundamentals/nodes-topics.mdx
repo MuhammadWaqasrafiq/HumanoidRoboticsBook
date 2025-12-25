@@ -18,6 +18,7 @@ A **node** is an independent executable process that performs computation. Think
 - **Path planner node**: Publishes navigation waypoints
 
 **Key principle**: Each node should do **one thing well**. This modularity allows:
+
 - **Reusability**: Camera node works with any subscriber
 - **Debugging**: Isolate issues to specific nodes
 - **Parallel development**: Teams work on different nodes simultaneously
@@ -43,6 +44,7 @@ def main():
 ```
 
 **Lifecycle**:
+
 1. `rclpy.init()` - Initialize ROS 2 context
 2. Create node instance (inherits from `Node` class)
 3. `rclpy.spin()` - Process callbacks (subscribers, timers, services)
@@ -55,6 +57,7 @@ def main():
 A **topic** is a named communication channel. Nodes publish messages to topics, and other nodes subscribe to receive those messages.
 
 **Analogy**: Topics are like radio frequencies:
+
 - **Publisher** = Radio station broadcasting on 101.5 FM
 - **Topic** = Frequency 101.5 FM
 - **Subscriber** = Car radio tuned to 101.5 FM
@@ -79,6 +82,7 @@ sequenceDiagram
 ```
 
 **Key properties**:
+
 - **Many-to-many**: Multiple publishers can publish to one topic, multiple subscribers can subscribe
 - **Anonymous**: Publishers don't know who's listening, subscribers don't know who's publishing
 - **Asynchronous**: No waiting for acknowledgment (fire-and-forget)
@@ -128,6 +132,7 @@ if __name__ == '__main__':
 ```
 
 **Breakdown**:
+
 - `create_publisher(message_type, topic_name, queue_size)`:
   - `String` - Message type from `std_msgs.msg`
   - `'chatter'` - Topic name (by convention, starts with `/`)
@@ -136,6 +141,7 @@ if __name__ == '__main__':
 - `publisher_.publish(msg)` - Send message to topic
 
 **Running the publisher**:
+
 ```bash
 # Terminal 1: Source ROS 2 and run publisher
 source /opt/ros/jazzy/setup.bash
@@ -182,6 +188,7 @@ if __name__ == '__main__':
 ```
 
 **Breakdown**:
+
 - `create_subscription(message_type, topic_name, callback, queue_size)`:
   - `String` - Must match publisher's message type
   - `'chatter'` - Must match publisher's topic name
@@ -190,6 +197,7 @@ if __name__ == '__main__':
 - `listener_callback(self, msg)` - Receives message object, extracts data
 
 **Running the subscriber**:
+
 ```bash
 # Terminal 2: Source ROS 2 and run subscriber
 source /opt/ros/jazzy/setup.bash
@@ -197,6 +205,7 @@ python3 simple_subscriber.py
 ```
 
 **Expected output**:
+
 ```
 [INFO] [simple_subscriber]: Subscriber node started!
 [INFO] [simple_subscriber]: I heard: "Hello World: 0"
@@ -313,6 +322,7 @@ scan_msg.ranges = [1.0, 1.5, 2.0, ...]  # Distance readings
 ```
 
 **View message definition**:
+
 ```bash
 ros2 interface show std_msgs/msg/String
 # Output:
@@ -431,6 +441,7 @@ if __name__ == '__main__':
 ```
 
 **How it works**:
+
 1. Publishes to `/cmd_vel` topic (standard velocity command topic)
 2. State machine alternates between moving forward and turning
 3. Moves forward 1 meter (5 seconds × 0.2 m/s)
@@ -438,6 +449,7 @@ if __name__ == '__main__':
 5. Repeats to trace a square
 
 **Testing without a real robot**:
+
 ```bash
 # Terminal 1: Run the motion node
 python3 square_motion.py
@@ -455,6 +467,7 @@ ros2 topic echo /cmd_vel
 **Symptom**: Subscriber doesn't receive messages
 
 **Debug steps**:
+
 ```bash
 # Check if topic exists
 ros2 topic list | grep chatter
@@ -469,6 +482,7 @@ ros2 topic info /chatter -v
 ```
 
 **Common causes**:
+
 - Topic name mismatch (typo, case-sensitive)
 - Message type mismatch
 - Subscriber started before publisher (wait 1 second for discovery)
@@ -479,6 +493,7 @@ ros2 topic info /chatter -v
 **Cause**: Using BEST_EFFORT reliability with packet loss
 
 **Solution**: Use RELIABLE QoS for critical data
+
 ```python
 from rclpy.qos import QoSProfile, ReliabilityPolicy
 
@@ -491,6 +506,7 @@ self.subscription = self.create_subscription(String, 'topic', callback, qos)
 **Cause**: Publishing too fast or processing heavy callbacks
 
 **Solutions**:
+
 - Reduce publishing rate: `self.create_timer(0.1, callback)` → `self.create_timer(1.0, callback)`
 - Use QoS depth wisely: Large depth = more memory
 - Process heavy work in separate thread (avoid blocking callback)
@@ -500,6 +516,7 @@ self.subscription = self.create_subscription(String, 'topic', callback, qos)
 **Cause**: TRANSIENT_LOCAL durability with stale data
 
 **Solution**: Use VOLATILE durability for real-time data
+
 ```python
 from rclpy.qos import DurabilityPolicy
 
@@ -537,7 +554,7 @@ Ready for more advanced communication patterns? Continue to **[Section 2: Servic
 
 ## Further Reading
 
-- **ROS 2 Nodes**: https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Nodes.html
-- **ROS 2 Topics**: https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Topics.html
-- **QoS Policies**: https://docs.ros.org/en/jazzy/Concepts/About-Quality-of-Service-Settings.html
-- **Message Types**: https://github.com/ros2/common_interfaces (source code for std_msgs, geometry_msgs, sensor_msgs)
+- **ROS 2 Nodes**: &lt;https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Nodes.html&gt;
+- **ROS 2 Topics**: &lt;https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Topics.html&gt;
+- **QoS Policies**: &lt;https://docs.ros.org/en/jazzy/Concepts/About-Quality-of-Service-Settings.html&gt;
+- **Message Types**: &lt;https://github.com/ros2/common_interfaces&gt; (source code for std_msgs, geometry_msgs, sensor_msgs)

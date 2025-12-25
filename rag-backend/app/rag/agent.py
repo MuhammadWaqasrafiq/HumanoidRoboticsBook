@@ -1,76 +1,51 @@
-import google.generativeai as genai
+import os
+import google.genai as genai
 from app.config import settings
-from app.rag.retriever import QdrantRetriever
-from app.rag.embeddings import GeminiEmbedding
-
-# Configure the Gemini API key
-genai.configure(api_key=settings.GOOGLE_API_KEY)
+from app.rag.retriever import QdrantRetriever, get_retriever_client
+from app.rag.persona import prompt_template
 
 class RAGAgent:
-    """
-    A RAG agent that uses a retriever and a generator to answer questions.
-    """
     def __init__(self, retriever: QdrantRetriever, model_name: str = settings.CHAT_MODEL):
         """
-        Initializes the RAGAgent instance.
-
-        Args:
-            retriever: The retriever for finding relevant documents.
-            model_name: The name of the chat model to use.
+        Initializes the RAGAgent.
+        Sets the Google API key as an environment variable and initializes the model.
         """
+        os.environ['GOOGLE_API_KEY'] = settings.GOOGLE_API_KEY
+        
         self.retriever = retriever
         self.model = genai.GenerativeModel(model_name)
 
-    def generate_answer(self, query: str) -> str:
+    async def generate_answer(self, query: str, context: str | None = None) -> str:
         """
-        Generates an answer to a query using the RAG pipeline.
-
-        Args:
-            query: The user's query.
-
-        Returns:
-            The generated answer.
+        Generates an answer by retrieving context and calling the generative model.
         """
-        # 1. Retrieve relevant context
-        retrieved_chunks = self.retriever.search(query, top_k=3)
-
-        # 2. Build the prompt
+        if context:
+            query = f"Context: {context}\n\nQuestion: {query}"
+            
+        retrieved_chunks = await self.retriever.search(query, top_k=3)
         if not retrieved_chunks:
-            return "Not found in the book."
+            return "I could not find any relevant information in the book to answer your question."
 
-        context = "\n---\n".join(retrieved_chunks)
-        
-        prompt_template = """
-        You are a helpful assistant for the book. Your name is 'BookBot'.
-        You must answer questions based ONLY on the provided context.
-        If the information to answer the question is not in the context, you MUST respond with 'Not found in the book.'.
-        Do not add any other information or pleasantries.
+        context_str = "\n---\n".join(retrieved_chunks)
+        prompt = prompt_template.format(context=context_str, query=query)
 
-        CONTEXT:
-        ---
-        {context}
-        ---
-
-        QUESTION: {query}
-
-        ANSWER:
-        """
-        
-        prompt = prompt_template.format(context=context, query=query)
-
-        # 3. Generate the answer
         try:
-            response = self.model.generate_content(prompt)
+            response = await self.model.generate_content_async(prompt)
             return response.text.strip()
         except Exception as e:
-            print(f"An error occurred during response generation: {e}")
-            return "Sorry, I encountered an error while generating a response."
+            print(f"Error during content generation: {e}")
+            return "I am sorry, but I encountered an error while trying to generate a response."
 
-def get_rag_agent() -> RAGAgent:
+async def get_rag_agent():
     """
-    Returns a RAGAgent instance.
-    This function can be used for dependency injection in FastAPI.
+    FastAPI dependency to get a RAGAgent instance.
+    This correctly handles the lifecycle of the QdrantRetriever.
     """
-    embedding_client = GeminiEmbedding()
-    retriever = QdrantRetriever(embedding_client=embedding_client)
-    return RAGAgent(retriever=retriever)
+    retriever = await get_retriever_client()
+    try:
+        # Manually enter the context
+        await retriever.__aenter__()
+        yield RAGAgent(retriever=retriever)
+    finally:
+        # Manually exit the context to ensure cleanup
+        await retriever.__aexit__(None, None, None)

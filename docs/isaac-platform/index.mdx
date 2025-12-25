@@ -87,6 +87,7 @@ graph TB
 **What it is:** GPU-accelerated physics simulator built on NVIDIA Omniverse
 
 **Key Features:**
+
 - PhysX 5 physics engine with GPU tensor API
 - RTX raytracing for photorealistic rendering
 - USD (Universal Scene Description) format
@@ -94,6 +95,7 @@ graph TB
 - Python scripting API
 
 **Use Cases:**
+
 - Robot algorithm testing
 - Sensor simulation (cameras, lidars, IMUs)
 - Multi-robot coordination
@@ -106,18 +108,21 @@ graph TB
 **What it is:** Massively parallel reinforcement learning environment
 
 **Key Features:**
+
 - Train 1000+ robots simultaneously on one GPU
 - Tensor API for batched physics simulation
 - Pre-built humanoid/quadruped environments
 - PyTorch integration
 
 **Use Cases:**
+
 - Training bipedal walking controllers
 - Learning manipulation skills
 - Multi-agent coordination
 - Sim-to-real transfer
 
 **Performance:**
+
 ```python
 # Traditional RL training (MuJoCo/PyBullet):
 # 1 robot × 200 Hz = 200 steps/sec
@@ -137,12 +142,14 @@ graph TB
 **What it is:** GPU-accelerated ROS 2 packages for perception
 
 **Key Packages:**
+
 - **isaac_ros_visual_slam**: Real-time SLAM with GPU acceleration
 - **isaac_ros_dnn_inference**: TensorRT-optimized model inference
 - **isaac_ros_image_proc**: GPU image processing
 - **isaac_ros_apriltag**: GPU-accelerated AprilTag detection
 
 **Performance Gains:**
+
 - SLAM: 5-10x faster than CPU SLAM (ORB-SLAM2, etc.)
 - Object detection: 3-5x faster than CPU inference
 - Image processing: 10-20x faster than CPU
@@ -154,12 +161,14 @@ graph TB
 **What it is:** Tool for generating massive labeled datasets
 
 **Key Features:**
+
 - Domain randomization (lighting, textures, poses)
 - Pixel-perfect labels (segmentation, depth, bounding boxes)
 - Procedural scene generation
 - Multi-camera rendering
 
 **Use Cases:**
+
 - Training object detection models
 - Semantic segmentation datasets
 - Depth estimation training
@@ -170,18 +179,21 @@ graph TB
 ### System Requirements
 
 **Minimum (Testing Only):**
+
 - GPU: RTX 2070 (8 GB VRAM)
 - CPU: 4 cores
 - RAM: 16 GB
 - Storage: 50 GB
 
 **Recommended (Development):**
+
 - GPU: RTX 4070 Ti or RTX 4080 (12-16 GB VRAM)
 - CPU: 8+ cores (Ryzen 7/9, Intel i7/i9)
 - RAM: 32 GB
 - Storage: 100 GB SSD
 
 **Professional (Large Scenes/RL):**
+
 - GPU: RTX 4090 or RTX 6000 Ada (24+ GB VRAM)
 - CPU: 16+ cores (Ryzen 9, Threadripper, Xeon)
 - RAM: 64+ GB
@@ -245,6 +257,7 @@ python -c "from isaacsim import SimulationApp; print('Isaac Sim installed!')"
 ### First Launch Setup
 
 **On first launch, Isaac Sim will:**
+
 1. Compile Vulkan shaders (15-30 minutes)
 2. Download physics assets (5-10 GB)
 3. Set up cache directories
@@ -396,6 +409,7 @@ simulation_app.close()
 ```
 
 **Run:**
+
 ```bash
 cd code-examples/isaac-sim
 python3 import_urdf_humanoid.py
@@ -408,6 +422,7 @@ python3 import_urdf_humanoid.py
 ## Enabling GPU Physics
 
 **Why GPU Physics?**
+
 - 10-100x faster than CPU physics
 - Enables parallel robot simulation (100+ robots)
 - Essential for reinforcement learning
@@ -639,6 +654,7 @@ This chapter is organized into the following sections:
 ### USD (Universal Scene Description)
 
 **What is USD?**
+
 - Open-source 3D scene file format from Pixar
 - Industry standard for complex 3D workflows
 - Isaac Sim's native format (not URDF or SDF)
@@ -654,6 +670,7 @@ This chapter is organized into the following sections:
 | **File size** | Small (KB) | Large (MB-GB with meshes) |
 
 **Workflow:**
+
 1. Design robot in URDF (portable, ROS-compatible)
 2. Import to Isaac Sim → Converts to USD
 3. Add Isaac-specific features (GPU physics, RTX materials)
@@ -664,6 +681,7 @@ This chapter is organized into the following sections:
 ### PhysX 5 Tensor API
 
 **What it enables:**
+
 - Batch simulation of multiple robots
 - Direct tensor output (no copying between CPU/GPU)
 - PyTorch-native interface for RL training
@@ -695,6 +713,7 @@ for _ in range(1000):
 ```
 
 **Performance:**
+
 - CPU (serial): 100 robots × 0.01s = 1 second per step
 - GPU (parallel): 100 robots → 0.01s per step
 
@@ -709,6 +728,7 @@ for _ in range(1000):
 **Cause:** Incorrect inertia values in URDF or self-collision issues
 
 **Fix:**
+
 ```python
 # When importing, enable self-collision filtering
 import_config = {
@@ -721,11 +741,13 @@ import_config = {
 ### 2. Slow Performance (under 20 FPS)
 
 **Causes:**
+
 - RTX raytracing enabled (beautiful but slow)
 - High-poly collision meshes
 - Too many robots without GPU physics
 
 **Fixes:**
+
 ```python
 # Disable RTX, use rasterization
 # Viewport → Render Mode → Raster
@@ -741,6 +763,7 @@ import_config = {
 **Cause:** Action Graph not started or ROS 2 bridge not enabled
 
 **Fix:**
+
 ```python
 # Verify bridge is enabled
 enable_extension("omni.isaac.ros2_bridge")
@@ -756,11 +779,11 @@ enable_extension("omni.isaac.ros2_bridge")
 
 ## Resources
 
-- **Isaac Sim Manual**: https://docs.omniverse.nvidia.com/isaacsim/latest/
-- **Isaac Gym**: https://developer.nvidia.com/isaac-gym
-- **Isaac ROS**: https://nvidia-isaac-ros.github.io/
-- **USD Documentation**: https://openusd.org/release/index.html
-- **Omniverse Forum**: https://forums.developer.nvidia.com/c/omniverse/
+- **Isaac Sim Manual**: &lt;https://docs.omniverse.nvidia.com/isaacsim/latest/&gt;
+- **Isaac Gym**: &lt;https://developer.nvidia.com/isaac-gym&gt;
+- **Isaac ROS**: &lt;https://nvidia-isaac-ros.github.io/&gt;
+- **USD Documentation**: &lt;https://openusd.org/release/index.html&gt;
+- **Omniverse Forum**: &lt;https://forums.developer.nvidia.com/c/omniverse/&gt;
 
 ---
 
@@ -769,6 +792,7 @@ enable_extension("omni.isaac.ros2_bridge")
 Ready to dive deeper? Proceed to **[Section 1: Isaac Sim Advanced Features](./advanced-features)** to master materials, lighting, sensors, and USD workflows.
 
 **In the next section:**
+
 - Physically-based rendering (PBR) materials
 - Dynamic lighting and shadows
 - Camera simulation with lens effects

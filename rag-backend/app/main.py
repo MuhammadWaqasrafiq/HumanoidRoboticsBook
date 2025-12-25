@@ -1,7 +1,9 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware # CORS yahan import karna behtar hai
 from app.api.chat import router as chat_router
 from app.rag.ingest import ingest_data
-from app.db.sqlite import create_db_and_tables
+from app.db.postgres import create_db_and_tables, engine
+import asyncio
 
 # Create a FastAPI app instance
 app = FastAPI(
@@ -10,12 +12,13 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# CORS Middleware to allow requests from the frontend
-from fastapi.middleware.cors import CORSMiddleware
+# CORS Middleware Setup
 origins = [
-    "http://localhost:3000",  # Docusaurus dev server
+    "http://localhost:3000",  # Standard React/Docusaurus port
+    "http://localhost:3001",  # AAPKA port jo terminal mein dikh raha hai
     "http://localhost",
 ]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -25,26 +28,11 @@ app.add_middleware(
 )
 
 @app.on_event("startup")
-def on_startup():
-    """
-    Event handler for application startup.
-    - Creates the database and tables for chat history.
-    - Ingests data into the vector store.
-    """
+async def on_startup():
     print("Application starting up...")
-    
-    # 1. Create SQLite database and tables
     print("Initializing database...")
-    create_db_and_tables()
+    await create_db_and_tables()
     print("Database initialized.")
-    
-    # 2. Ingest data into the in-memory Qdrant.
-    # For a production setup with a persistent Qdrant, you would run
-    # this ingestion as a separate, one-time script, not on startup.
-    print("Ingesting data into vector store...")
-    ingest_data()
-    print("Data ingestion complete.")
-    
     print("Startup complete.")
 
 # Include the chat router
@@ -52,7 +40,4 @@ app.include_router(chat_router, prefix="/api", tags=["Chat"])
 
 @app.get("/", tags=["Root"])
 def read_root():
-    """
-    Root endpoint to check if the server is running.
-    """
     return {"message": "Welcome to the RAG Chatbot API!"}

@@ -339,7 +339,7 @@ flowchart LR
 
 ## Integration Instructions
 
-### Diagram Placement Recommendations:
+### Diagram Placement Recommendations
 
 1. **URDF to USD Import Pipeline** → Insert in "Importing URDF Humanoid" section after the code examples
 2. **ROS 2 Bridge Architecture** → Insert in "ROS 2 Bridge Setup" section before the code examples
@@ -348,7 +348,8 @@ flowchart LR
 5. **Isaac Gym Multi-Environment Training** → Create new subsection "Advanced: Isaac Gym for RL"
 6. **Isaac ROS Perception Pipeline** → Create new subsection "Advanced: Isaac ROS Integration"
 
-### Task T073 Status:
+### Task T073 Status
+
 - ✅ 2 diagrams already in index.mdx (Isaac Platform Ecosystem, Interface Overview)
 - ✅ 6 additional diagrams created in this file
 - ✅ **Total: 8 diagrams** (exceeds target of 4-6)

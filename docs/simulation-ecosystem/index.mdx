@@ -76,12 +76,14 @@ graph TB
 **Status:** Deprecated, maintenance mode only (last release: Gazebo 11)
 
 **Pros:**
+
 - ✅ Mature ecosystem with extensive plugins
 - ✅ Large community and documentation
 - ✅ Well-integrated with ROS 1 and ROS 2
 - ✅ Low system requirements
 
 **Cons:**
+
 - ❌ No longer actively developed
 - ❌ Single-threaded rendering (performance bottleneck)
 - ❌ ODE physics engine limitations (instability with complex contacts)
@@ -96,6 +98,7 @@ graph TB
 **Status:** Active development, official successor to Gazebo Classic
 
 **Pros:**
+
 - ✅ Modern architecture (modular, multi-threaded)
 - ✅ Multiple physics engines (DART, Bullet, TPE)
 - ✅ Better rendering (Ogre2, PBR materials)
@@ -104,6 +107,7 @@ graph TB
 - ✅ ROS 2 native (`ros_gz_bridge`)
 
 **Cons:**
+
 - ❌ Smaller plugin ecosystem than Classic (still growing)
 - ❌ Learning curve if migrating from Classic
 - ❌ CPU-bound physics (no GPU acceleration)
@@ -112,6 +116,7 @@ graph TB
 **Verdict:** Best for traditional robotics simulation without GPU requirements.
 
 **System Requirements:**
+
 - CPU: 4+ cores recommended
 - RAM: 8 GB minimum, 16 GB recommended
 - GPU: Integrated graphics OK, dedicated GPU better for visualization
@@ -124,6 +129,7 @@ graph TB
 **Status:** Active development, optimized for AI and GPU computing
 
 **Pros:**
+
 - ✅ **GPU-accelerated physics** (PhysX 5) - 10-100x faster than CPU
 - ✅ **Photorealistic rendering** (RTX raytracing, path tracing)
 - ✅ **Domain randomization** for ML training
@@ -133,6 +139,7 @@ graph TB
 - ✅ ROS 2 bridge built-in
 
 **Cons:**
+
 - ❌ **Requires NVIDIA GPU** (RTX series recommended)
 - ❌ Closed-source (free for non-commercial, license for commercial)
 - ❌ Large download (10+ GB)
@@ -142,6 +149,7 @@ graph TB
 **Verdict:** Best for AI-focused projects, ML training, large-scale simulations, and projects with GPU resources.
 
 **System Requirements:**
+
 - **GPU**: RTX 2070 or better (12+ GB VRAM recommended)
 - CPU: 8+ cores recommended
 - RAM: 32 GB minimum, 64 GB for large scenes
@@ -182,6 +190,7 @@ graph TB
 **Real-time factor:** How many simulation seconds per real second (2x = runs twice as fast as reality)
 
 :::tip Benchmark Conditions
+
 - Hardware: AMD Ryzen 9 5900X, RTX 4070 Ti (12 GB), 32 GB RAM
 - Scenario: Single humanoid robot (15 links, 14 joints) walking on flat ground
 - Sensors: 1 RGB camera (640×480), 1 IMU
@@ -234,10 +243,12 @@ graph TD
 **Used in:** Gazebo Classic (default)
 
 **Pros:**
+
 - Fast for simple scenarios
 - Stable for wheeled robots
 
 **Cons:**
+
 - Poor contact dynamics (humanoids fall through floor sometimes)
 - Constraint solver instability with many joints
 - No parallel computation
@@ -251,12 +262,14 @@ graph TD
 **Used in:** Ignition Gazebo (recommended), PyBullet
 
 **Pros:**
+
 - Excellent articulated body dynamics (good for humanoids)
 - Stable constraint solver
 - Fast inverse dynamics
 - Good for manipulation tasks
 
 **Cons:**
+
 - CPU-only (no GPU acceleration)
 - Slower than PhysX for large scenes
 
@@ -269,11 +282,13 @@ graph TD
 **Used in:** Gazebo Classic, Ignition Gazebo, PyBullet
 
 **Pros:**
+
 - Fast collision detection
 - Good for rigid body dynamics
 - Used in games (proven performance)
 
 **Cons:**
+
 - Contact friction less accurate than DART
 - Articulated bodies can be unstable
 
@@ -286,12 +301,14 @@ graph TD
 **Used in:** Isaac Sim exclusively
 
 **Pros:**
+
 - **GPU acceleration** - 10-100x faster than CPU engines
 - Highly stable contact solver
 - Supports articulated bodies (humanoids, quadrupeds)
 - Tensor API for batch simulation (RL training)
 
 **Cons:**
+
 - NVIDIA GPU required
 - Closed-source
 - Not portable to other simulators
@@ -331,6 +348,7 @@ graph TD
 ### IMU (Inertial Measurement Unit)
 
 All three simulators provide:
+
 - ✅ Accelerometer readings (linear acceleration)
 - ✅ Gyroscope readings (angular velocity)
 - ✅ Configurable noise models
@@ -358,6 +376,7 @@ ign gazebo shapes.sdf
 ### Isaac Sim (Ubuntu 22.04 or Windows)
 
 **Prerequisites:**
+
 - NVIDIA GPU with RTX support (2070 or better)
 - 32+ GB RAM
 - 50 GB free disk space
@@ -404,6 +423,7 @@ This chapter is organized into the following sections:
 - **RTF = 0.5** → Simulation runs 2x slower than reality (bad - physics can't keep up)
 
 **Example:**
+
 ```python
 # Isaac Sim with GPU physics: RTF = 10x
 # 10 minutes of robot testing = 1 minute of real time
@@ -437,6 +457,7 @@ This chapter is organized into the following sections:
 | 100+ | Excellent | Slow | High-precision manipulation |
 
 **Example (SDF for Gazebo):**
+
 ```xml
 <physics name="default_physics">
   <max_step_size>0.001</max_step_size>  <!-- 1 ms timestep -->
@@ -454,6 +475,7 @@ This chapter is organized into the following sections:
 **Cause:** Incorrect inertia values or overlapping collision geometries
 
 **Fix:**
+
 ```xml
 <!-- Add damping to all joints -->
 <joint name="knee">
@@ -467,6 +489,7 @@ This chapter is organized into the following sections:
 **Cause:** Physics timestep too large or ODE engine limitations
 
 **Fix:**
+
 - Use DART physics (Ignition) or PhysX (Isaac Sim)
 - Reduce timestep to 0.001s
 - Increase solver iterations to 50+
@@ -474,11 +497,13 @@ This chapter is organized into the following sections:
 ### 3. Simulation Runs Slower Than Real-Time (RTF under 1.0)
 
 **Causes:**
+
 - CPU too slow for physics complexity
 - Too many contacts (high-poly collision meshes)
 - Rendering bottleneck
 
 **Fixes:**
+
 - Simplify collision geometry (use primitives, not meshes)
 - Reduce sensor update rates (30 Hz instead of 100 Hz)
 - Disable GUI (headless mode) for faster physics
@@ -487,11 +512,13 @@ This chapter is organized into the following sections:
 ### 4. Sensors Return Unrealistic Data
 
 **Causes:**
+
 - No noise model configured
 - Incorrect sensor placement in URDF
 - Missing sensor plugin configuration
 
 **Fix:**
+
 ```xml
 <!-- Add realistic camera noise in Gazebo -->
 <sensor name="camera" type="camera">
@@ -533,6 +560,7 @@ graph TD
 ```
 
 **Recommended Approach:**
+
 1. Start with Ignition Gazebo (works on any hardware)
 2. Master basic simulation concepts
 3. If you have RTX GPU, try Isaac Sim for comparison
@@ -540,11 +568,11 @@ graph TD
 
 ## Resources
 
-- **Gazebo Tutorials**: https://gazebosim.org/docs
-- **Ignition Gazebo**: https://gazebosim.org/docs/fortress
-- **Isaac Sim Docs**: https://docs.omniverse.nvidia.com/isaacsim/latest/
-- **ROS 2 Gazebo Bridge**: https://github.com/gazebosim/ros_gz
-- **Isaac ROS**: https://nvidia-isaac-ros.github.io/
+- **Gazebo Tutorials**: &lt;https://gazebosim.org/docs&gt;
+- **Ignition Gazebo**: &lt;https://gazebosim.org/docs/fortress&gt;
+- **Isaac Sim Docs**: &lt;https://docs.omniverse.nvidia.com/isaacsim/latest/&gt;
+- **ROS 2 Gazebo Bridge**: &lt;https://github.com/gazebosim/ros_gz&gt;
+- **Isaac ROS**: &lt;https://nvidia-isaac-ros.github.io/&gt;
 
 ---
 
@@ -553,6 +581,7 @@ graph TD
 Ready to simulate? Proceed to **[Section 1: Gazebo Setup & Basics](./gazebo-basics)** to spawn your humanoid robot in Ignition Gazebo.
 
 **In the next section:**
+
 - Install Ignition Gazebo Fortress
 - Spawn URDF robot with `ros_gz_bridge`
 - Add sensor plugins (camera, IMU)

@@ -18,7 +18,7 @@ rag-backend/
  │   │   ├── agent.py       # Core RAG agent logic
  │   │   └── ingest.py      # Data ingestion script
  │   └── db/
- │       └── sqlite.py      # SQLite database setup (for chat history, etc.)
+ │       └── postgres.py    # PostgreSQL database setup (for chat history, etc.)
  ├── data/
  │   └── book.txt         # The source document for the RAG chatbot
  ├── requirements.txt

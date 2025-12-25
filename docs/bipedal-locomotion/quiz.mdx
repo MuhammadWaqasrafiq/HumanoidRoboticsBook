@@ -10,6 +10,7 @@ description: Test your understanding of gait generation, ZMP theory, balance con
 Test your mastery of bipedal locomotion control and balance algorithms!
 
 :::info Quiz Instructions
+
 - 10 questions covering gait fundamentals through advanced locomotion control
 - Each question has detailed explanations
 - Score 80% or higher to demonstrate mastery
@@ -30,25 +31,30 @@ Test your mastery of bipedal locomotion control and balance algorithms!
 **ZMP stability analysis:**
 
 **Support polygon boundaries:**
+
 - x-range: [0, 0.24] meters (foot length)
 - y-range: [-0.05, 0.05] meters (foot width)
 
 **COM projection onto ground:**
+
 - COM position: (0.2, 0.05, 0.9)
 - Ground projection: (0.2, 0.05) (ignore z-coordinate)
 
 **Stability check:**
+
 1. x-coordinate: 0.2 ∈ [0, 0.24] ✓ Inside
 2. y-coordinate: 0.05 ∈ [-0.05, 0.05] ✓ Inside (at boundary)
 
 **Result:** COM projection is inside support polygon → **Stable**
 
 **Why this matters:**
+
 - ZMP stability criterion: Robot stable if ZMP (≈ COM ground projection) lies inside support polygon
 - This robot is stable but close to tipping (y = 0.05 at edge)
 - Small lateral perturbation could cause instability
 
 **Safety margin calculation:**
+
 ```python
 import numpy as np
 
@@ -79,6 +85,7 @@ print(f"Safety margin: x={margin_x*100:.1f}cm, y={margin_y*100:.1f}cm")
 **Truth:** ZMP stability depends on **horizontal** COM position relative to support polygon, not vertical height.
 
 **Height effects (secondary):**
+
 - Higher COM → longer pendulum arm → slower recovery time
 - But stability criterion only checks (x, y) projection
 
@@ -91,6 +98,7 @@ print(f"Safety margin: x={margin_x*100:.1f}cm, y={margin_y*100:.1f}cm")
 ❌ **Incorrect - Single Support Can Be Stable**
 
 **Single support stability:**
+
 - Stable if ZMP inside support polygon (one foot)
 - Requires active balance control
 - Humans spend 60-70% of gait cycle in single support
@@ -106,6 +114,7 @@ print(f"Safety margin: x={margin_x*100:.1f}cm, y={margin_y*100:.1f}cm")
 ❌ **Incorrect - Sufficient Information Given**
 
 **Given data includes:**
+
 - Support polygon bounds (aligned with x-y axes)
 - COM position
 
@@ -126,6 +135,7 @@ print(f"Safety margin: x={margin_x*100:.1f}cm, y={margin_y*100:.1f}cm")
 ❌ **Incorrect - Confusing Walking with Running**
 
 **Running characteristics:**
+
 - 0% double support
 - Flight phase (both feet off ground)
 - Speed &gt; 2.0 m/s typically
@@ -141,6 +151,7 @@ print(f"Safety margin: x={margin_x*100:.1f}cm, y={margin_y*100:.1f}cm")
 **Double support in walking:**
 
 **Typical gait cycle breakdown (walking at 0.5 m/s):**
+
 1. **Right heel strike** → Double support starts (10-20% duration)
 2. **Left toe-off** → Single support (right foot) (30-40% duration)
 3. **Left heel strike** → Double support again (10-20% duration)
@@ -148,17 +159,20 @@ print(f"Safety margin: x={margin_x*100:.1f}cm, y={margin_y*100:.1f}cm")
 5. **Repeat cycle**
 
 **Double support ratio:**
+
 - **Walking (0.3-1.5 m/s):** 10-20% per transition × 2 transitions = 20-40% total
 - **Each transition:** 10-20% of cycle
 - **Faster walking:** Shorter double support (~10%)
 - **Slower walking:** Longer double support (~25%)
 
 **Why double support matters:**
+
 1. **Weight transfer:** Smooth transition between feet
 2. **Stability:** Lower risk of falling (two contact points)
 3. **Gait planning:** Critical for ZMP trajectory continuity
 
 **Real-world measurement:**
+
 ```python
 # Typical walking gait at 0.5 m/s
 cycle_time = 1.1  # seconds (total stride)
@@ -174,10 +188,12 @@ print(f"Double support: {double_support_percentage:.1f}%")
 ```
 
 **Speed dependency:**
+
 - 0.3 m/s (slow): 25-30% double support
 - 0.5 m/s (normal): 18-22% double support
 - 1.0 m/s (brisk): 10-12% double support
 - 2.0+ m/s (running): 0% (flight phase instead)
+
 </details>
 
 <details>
@@ -198,6 +214,7 @@ print(f"Double support: {double_support_percentage:.1f}%")
 ❌ **Incorrect - Confusing Walking Definition**
 
 **Walking requires:**
+
 - At least one foot on ground (always)
 - Alternating single and double support
 
@@ -218,17 +235,20 @@ print(f"Double support: {double_support_percentage:.1f}%")
 **Balance recovery hierarchy:**
 
 **1. Ankle Strategy (First Response)**
+
 - **When:** Small perturbations (&lt;0.15m COM shift)
 - **How:** Apply torque at ankle joint to create counter-moment
 - **Speed:** Fastest response (~100-200ms)
 - **Energy:** Minimal actuator effort
 
 **Why ankle strategy is first:**
+
 - No foot movement needed (foot stays planted)
 - Fastest response time
 - Works for small disturbances
 
 **Biomechanics:**
+
 ```
 Forward push → COM shifts forward
 Ankle plantarflexion → Creates backward moment
@@ -236,6 +256,7 @@ Result → COM returns to center
 ```
 
 **Implementation:**
+
 ```python
 class AnkleStrategy:
     def __init__(self):
@@ -267,9 +288,11 @@ print(f"Ankle recovery torque: {torque:.1f} N·m")
 **NOTE:** For 0.3m perturbation, ankle strategy will saturate → must escalate to hip strategy!
 
 **Recovery cascade:**
+
 1. **&lt;0.15m:** Ankle strategy (sufficient)
 2. **0.15-0.5m:** Hip strategy (this case)
 3. **&gt;0.5m:** Stepping strategy
+
 </details>
 
 <details>
@@ -280,34 +303,41 @@ print(f"Ankle recovery torque: {torque:.1f} N·m")
 **Hip strategy characteristics:**
 
 **When to use:**
+
 - Medium-to-large perturbations (0.15-0.5m)
 - Ankle strategy saturated
 - Need faster COM motion than ankle alone
 
 **How it works:**
+
 1. Bend forward at hips
 2. Creates large moment arm
 3. Shifts COM backward rapidly
 4. Counteracts forward push
 
 **For 0.3m perturbation:**
+
 - **Ankle strategy:** Insufficient (saturates at ~0.15m recovery)
 - **Hip strategy:** Appropriate response
 - **Stepping:** Not yet needed
 
 **Why hip after ankle:**
+
 - Hip strategy is **second line** of defense
 - Ankle tried first (but saturates)
 - Hip engages when ankle insufficient
 
 **Trade-offs:**
+
 - **Faster COM motion** than ankle
 - **Higher energy** consumption
 - **More complex** coordination (hip + knee + ankle)
 
 **Both answers A and B are valid** depending on interpretation:
+
 - **A (Ankle first):** Technically correct - ankle always tries first
 - **B (Hip effective):** Practically correct - 0.3m needs hip to recover
+
 </details>
 
 <details>
@@ -316,17 +346,21 @@ print(f"Ankle recovery torque: {torque:.1f} N·m")
 ❌ **Premature - Stepping is Last Resort**
 
 **Stepping strategy:**
+
 - **When:** Large perturbations (&gt;0.5m COM displacement)
 - **Why last:** Requires foot placement planning, higher risk
 
 **For 0.3m perturbation:**
+
 - Hip strategy sufficient
 - No stepping needed yet
 
 **Stepping triggers:**
+
 - COM velocity &gt; 0.8 m/s
 - COM displacement &gt; 0.5m
 - Ankle + hip strategies both saturated
+
 </details>
 
 <details>
@@ -335,6 +369,7 @@ print(f"Ankle recovery torque: {torque:.1f} N·m")
 ❌ **Supplementary, Not Primary**
 
 **Arm swing role:**
+
 - Provides **auxiliary** momentum
 - Helps **fine-tune** balance
 - **Not sufficient** alone for 0.3m perturbation
@@ -369,14 +404,18 @@ print(f"Ankle recovery torque: {torque:.1f} N·m")
 **Whole-body control QP structure:**
 
 **Objective function (minimize):**
+
 ```
 min: ½ τᵀ W τ + ...
 ```
+
 Where:
+
 - τ = joint torques (decision variables)
 - W = weight matrix (penalize high torques)
 
 **Equality constraints:**
+
 1. **Dynamics:** M(q)q̈ + C(q,q̇) + G(q) = τ + Jᵀλ
    - M = mass matrix
    - C = Coriolis/centrifugal
@@ -389,11 +428,13 @@ Where:
    - Example: "Track foot trajectory"
 
 **Inequality constraints:**
+
 1. **Torque limits:** τ_min ≤ τ ≤ τ_max
 2. **Contact forces:** Friction cone constraints
 3. **Joint limits:** q_min ≤ q ≤ q_max
 
 **Full QP formulation:**
+
 ```python
 import cvxpy as cp
 import numpy as np
@@ -434,16 +475,19 @@ print(f"Optimal torques: {optimal_torques}")
 ```
 
 **Why this formulation:**
+
 1. **Minimize energy:** Low torques → efficient walking
 2. **Safety:** Torque limits prevent actuator damage
 3. **Stability:** Contact constraints prevent slipping
 4. **Task achievement:** Equality constraints ensure goals met
 
 **Real-world example (Atlas robot):**
+
 - 30 joints → 30 torque variables
 - 4 contact points → 24 contact force variables
 - Task: Maintain upright posture + follow foot trajectory
 - Solved at 1000 Hz (1ms per QP solve)
+
 </details>
 
 <details>
@@ -464,10 +508,12 @@ print(f"Optimal torques: {optimal_torques}")
 ❌ **Too Narrow - IK is Subset**
 
 **IK (Inverse Kinematics):**
+
 - Solves for joint angles given foot position
 - Purely kinematic (no forces/torques)
 
 **WBC (Whole-Body Control):**
+
 - Solves for joint torques given tasks
 - Includes dynamics, contacts, torque limits
 - Superset of IK
@@ -487,11 +533,13 @@ print(f"Optimal torques: {optimal_torques}")
 ❌ **Dangerous - Could Cause Fall**
 
 **Problem:** Unexpected contact could be:
+
 - Obstacle collision
 - Early foot strike (stumble)
 - Terrain irregularity
 
 **Ignoring contact risks:**
+
 - Incorrect force distribution
 - ZMP shift outside support polygon
 - Loss of balance
@@ -507,12 +555,14 @@ print(f"Optimal torques: {optimal_torques}")
 **Why this is correct:**
 
 **State machine fault handling:**
+
 1. **Unexpected contact detected** during SINGLE_SUPPORT_R
 2. **Implication:** Both feet now on ground
 3. **Action:** Transition to DOUBLE_SUPPORT state immediately
 4. **Benefit:** Re-stabilize before continuing gait
 
 **Gait state machine with fault tolerance:**
+
 ```mermaid
 stateDiagram-v2
     [*] --> STAND
@@ -528,6 +578,7 @@ stateDiagram-v2
 ```
 
 **Implementation:**
+
 ```python
 class GaitStateMachine:
     def __init__(self):
@@ -558,6 +609,7 @@ class GaitStateMachine:
 ```
 
 **Why safety-first:**
+
 - False transition to DOUBLE_SUPPORT: Minor inefficiency (slower gait)
 - Missing true contact: Potential fall (catastrophic)
 
@@ -570,11 +622,13 @@ class GaitStateMachine:
 ❌ **Too Extreme**
 
 **Emergency stop when:**
+
 - Critical faults (actuator failure, loss of power)
 - Imminent danger (falling detected)
 - Multiple simultaneous faults
 
 **Unexpected contact:**
+
 - Recoverable with DOUBLE_SUPPORT transition
 - No need for emergency stop (too drastic)
 
@@ -587,6 +641,7 @@ class GaitStateMachine:
 ❌ **Inefficient and Unsafe**
 
 **Problems:**
+
 1. **Disrupts momentum:** Would cause jerky motion
 2. **Slow recovery:** Restart takes 2-3 seconds
 3. **Unsafe:** During reversal, COM may shift unpredictably
@@ -608,10 +663,12 @@ class GaitStateMachine:
 ❌ **Static Stability Less Relevant at Higher Speeds**
 
 **Static stability:**
+
 - Relevant for slow walking (&lt;0.2 m/s)
 - Assumes zero velocity (quasi-static)
 
 **At 0.8 m/s:**
+
 - Dynamics dominate (dynamic stability more important)
 - COM velocity and acceleration matter more than position
 
@@ -626,29 +683,34 @@ class GaitStateMachine:
 **Why ZMP margin worsens at high speeds:**
 
 **ZMP equation (simplified):**
+
 ```
 ZMP = COM_projection - (COM_height / g) · COM_acceleration
 ```
 
 Where:
+
 - g = 9.81 m/s² (gravity)
 - COM_acceleration ∝ velocity² (higher speed → higher acceleration)
 
 **Effect of speed increase (0.3 m/s → 0.8 m/s):**
 
 **At 0.3 m/s (slow walking):**
+
 - COM acceleration: ~0.5 m/s²
 - ZMP offset from COM: 0.9 / 9.81 · 0.5 ≈ 0.046m (4.6cm)
 - Support polygon: 24cm × 10cm
 - **ZMP margin:** ~7cm from edges (safe)
 
 **At 0.8 m/s (fast walking):**
+
 - COM acceleration: ~3.5 m/s² (7× higher!)
 - ZMP offset from COM: 0.9 / 9.81 · 3.5 ≈ 0.32m (32cm)
 - Support polygon: Still 24cm × 10cm
 - **ZMP margin:** &lt;1cm from edges (unstable!)
 
 **ZMP margin degradation:**
+
 ```python
 def compute_zmp_margin(walking_speed, com_height=0.9):
     # Empirical: COM acceleration ≈ k · speed²
@@ -682,15 +744,18 @@ print(f"Margin degradation: {((margin_slow - margin_fast)/margin_slow)*100:.1f}%
 ```
 
 **Why this matters:**
+
 - **ZMP margin is critical** for dynamic stability
 - **Higher speeds** → larger accelerations → ZMP moves toward polygon edges
 - **Solution:** Wider steps, faster step frequency, or speed limit
 
 **Real-world mitigation:**
+
 1. Increase step width (wider support polygon)
 2. Reduce step length (lower peak accelerations)
 3. Increase step frequency (shorter time at peak acceleration)
 4. Speed governor (limit to 0.6 m/s if ZMP margin &lt; 3cm)
+
 </details>
 
 <details>
@@ -699,6 +764,7 @@ print(f"Margin degradation: {((margin_slow - margin_fast)/margin_slow)*100:.1f}%
 ❌ **Foot Clearance Actually Improves**
 
 **At higher speeds:**
+
 - Faster swing velocity → higher foot lift (natural dynamics)
 - Less risk of scuffing ground
 
@@ -711,10 +777,12 @@ print(f"Margin degradation: {((margin_slow - margin_fast)/margin_slow)*100:.1f}%
 ✅ **Also Worsens (But Secondary Effect)**
 
 **Double support vs speed:**
+
 - 0.3 m/s: 25% double support (stable transitions)
 - 0.8 m/s: 10% double support (brief transitions)
 
 **Effect:**
+
 - **Less time** for weight transfer
 - **Higher risk** of ZMP discontinuity
 - But **ZMP margin** worsens more dramatically
@@ -736,6 +804,7 @@ print(f"Margin degradation: {((margin_slow - margin_fast)/margin_slow)*100:.1f}%
 **Why gait planner is likely culprit:**
 
 **Failure sequence:**
+
 1. **Gait planner** generates COM trajectory
 2. **COM acceleration** exceeds what support polygon can handle
 3. **ZMP** shifts outside polygon (0.2s before fall)
@@ -743,6 +812,7 @@ print(f"Margin degradation: {((margin_slow - margin_fast)/margin_slow)*100:.1f}%
 5. **Tipping** occurs
 
 **Root cause analysis:**
+
 ```python
 class GaitPlanner:
     def __init__(self):
@@ -764,12 +834,14 @@ class GaitPlanner:
 ```
 
 **Common gait planner bugs:**
+
 1. **Step length too long** → high acceleration at push-off
 2. **Step time too short** → insufficient time for smooth acceleration
 3. **No ZMP margin checking** → planned ZMP at polygon boundary
 4. **Ignored actuator limits** → commanded torques infeasible
 
 **Fix:**
+
 ```python
 def safe_gait_planning(self, target_speed):
     # Compute ZMP margin for planned trajectory
@@ -793,6 +865,7 @@ def safe_gait_planning(self, target_speed):
 ❌ **Would Cause Slow Drift, Not Sudden Tipping**
 
 **Low controller gains:**
+
 - **Effect:** Sluggish response to disturbances
 - **Symptom:** Gradual COM drift (over 2-5 seconds)
 - **Not consistent with:** Sudden ZMP violation 0.2s before fall
@@ -808,10 +881,12 @@ def safe_gait_planning(self, target_speed):
 ❌ **2cm Error is Acceptable**
 
 **Foot placement tolerances:**
+
 - **Acceptable:** ±2cm (normal sensor/actuator uncertainty)
 - **Problematic:** &gt;5cm (causes ZMP shift)
 
 **2cm error impact:**
+
 - ZMP shift: ~1-1.5cm
 - Support polygon: 24cm × 10cm
 - **Margin lost:** 1.5cm (reduces safety but doesn't cause tipping)
@@ -825,11 +900,13 @@ def safe_gait_planning(self, target_speed):
 ❌ **IMU Drift is Gradual**
 
 **IMU drift characteristics:**
+
 - **Rate:** 0.5-2°/minute (slow)
 - **Effect:** Gradual COM estimation error
 - **Timescale:** Minutes, not seconds
 
 **Sudden tipping (0.2s before fall):**
+
 - Indicates rapid event (excessive acceleration)
 - Not consistent with slow IMU drift
 
@@ -848,6 +925,7 @@ def safe_gait_planning(self, target_speed):
 ❌ **Opposite - WBC is Slower**
 
 **Computational cost comparison:**
+
 - **Hierarchical control:** O(n) (n = number of joints)
   - Separate IK, then torque control
   - Each layer independent
@@ -867,16 +945,19 @@ def safe_gait_planning(self, target_speed):
 **Whole-body QP handles constraint conflicts:**
 
 **Example scenario:**
+
 1. **Task 1:** Keep COM at 0.9m height (high priority)
 2. **Task 2:** Reach hand to target position (medium priority)
 3. **Constraint:** Joint torque limits (hard constraint)
 
 **Hierarchical control problem:**
+
 - Solves tasks sequentially (priority order)
 - Task 1 solution may make Task 2 infeasible
 - No mechanism to trade off between tasks
 
 **Hierarchical failure case:**
+
 ```python
 # Hierarchical approach
 def hierarchical_control(com_task, hand_task, torque_limits):
@@ -898,6 +979,7 @@ def hierarchical_control(com_task, hand_task, torque_limits):
 ```
 
 **Whole-body QP solution:**
+
 ```python
 import cvxpy as cp
 
@@ -931,19 +1013,23 @@ def whole_body_qp(com_task, hand_task, torque_limits):
 ```
 
 **WBC advantages:**
+
 1. **Optimal trade-offs:** Finds best compromise between conflicting tasks
 2. **Respects all constraints:** Torque limits, friction cones, joint limits
 3. **Smooth behavior:** No sudden task abandonment
 4. **Predictable:** Weighted priorities clear in formulation
 
 **Real-world example (Atlas robot reaching while balancing):**
+
 - **Hierarchical:** Either balance perfectly OR reach target (can't do both if conflicting)
 - **WBC:** Balance 95% + reach 80% (optimal compromise)
 
 **When WBC matters most:**
+
 - Tight torque limits (underactuated systems)
 - Conflicting high-priority tasks
 - Complex contact scenarios (multi-contact manipulation)
+
 </details>
 
 <details>
@@ -952,12 +1038,14 @@ def whole_body_qp(com_task, hand_task, torque_limits):
 ❌ **Incorrect - WBC Requires Dynamics**
 
 **WBC needs:**
+
 - Mass matrix M(q)
 - Coriolis/centrifugal C(q, q̇)
 - Gravity vector G(q)
 - Contact Jacobians J
 
 **Hierarchical control:**
+
 - Also requires dynamics (for torque computation)
 
 **Both need dynamics models** - no advantage for WBC here.
@@ -969,10 +1057,12 @@ def whole_body_qp(com_task, hand_task, torque_limits):
 ❌ **Incorrect - WBC Executes, Doesn't Plan**
 
 **WBC role:**
+
 - **Executes** given tasks (COM trajectory, foot trajectory)
 - **Computes** joint torques to achieve tasks
 
 **Gait planning:**
+
 - Separate module (gait planner)
 - Generates COM/foot trajectories
 - Feeds into WBC for execution
@@ -992,6 +1082,7 @@ def whole_body_qp(com_task, hand_task, torque_limits):
 ❌ **Sensors Detect, Don't Adapt**
 
 **Force sensors:**
+
 - Detect contact and forces
 - Don't directly measure height variations
 
@@ -1008,6 +1099,7 @@ def whole_body_qp(com_task, hand_task, torque_limits):
 **Why compliant contacts are critical:**
 
 **Rigid foot problem on uneven terrain:**
+
 ```
 Flat terrain: Full foot contact (stable)
     ████████
@@ -1019,11 +1111,13 @@ Flat terrain: Full foot contact (stable)
 ```
 
 **Compliant foot solution:**
+
 1. **Passive compliance:** Soft foot pad deforms to terrain
 2. **Active compliance:** Ankle control adapts to maintain full contact
 3. **Force distribution:** Even pressure across foot surface
 
 **Implementation:**
+
 ```python
 class CompliantFootControl:
     def __init__(self):
@@ -1071,12 +1165,14 @@ print(f"Ankle adaptation torque: {ankle_torque:.1f} N·m")
 ```
 
 **Why this works:**
+
 1. **Detects unevenness:** Force imbalance between heel/toe
 2. **Adapts ankle:** Adjusts angle to redistribute forces
 3. **Maintains stability:** Full foot contact despite ±2cm variations
 4. **Smooth walking:** No need to slow down or stop
 
 **Alternative: Passive compliance (rubber foot pad)**
+
 - Absorbs ±1-2cm variations
 - No active control needed
 - Trade-off: Less precise force control
@@ -1090,6 +1186,7 @@ print(f"Ankle adaptation torque: {ankle_torque:.1f} N·m")
 ✅ **Helps but Not Sufficient Alone**
 
 **Slower walking:**
+
 - **Pros:** More time to react, lower impact forces
 - **Cons:** Doesn't solve root problem (rigid foot on uneven terrain)
 
@@ -1104,6 +1201,7 @@ print(f"Ankle adaptation torque: {ankle_torque:.1f} N·m")
 ✅ **Also Important (Complementary)**
 
 **Vision-based terrain mapping:**
+
 - **Benefit:** Predict height changes before foot contact
 - **Enables:** Proactive foot placement adjustment
 - **Limitation:** Doesn't replace need for compliant contact (sensor errors, occlusions)
@@ -1111,6 +1209,7 @@ print(f"Ankle adaptation torque: {ankle_torque:.1f} N·m")
 **Best system: Vision (predict) + Compliance (react)**
 
 **But question asks "MOST critical":**
+
 - **Compliance (B):** Necessary for ANY uneven terrain walking
 - **Vision (D):** Improves performance but not strictly required
 
@@ -1129,6 +1228,7 @@ print(f"Ankle adaptation torque: {ankle_torque:.1f} N·m")
 ❌ **Not an Automatic State Machine Concern**
 
 **User confirmation:**
+
 - Handled by higher-level behavior planner
 - Not part of low-level gait state machine
 
@@ -1143,16 +1243,19 @@ print(f"Ankle adaptation torque: {ankle_torque:.1f} N·m")
 **Purpose of WALK_INIT:**
 
 **Why you can't go directly from STAND to SINGLE_SUPPORT_R:**
+
 1. **STAND state:** COM centered between both feet (x = 0)
 2. **SINGLE_SUPPORT_R:** COM must be over right foot (x = 0.10m)
 3. **Problem:** Can't lift left foot while COM is centered (would fall left)
 
 **WALK_INIT phase:**
+
 - **Duration:** 0.5-1.0 seconds
 - **Action:** Shift COM from center to right foot
 - **Result:** Safe to lift left foot (COM supported by right foot)
 
 **State sequence:**
+
 ```mermaid
 stateDiagram-v2
     STAND --> WALK_INIT: Walk command
@@ -1173,6 +1276,7 @@ stateDiagram-v2
 ```
 
 **Implementation:**
+
 ```python
 class WalkInitState:
     def __init__(self):
@@ -1215,11 +1319,13 @@ class WalkInitState:
 ```
 
 **Why this matters:**
+
 - **Prevents falls:** Can't lift foot while COM unsupported
 - **Smooth transition:** Gradual COM shift (not jerky)
 - **Robust:** Checks COM position before allowing single support
 
 **Typical timing:**
+
 - STAND: Indefinite (until walk command)
 - WALK_INIT: 0.5-1.0s (COM shift)
 - SINGLE_SUPPORT: 0.4-0.6s (swing phase)
@@ -1234,6 +1340,7 @@ class WalkInitState:
 ❌ **Calibration is Offline Process**
 
 **Sensor calibration:**
+
 - Done during robot initialization (before operation)
 - Not part of runtime gait state machine
 
@@ -1246,6 +1353,7 @@ class WalkInitState:
 ❌ **Planning Happens Before State Machine**
 
 **Foot trajectory planning:**
+
 - Done by gait planner (before state machine starts)
 - Not during WALK_INIT state
 
@@ -1257,6 +1365,7 @@ class WalkInitState:
 ## Score Interpretation
 
 **Calculate your score:**
+
 - 9-10/10 correct: **Expert** - Ready for advanced locomotion research
 - 7-8/10 correct: **Proficient** - Strong understanding, ready for implementation
 - 5-6/10 correct: **Developing** - Review key locomotion concepts
@@ -1294,6 +1403,7 @@ After completing this quiz:
 
 :::tip Practice Challenge
 **Build complete locomotion system:**
+
 1. Implement ZMP-based gait planner (step length 0.4m, 0.5 m/s speed)
 2. Create balance controller with ankle + hip strategies
 3. Design gait state machine with fault handling

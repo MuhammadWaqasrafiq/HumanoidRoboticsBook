@@ -44,6 +44,7 @@ Before starting this chapter, you should:
 ## Why VLA Models Matter
 
 Traditional robot control requires **weeks of manual engineering** per task:
+
 1. Train object detector (YOLOv8, Faster R-CNN)
 2. Write grasp planner (heuristics, learned grasping networks)
 3. Code motion controller (inverse kinematics, trajectory optimization)
@@ -101,20 +102,24 @@ flowchart LR
 ### Component Breakdown
 
 **1. Vision Encoder** (extracts visual features from robot camera)
+
 - **DINOv2** (Meta AI): Self-supervised ViT, excellent for robotics
 - **SigLIP** (Google): Language-aligned vision encoder
 - **Input:** 224x224 RGB image → **Output:** 768-1024D feature vector
 
 **2. Language Model** (understands natural language commands)
+
 - **Llama 2** (7B-70B params): Strong reasoning, open-source
 - **Gemma** (2B-7B params): Efficient, fast inference
 - **Input:** Text string → **Output:** Contextualized embeddings
 
 **3. Fusion Layer** (combines vision + language)
+
 - **Cross-attention:** Vision attends to language tokens
 - **Gated fusion:** Learned importance weights for each modality
 
 **4. Action Decoder** (generates robot control commands)
+
 - **MLP:** Fast (8-12 Hz), deterministic
 - **Diffusion:** Smooth (10-20 Hz), handles multi-modality
 - **Flow Matching:** Fastest + smoothest (50-120 Hz), used by π0 and GR00T N1
@@ -149,6 +154,7 @@ actions = mlp_head(fused_features)  # 7-DoF action vector
 ```
 
 **Key Specifications:**
+
 - **Parameters:** 7.23 billion
 - **Vision:** DINOv2-Base + SigLIP-Base (dual encoders)
 - **Language:** Llama 2-7B
@@ -198,6 +204,7 @@ print(f"   Device: {model.device}")
 ```
 
 **Expected output:**
+
 ```
 ✅ OpenVLA-7B loaded successfully!
    Parameters: 7.23B
@@ -257,11 +264,13 @@ print(f"   Gripper: {actions[6]:.2f} (0=open, 1=closed)")
 ```
 
 **Run:**
+
 ```bash
 python code-examples/vla/openvla_inference.py
 ```
 
 **Example output:**
+
 ```
 Using device: cuda
 
@@ -316,6 +325,7 @@ print(f"   VRAM: ~7 GB (50% reduction from FP16)")
 ```
 
 **Accuracy benchmarks:**
+
 - **FP16:** 72.1% task success rate
 - **INT8:** 71.6% success rate (-0.5%, negligible)
 - **INT4:** 69.8% success rate (-2.3%, acceptable for experimentation)
@@ -333,6 +343,7 @@ Integrate OpenVLA with ROS 2 for real robot control. See `code-examples/vla/open
 **NVIDIA GR00T N1** is the first open VLA specifically designed for humanoid robots.
 
 **Why GR00T N1 for humanoids:**
+
 - ✅ **Dual-system architecture:** System 1 (120Hz motor control) + System 2 (VLM planning)
 - ✅ **Humanoid-specific training:** Data from bipedal robots (Fourier GR-1, 1X NEO)
 - ✅ **Open foundation model:** Fully customizable, no licensing restrictions
@@ -371,6 +382,7 @@ flowchart TB
 ```
 
 **Key Innovation:** **Separation of concerns**
+
 - **System 2 (slow):** Reasons about task, generates plan (1-2 Hz)
 - **System 1 (fast):** Executes plan with reactive motor control (120 Hz)
 
@@ -385,24 +397,28 @@ Based on research from `specs/001-physical-ai-book/research.md`, here's a practi
 ### Quick Selection Guide
 
 **Choose OpenVLA if:**
+
 - ✅ Learning VLAs for the first time
 - ✅ Need reproducible research baseline
 - ✅ Have RTX 4070 Ti (12 GB VRAM)
 - ✅ Want Hugging Face integration
 
 **Choose GR00T N1 if:**
+
 - ✅ Building humanoid robot application
 - ✅ Using NVIDIA Isaac Sim ecosystem
 - ✅ Need 120Hz real-time control
 - ✅ Want dual-system architecture
 
 **Choose π0/π0.5 if:**
+
 - ✅ Need smooth flow-matching trajectories (50 Hz)
 - ✅ Mobile manipulator application
 - ✅ Want open-world generalization
 - ✅ Have 6-8 GB VRAM (efficient)
 
 **Choose Octo if:**
+
 - ✅ Transfer learning across robot types
 - ✅ Fast fine-tuning (hours on consumer GPU)
 - ✅ Goal-conditioned tasks (image goals)

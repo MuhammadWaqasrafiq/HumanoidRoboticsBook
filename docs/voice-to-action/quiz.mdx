@@ -10,6 +10,7 @@ description: Test your understanding of voice-controlled robotics, Whisper ASR, 
 Test your mastery of voice-controlled robot systems!
 
 :::info Quiz Instructions
+
 - 7 questions covering voice recognition, LLM parsing, VLA integration, and pipeline optimization
 - Detailed explanations provided for each answer
 - Score 80% or higher (6/7) to demonstrate mastery
@@ -27,6 +28,7 @@ Test your mastery of voice-controlled robot systems!
  **Fastest but too inaccurate**
 
 **Whisper Tiny specs:**
+
 - Latency: ~100ms (excellent!)
 - Accuracy: 88% word accuracy (poor for robotics)
 - VRAM: 1 GB
@@ -34,6 +36,7 @@ Test your mastery of voice-controlled robot systems!
 **Problem:** 88% accuracy means 1 in 8 words wrong  frequent command failures
 
 **Example errors:**
+
 - User: "pick up the red cup"
 - Tiny: "pick up the **dead** cup" (12% error  task fails)
 
@@ -48,20 +51,23 @@ Test your mastery of voice-controlled robot systems!
 **Whisper Base is optimal for robotics:**
 
 **Advantages:**
+
 - **Latency:** ~200ms (well within &lt;3s budget)
 - **Accuracy:** 92% word accuracy (reliable for commands)
 - **VRAM:** 1 GB (leaves room for VLA model)
 - **Multilingual:** Supports 99 languages
 
 **Latency breakdown for &lt;3s target:**
+
 - Audio capture: ~50ms
-- Whisper Base: ~200ms 
+- Whisper Base: ~200ms
 - LLM parsing: ~500-1000ms
 - VLA inference: ~100-200ms
 - ROS 2 publish: ~30ms
 - **Total:** ~880-1480ms  (well under 3000ms)
 
 **Why not larger models:**
+
 - Medium/Large: 800-1500ms (too slow for &lt;3s target)
 - Tiny/Small: Lower accuracy  more failures
 
@@ -74,6 +80,7 @@ Test your mastery of voice-controlled robot systems!
 L **Too slow**
 
 **Whisper Large specs:**
+
 - Latency: ~1500ms (half the latency budget!)
 - Accuracy: 98% (excellent but overkill)
 - VRAM: 10 GB (doesn't fit with VLA model)
@@ -89,6 +96,7 @@ L **Too slow**
  **Possible but suboptimal**
 
 **Whisper Medium specs:**
+
 - Latency: ~800ms (acceptable)
 - Accuracy: 97% (excellent)
 - VRAM: 5 GB
@@ -123,6 +131,7 @@ Whisper at 200ms is **only 12.7%** of total latency (1580ms).
  **Correct - This is the bottleneck!**
 
 **LLM parsing dominates latency:**
+
 - **LLM:** 1200ms (76% of total)
 - Whisper: 200ms (13%)
 - VLA: 150ms (9%)
@@ -185,6 +194,7 @@ L **Dangerous!**
 Low confidence (65%) means high probability of transcription errors.
 
 **Risk:**
+
 - User says: "place the cup on the table"
 - Whisper (65% conf): "**race** the cup **under** the table"
 - Robot executes wrong command  potential damage
@@ -208,11 +218,13 @@ if confidence < 0.70:  # 70% threshold
 ```
 
 **Why 70% threshold:**
+
 - **&lt;70%:** High error probability  reject
 - **70-85%:** Acceptable for non-critical tasks
 - **>85%:** High confidence  execute immediately
 
 **User experience:**
+
 ```
 User: [mumbles] "pick... uh... cup"
 System: "  I didn't catch that. Please repeat."
@@ -241,6 +253,7 @@ Logging helps debugging but doesn't prevent errors from reaching the robot.
 L **Ineffective**
 
 Low confidence usually due to:
+
 - Background noise (increasing volume won't help)
 - Unclear speech (volume doesn't improve articulation)
 - Out-of-vocabulary words (volume irrelevant)
@@ -262,6 +275,7 @@ L **Incorrect**
 VLA models (OpenVLA, GR00T N1) ARE trained on natural language inputs!
 
 **VLA input:**
+
 ```python
 image = robot_camera.capture()
 text = "pick up the red cup"
@@ -279,6 +293,7 @@ actions = vla_model(image, text)  # Natural language works!
 **Structured parsing adds robustness:**
 
 **Without parsing:**
+
 ```python
 # Raw voice command
 text = "uhhh... pick up the... red thing... no wait, blue cup"
@@ -286,6 +301,7 @@ actions = vla_model(image, text)  # Confusing input  unpredictable output
 ```
 
 **With parsing:**
+
 ```python
 # LLM extracts clean command
 parsed = llm_parser(text)
@@ -303,6 +319,7 @@ actions = vla_model(image, instruction)
 ```
 
 **Benefits:**
+
 1. **Validation:** Catch invalid commands before VLA
 2. **Normalization:** Convert variations ("grab", "grasp", "pick up")  standardized "pick_up"
 3. **Error messages:** Clear feedback ("No object specified") vs generic VLA failure
@@ -310,12 +327,14 @@ actions = vla_model(image, instruction)
 5. **Multi-step:** Break complex commands into sequence of simple actions
 
 **Example multi-step:**
+
 ```
 Voice: "pick up the red cup and place it on the table"
 LLM parses to:
   Step 1: {"action": "pick_up", "object": "cup", "color": "red"}
   Step 2: {"action": "place", "object": "cup", "destination": "table"}
 ```
+
 </details>
 
 <details>
@@ -326,6 +345,7 @@ L **Incorrect**
 ROS 2 uses message types (sensor_msgs/JointState), not JSON.
 
 **VLA output  ROS 2:**
+
 ```python
 actions = vla_model(image, text)  # numpy array
 
@@ -345,13 +365,15 @@ L **Incorrect - Actually INCREASES total time**
 **Latency comparison:**
 
 **Direct (no parsing):**
+
 - Whisper: 200ms
 - VLA: 150ms
 - **Total:** 350ms
 
 **With LLM parsing:**
+
 - Whisper: 200ms
-- **LLM parsing: +1000ms** 
+- **LLM parsing: +1000ms**
 - VLA: 150ms
 - **Total:** 1350ms (slower!)
 
@@ -409,11 +431,13 @@ if current_image is None:
 ```
 
 **Why this is best:**
+
 1. **Safety:** VLA needs visual context to generate safe actions
 2. **User feedback:** Clear error message
 3. **Debugging:** User knows to check camera, not voice system
 
 **Alternative for non-critical tasks:**
+
 - Use cached frame (with timestamp check)
 - Use synthetic/placeholder image for testing
 
@@ -428,6 +452,7 @@ L **Not possible**
 VLA models (OpenVLA, GR00T N1) are trained with BOTH modalities. They can't operate with text alone.
 
 **Architecture:**
+
 ```python
 vision_features = vision_encoder(image)   # Required
 language_features = language_model(text)  # Required
@@ -446,6 +471,7 @@ actions = action_decoder(fused)
 L **Dangerous**
 
 Repeating previous action without visual context can cause:
+
 - Collisions (environment changed)
 - Incorrect grasps (object moved)
 - Safety hazards (person entered workspace)
@@ -476,11 +502,13 @@ Repeating previous action without visual context can cause:
  **Correct - Biggest Impact!**
 
 **LLM quantization:**
+
 - **FP16:** ~1200ms
 - **INT8:** ~600ms
 - **Savings: -600ms** (24% total latency reduction!)
 
 **How to implement:**
+
 ```python
 from transformers import BitsAndBytesConfig
 
@@ -494,6 +522,7 @@ llm = AutoModelForCausalLM.from_pretrained(
 ```
 
 **Result:**
+
 - **Before:** Whisper (200ms) + LLM (1200ms) + VLA (150ms) = **2550ms**
 - **After:** Whisper (200ms) + LLM (600ms) + VLA (150ms) = **1950ms**  &lt;2000ms!
 
@@ -506,6 +535,7 @@ llm = AutoModelForCausalLM.from_pretrained(
  **Expensive, moderate impact**
 
 **Speed improvement:**
+
 - Whisper: 200ms  150ms (-50ms)
 - LLM: 1200ms  900ms (-300ms)
 - VLA: 150ms  100ms (-50ms)
@@ -522,6 +552,7 @@ llm = AutoModelForCausalLM.from_pretrained(
 L **Not possible - they're sequential**
 
 Pipeline stages have dependencies:
+
 1. Whisper outputs text
 2. **LLM needs Whisper's text** as input
 3. VLA needs LLM's parsed command
@@ -529,8 +560,10 @@ Pipeline stages have dependencies:
 **Can't parallelize:** LLM must wait for Whisper to finish.
 
 **What you CAN parallelize:**
+
 - Whisper + VLA model loading (initialization)
 - Multiple voice commands in batch (if processing queue)
+
 </details>
 
 ---
@@ -545,6 +578,7 @@ Pipeline stages have dependencies:
 L **Makes problem worse**
 
 Louder microphone amplifies BOTH:
+
 - User voice (good)
 - Background noise (bad)
 
@@ -561,11 +595,13 @@ Louder microphone amplifies BOTH:
 **Wake word prevents false activations:**
 
 **Without wake word:**
+
 - System listens continuously
 - Background voices: "pick up that box"  robot activates incorrectly L
 - Machine noise: "sshhh-pick-shhh"  spurious transcriptions L
 
 **With wake word:**
+
 ```python
 # Stage 0: Wake word detection (runs continuously)
 audio_stream = microphone.stream()
@@ -576,12 +612,14 @@ if wake_word_detector.detect("hey robot", audio_stream):
 ```
 
 **Benefits:**
+
 1. **False activation prevention:** Only activates when user says "hey robot"
 2. **Privacy:** Not constantly transcribing ambient speech
 3. **Latency:** Wake word runs on lightweight model (10-50ms), full pipeline only when needed
 4. **User control:** Explicit activation signal
 
 **Implementation:**
+
 ```python
 from openwakeword import Model
 
@@ -597,6 +635,7 @@ while True:
 ```
 
 **Popular wake word models:**
+
 - Porcupine (Picovoice)
 - Snowboy (offline)
 - OpenWakeWord (open-source)
@@ -631,6 +670,7 @@ Visual confirmation is good UX but doesn't prevent false activations from backgr
 ## Score Interpretation
 
 **Calculate your score:**
+
 - 7/7 correct: < **Expert** - Ready to deploy voice-controlled robots
 - 6/7 correct:  **Proficient** - Strong understanding
 - 4-5/7 correct:  **Developing** - Review key optimization strategies
@@ -656,13 +696,14 @@ Visual confirmation is good UX but doesn't prevent false activations from backgr
 
 After completing this quiz:
 
-1.  **Score &gt;= 80%:** Deploy complete voice-controlled robot!
-2.  **Score &lt; 80%:** Review Chapter 11 sections
+1. **Score &gt;= 80%:** Deploy complete voice-controlled robot!
+2. **Score &lt; 80%:** Review Chapter 11 sections
 3. **Hands-on:** Run `code-examples/voice-pipeline/voice_robot.py`
 4. **Production:** Add wake word detection, test in real environment
 
 :::tip Final Challenge
 **Build complete voice-controlled humanoid:**
+
 1. Integrate Chapters 6 (Isaac Sim) + 10 (VLA) + 11 (Voice)
 2. Deploy on RTX 4070 Ti with microphone
 3. Test with 20 real voice commands

@@ -16,6 +16,7 @@ This chapter guides you through the process of integrating all the technologies 
 
 :::tip Learning Objectives
 By the end of this chapter, you will be able to:
+
 - Design and implement a high-level architecture for an autonomous humanoid butler.
 - Integrate ROS 2 nodes for perception, navigation, manipulation, and VLA inference.
 - Develop a task planner to break down complex natural language commands into robot action sequences.
@@ -33,13 +34,13 @@ Our capstone project is an autonomous humanoid robot butler designed to perform 
 
 The ideal autonomous butler should demonstrate the following 7 capabilities:
 
-1.  **Voice Command Understanding**: Accurately interpret natural language commands (e.g., "Clean up the living room").
-2.  **Environment Mapping & Localization**: Build and maintain a map of the environment and constantly know its position within it.
-3.  **Object Recognition & Tracking**: Identify and track household objects (e.g., "red cup," "book," "remote control").
-4.  **Autonomous Navigation**: Plan and execute collision-free paths to various locations in the home.
-5.  **Dexterous Manipulation**: Grasp, pick, place, and transfer a variety of common household objects.
-6.  **Task Planning & Execution**: Break down high-level commands into a sequence of low-level actions, and execute them reliably.
-7.  **Error Handling & Recovery**: Detect when a task fails and attempt recovery or report failure intelligently.
+1. **Voice Command Understanding**: Accurately interpret natural language commands (e.g., "Clean up the living room").
+2. **Environment Mapping & Localization**: Build and maintain a map of the environment and constantly know its position within it.
+3. **Object Recognition & Tracking**: Identify and track household objects (e.g., "red cup," "book," "remote control").
+4. **Autonomous Navigation**: Plan and execute collision-free paths to various locations in the home.
+5. **Dexterous Manipulation**: Grasp, pick, place, and transfer a variety of common household objects.
+6. **Task Planning & Execution**: Break down high-level commands into a sequence of low-level actions, and execute them reliably.
+7. **Error Handling & Recovery**: Detect when a task fails and attempt recovery or report failure intelligently.
 
 ### High-Level System Architecture
 
@@ -284,46 +285,52 @@ source install/setup.bash
 Each module will be developed as a ROS 2 package, leveraging the code examples and concepts from previous chapters.
 
 #### A. Perception Module (`capstone_perception`)
--   **Functionality**: Object detection (e.g., YOLO), depth estimation, basic visual SLAM or AMCL for localization.
--   **Inputs**: Camera images, depth data, IMU.
--   **Outputs**: Object poses, robot pose estimates.
--   **Key Chapters**: Chapter 7 (Perception Stack).
+
+- **Functionality**: Object detection (e.g., YOLO), depth estimation, basic visual SLAM or AMCL for localization.
+- **Inputs**: Camera images, depth data, IMU.
+- **Outputs**: Object poses, robot pose estimates.
+- **Key Chapters**: Chapter 7 (Perception Stack).
 
 #### B. Navigation Module (`capstone_navigation`)
--   **Functionality**: Map management (SLAM), global and local path planning, obstacle avoidance.
--   **Inputs**: Lidar scans, odometry, target pose.
--   **Outputs**: Velocity commands to base controller.
--   **Key Chapters**: Chapter 8 (Bipedal Locomotion - adapted for humanoid navigation).
+
+- **Functionality**: Map management (SLAM), global and local path planning, obstacle avoidance.
+- **Inputs**: Lidar scans, odometry, target pose.
+- **Outputs**: Velocity commands to base controller.
+- **Key Chapters**: Chapter 8 (Bipedal Locomotion - adapted for humanoid navigation).
 
 #### C. Manipulation Module (`capstone_manipulation`)
--   **Functionality**: Inverse Kinematics (IK), motion planning for arm, gripper control, grasp planning.
--   **Inputs**: Target object pose, robot current state.
--   **Outputs**: Joint commands for arm and gripper.
--   **Key Chapters**: Chapter 9 (Dexterous Manipulation).
+
+- **Functionality**: Inverse Kinematics (IK), motion planning for arm, gripper control, grasp planning.
+- **Inputs**: Target object pose, robot current state.
+- **Outputs**: Joint commands for arm and gripper.
+- **Key Chapters**: Chapter 9 (Dexterous Manipulation).
 
 #### D. VLA Integration Module (`capstone_vla_integration`)
--   **Functionality**: Load and run VLA model inference (e.g., OpenVLA), translate VLA output to robot actions.
--   **Inputs**: Camera images, processed natural language commands.
--   **Outputs**: Low-level actions for manipulation or navigation.
--   **Key Chapters**: Chapter 10 (VLA Models).
+
+- **Functionality**: Load and run VLA model inference (e.g., OpenVLA), translate VLA output to robot actions.
+- **Inputs**: Camera images, processed natural language commands.
+- **Outputs**: Low-level actions for manipulation or navigation.
+- **Key Chapters**: Chapter 10 (VLA Models).
 
 #### E. Voice Handler Module (`capstone_voice_handler`)
--   **Functionality**: Speech-to-text (Whisper), natural language understanding (LLM).
--   **Inputs**: Raw audio from microphone.
--   **Outputs**: Structured intent (e.g., JSON with action, object, location).
--   **Key Chapters**: Chapter 11 (Voice-to-Action Pipeline).
+
+- **Functionality**: Speech-to-text (Whisper), natural language understanding (LLM).
+- **Inputs**: Raw audio from microphone.
+- **Outputs**: Structured intent (e.g., JSON with action, object, location).
+- **Key Chapters**: Chapter 11 (Voice-to-Action Pipeline).
 
 #### F. Task Planner Module (`capstone_task_planner`)
--   **Functionality**: High-level task decomposition, state machine management, coordination of other modules.
--   **Inputs**: Structured intent from voice handler, world model updates.
--   **Outputs**: Sequence of actions (navigation goals, manipulation commands) for robot.
--   **Key Chapters**: Integrates concepts from all previous chapters.
+
+- **Functionality**: High-level task decomposition, state machine management, coordination of other modules.
+- **Inputs**: Structured intent from voice handler, world model updates.
+- **Outputs**: Sequence of actions (navigation goals, manipulation commands) for robot.
+- **Key Chapters**: Integrates concepts from all previous chapters.
 
 ### Step 3: Implement World Model (`capstone_world_model`)
 
--   **Functionality**: A central repository for the robot's understanding of its environment. Tracks known objects, their properties (color, type, location), and the robot's current pose.
--   **Inputs**: Object detection results from Perception, robot odometry, user commands.
--   **Outputs**: Provides world state queries to Navigation, Manipulation, and Task Planner.
+- **Functionality**: A central repository for the robot's understanding of its environment. Tracks known objects, their properties (color, type, location), and the robot's current pose.
+- **Inputs**: Object detection results from Perception, robot odometry, user commands.
+- **Outputs**: Provides world state queries to Navigation, Manipulation, and Task Planner.
 
 ### Step 4: Create a Central Launch File
 
@@ -385,10 +392,10 @@ def generate_launch_description():
 
 ### Step 5: Test and Refine
 
--   **Modular Testing**: Test each component individually before integrating.
--   **Sub-System Testing**: Test pairs or small groups of integrated components (e.g., Perception + World Model, Voice Handler + Task Planner).
--   **End-to-End Testing**: Test the full system with a comprehensive set of voice commands and household tasks.
--   **Performance Metrics**: Focus on success rate, latency (voice command to action), and robustness to variations.
+- **Modular Testing**: Test each component individually before integrating.
+- **Sub-System Testing**: Test pairs or small groups of integrated components (e.g., Perception + World Model, Voice Handler + Task Planner).
+- **End-to-End Testing**: Test the full system with a comprehensive set of voice commands and household tasks.
+- **Performance Metrics**: Focus on success rate, latency (voice command to action), and robustness to variations.
 
 ---
 
@@ -396,13 +403,13 @@ def generate_launch_description():
 
 This checklist helps you track the 7 core capabilities of your autonomous butler project and validates against Success Criteria SC-006 (5 out of 7 capabilities demonstrated).
 
--   [ ] **Voice Command Understanding**: The robot correctly interprets at least 80% of spoken commands.
--   [ ] **Environment Mapping & Localization**: The robot can build a map of a new room and accurately localize itself within it.
--   [ ] **Object Recognition & Tracking**: The robot can identify and track at least 10 common household objects (e.g., cup, book, phone).
--   [ ] **Autonomous Navigation**: The robot can navigate to a specified room/location, avoiding obstacles, at least 80% of the time.
--   [ ] **Dexterous Manipulation**: The robot can grasp and place at least 5 different household objects from various surfaces.
--   [ ] **Task Planning & Execution**: The robot can execute 3-step sequential tasks (e.g., "Go to kitchen, pick up cup, bring to living room").
--   [ ] **Error Handling & Recovery**: The robot can detect simple task failures (e.g., object not found) and attempt a predefined recovery or report failure.
+- [ ] **Voice Command Understanding**: The robot correctly interprets at least 80% of spoken commands.
+- [ ] **Environment Mapping & Localization**: The robot can build a map of a new room and accurately localize itself within it.
+- [ ] **Object Recognition & Tracking**: The robot can identify and track at least 10 common household objects (e.g., cup, book, phone).
+- [ ] **Autonomous Navigation**: The robot can navigate to a specified room/location, avoiding obstacles, at least 80% of the time.
+- [ ] **Dexterous Manipulation**: The robot can grasp and place at least 5 different household objects from various surfaces.
+- [ ] **Task Planning & Execution**: The robot can execute 3-step sequential tasks (e.g., "Go to kitchen, pick up cup, bring to living room").
+- [ ] **Error Handling & Recovery**: The robot can detect simple task failures (e.g., object not found) and attempt a predefined recovery or report failure.
 
 ---
 
@@ -414,6 +421,7 @@ The Capstone Autonomous Butler Project is the culmination of your journey throug
 
 :::note Next Steps
 With the Capstone Project outlined, you are ready to explore the appendices for further resources:
+
 - **Appendix A: Lab Build Guides**: For setting up your physical AI lab.
 - **Appendix B: Troubleshooting Bible**: For debugging common issues.
 - **Appendix C: Future Roadmap**: To understand where Physical AI is headed next.

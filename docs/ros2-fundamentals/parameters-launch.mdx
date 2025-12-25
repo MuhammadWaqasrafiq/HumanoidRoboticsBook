@@ -26,11 +26,13 @@ ROS 2 provides two mechanisms for this:
 ## What are Parameters?
 
 A **parameter** is a named value associated with a node that can be:
+
 - **Declared** in node code with default values
 - **Set** from command line, launch files, or parameter files
 - **Changed** at runtime without restarting the node
 
 **Analogy**: Parameters are like configuration settings in an app:
+
 ```python
 # Traditional config file
 config = {
@@ -48,6 +50,7 @@ self.declare_parameter('enable_debug', False)
 ### Parameter Types
 
 ROS 2 supports these parameter types:
+
 - `bool` - True/False flags
 - `int` - Integer values
 - `double` - Floating-point numbers
@@ -124,11 +127,13 @@ if __name__ == '__main__':
 ```
 
 **Key concepts**:
+
 - `declare_parameter(name, default_value)` - Register parameter with fallback
 - `get_parameter(name).value` - Retrieve current value
 - Parameters are read during `__init__()`, so changes require node restart (for this example)
 
 **Running with custom parameters**:
+
 ```bash
 # Use defaults
 python3 configurable_velocity.py
@@ -190,12 +195,14 @@ configurable_velocity:
 ```
 
 **Load parameters from file**:
+
 ```bash
 ros2 run my_package configurable_velocity --ros-args \
   --params-file robot_config.yaml
 ```
 
 **YAML structure**:
+
 - Top level: Node name (`configurable_velocity`)
 - Second level: `ros__parameters` (double underscore)
 - Third level: Parameter names and values
@@ -246,11 +253,13 @@ class DynamicConfigNode(Node):
 ```
 
 **Benefits**:
+
 - Change parameters without restarting node
 - Validate new values before applying
 - Log configuration changes
 
 **Testing dynamic updates**:
+
 ```bash
 # Terminal 1: Run node
 python3 dynamic_config_node.py
@@ -270,6 +279,7 @@ ros2 param set /dynamic_config_node max_speed 3.0
 ## What are Launch Files?
 
 A **launch file** is a Python script that:
+
 - Starts multiple nodes simultaneously
 - Sets parameters for each node
 - Configures remappings (redirect topic names)
@@ -277,6 +287,7 @@ A **launch file** is a Python script that:
 - Loads parameter files
 
 **Why launch files?**
+
 - Manually starting 15 nodes is error-prone
 - Ensures correct startup order (e.g., sensor driver before SLAM)
 - Consistent configuration across team members
@@ -314,6 +325,7 @@ def generate_launch_description():
 ```
 
 **Running the launch file**:
+
 ```bash
 ros2 launch my_package simple_demo.launch.py
 ```
@@ -351,6 +363,7 @@ def generate_launch_description():
 ```
 
 **Or load from YAML file**:
+
 ```python
 import os
 from ament_index_python.packages import get_package_share_directory
@@ -475,6 +488,7 @@ def generate_launch_description():
 ```
 
 **Running with custom arguments**:
+
 ```bash
 # Use defaults
 ros2 launch my_package robot_system.launch.py
@@ -486,6 +500,7 @@ ros2 launch my_package robot_system.launch.py \
 ```
 
 **Key features**:
+
 - **DeclareLaunchArgument**: Command-line parameters for launch file
 - **namespace**: Prefix all node names and topics (multi-robot support)
 - **remappings**: Redirect topic names (e.g., `/cmd_vel` → `/mobile_base/cmd_vel`)
@@ -537,6 +552,7 @@ def generate_launch_description():
 ```
 
 **Usage**:
+
 ```bash
 # Launch with RViz
 ros2 launch my_package robot.launch.py use_rviz:=true
@@ -584,6 +600,7 @@ def generate_launch_description():
 ```
 
 **Benefits**:
+
 - Reuse existing launch files
 - Compose complex systems from smaller modules
 - Override included launch file arguments
@@ -616,6 +633,7 @@ ros2 launch my_package robot_system.launch.py --show-nodes
 ## Best Practices
 
 ### Parameters
+
 1. **Always declare parameters** with defaults in `__init__()`
 2. **Use descriptive names**: `max_linear_velocity` not `max_vel`
 3. **Add ParameterDescriptor** with value ranges and descriptions
@@ -623,6 +641,7 @@ ros2 launch my_package robot_system.launch.py --show-nodes
 5. **Log parameter changes** for debugging
 
 ### Launch Files
+
 1. **Use DeclareLaunchArgument** for flexibility (sim vs real, robot names)
 2. **Organize by system**: `sensors.launch.py`, `navigation.launch.py`, `main.launch.py`
 3. **Use namespaces** for multi-robot systems
@@ -640,6 +659,7 @@ ros2 launch my_package robot_system.launch.py --show-nodes
 **Cause**: Forgot to call `declare_parameter()` first
 
 **Solution**:
+
 ```python
 # Wrong: get before declare
 self.speed = self.get_parameter('speed').value  # ERROR
@@ -656,6 +676,7 @@ self.speed = self.get_parameter('speed').value
 **Cause**: Launch file not in correct directory or not installed
 
 **Solution**:
+
 ```python
 # Correct directory structure:
 my_package/
@@ -676,6 +697,7 @@ data_files=[
 **Cause**: Incorrect YAML structure or file path
 
 **Solution**:
+
 ```yaml
 # Wrong: Missing ros__parameters
 my_node:
@@ -692,6 +714,7 @@ my_node:
 **Symptom**: Subscriber starts before publisher, misses messages
 
 **Solution**: Use event handlers to wait for nodes:
+
 ```python
 from launch.actions import RegisterEventHandler
 from launch.event_handlers import OnProcessStart
@@ -761,6 +784,7 @@ def generate_launch_description():
 ```
 
 **Result**: Launches 6 nodes total (2 per robot) with unique topics:
+
 - `/robot1/cmd_vel`, `/robot1/scan`
 - `/robot2/cmd_vel`, `/robot2/scan`
 - `/robot3/cmd_vel`, `/robot3/scan`
@@ -808,7 +832,7 @@ Ready to debug your ROS 2 applications? Continue to **[Section 4: Debugging Tool
 
 ## Further Reading
 
-- **ROS 2 Parameters**: https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Parameters.html
-- **ROS 2 Launch**: https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Launch/Launch-Main.html
-- **Launch File Architecture**: https://design.ros2.org/articles/roslaunch.html
-- **Parameter YAML Files**: https://docs.ros.org/en/jazzy/Concepts/About-ROS-2-Parameters.html
+- **ROS 2 Parameters**: &lt;https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Parameters.html&gt;
+- **ROS 2 Launch**: &lt;https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Launch/Launch-Main.html&gt;
+- **Launch File Architecture**: &lt;https://design.ros2.org/articles/roslaunch.html&gt;
+- **Parameter YAML Files**: &lt;https://docs.ros.org/en/jazzy/Concepts/About-ROS-2-Parameters.html&gt;

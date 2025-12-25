@@ -25,11 +25,13 @@ ROS 2 provides two additional communication patterns:
 ## What is a Service?
 
 A **service** is a one-to-one communication pattern where:
+
 - **Client** sends a request and blocks until response arrives
 - **Server** processes the request and sends back a response
 - Communication is **synchronous**: Client waits for the result
 
 **Analogy**: Services are like function calls over a network:
+
 ```python
 # Local function call
 result = calculate_inverse_kinematics(target_pose)
@@ -70,6 +72,7 @@ sequenceDiagram
 ```
 
 **Key properties**:
+
 - **Blocking**: Client waits for response (or timeout)
 - **Reliable**: Uses TCP-like transport (RELIABLE QoS)
 - **Stateless**: Each request is independent
@@ -127,6 +130,7 @@ if __name__ == '__main__':
 ```
 
 **Breakdown**:
+
 - `create_service(service_type, service_name, callback)`
   - `AddTwoInts` - Service type from `example_interfaces.srv`
   - `'add_two_ints'` - Service name (by convention, no leading `/`)
@@ -137,6 +141,7 @@ if __name__ == '__main__':
   - **Must return** `response` object
 
 **Running the server**:
+
 ```bash
 # Terminal 1: Start the service server
 source /opt/ros/jazzy/setup.bash
@@ -214,12 +219,14 @@ if __name__ == '__main__':
 ```
 
 **Breakdown**:
+
 - `create_client(service_type, service_name)` - Creates client proxy
 - `wait_for_service(timeout_sec)` - Blocks until server is available
 - `call_async(request)` - Sends request, returns `Future` object
 - `spin_until_future_complete()` - Waits for response to arrive
 
 **Running the client**:
+
 ```bash
 # Terminal 2: Call the service
 source /opt/ros/jazzy/setup.bash
@@ -227,6 +234,7 @@ python3 add_two_ints_client.py 5 3
 ```
 
 **Expected output**:
+
 ```
 [INFO] [add_two_ints_client]: Connected to service!
 [INFO] [add_two_ints_client]: Sending request: 5 + 3
@@ -272,12 +280,14 @@ ros2 interface show example_interfaces/srv/AddTwoInts
 ## What is an Action?
 
 An **action** is a communication pattern for **long-running tasks** that need:
+
 - **Goal**: Start a task (e.g., "Navigate to waypoint X")
 - **Feedback**: Periodic progress updates (e.g., "50% complete, 10 meters remaining")
 - **Result**: Final outcome (e.g., "Reached target successfully")
 - **Cancellation**: Ability to abort mid-execution
 
 **Analogy**: Actions are like async jobs with progress bars:
+
 ```python
 # Start async job
 job = start_navigation(target_waypoint)
@@ -332,6 +342,7 @@ sequenceDiagram
 ```
 
 **Key properties**:
+
 - **Asynchronous**: Client doesn't block waiting for result
 - **Preemptable**: Client can cancel goal at any time
 - **Stateful**: Server tracks goal status (accepted, executing, succeeded, aborted, canceled)
@@ -420,6 +431,7 @@ if __name__ == '__main__':
 ```
 
 **Breakdown**:
+
 - `ActionServer(node, action_type, action_name, callback)`
 - **Callback signature**: `def execute_callback(self, goal_handle)`
   - `goal_handle` - Object to control goal lifecycle
@@ -430,6 +442,7 @@ if __name__ == '__main__':
 - **Must return** `Result` object
 
 **Running the action server**:
+
 ```bash
 # Terminal 1: Start action server
 source /opt/ros/jazzy/setup.bash
@@ -517,6 +530,7 @@ if __name__ == '__main__':
 ```
 
 **Breakdown**:
+
 - `ActionClient(node, action_type, action_name)` - Creates client
 - `send_goal_async(goal, feedback_callback)` - Sends goal non-blocking
 - **Callbacks**:
@@ -525,6 +539,7 @@ if __name__ == '__main__':
   - `get_result_callback` - Final result when action completes
 
 **Running the action client**:
+
 ```bash
 # Terminal 2: Send action goal
 source /opt/ros/jazzy/setup.bash
@@ -532,6 +547,7 @@ python3 move_to_target_client.py
 ```
 
 **Expected output**:
+
 ```
 [INFO] [move_to_target_client]: Action server available!
 [INFO] [move_to_target_client]: Sending goal: Move 5 meters
@@ -574,6 +590,7 @@ ros2 interface show example_interfaces/action/Fibonacci
 ```
 
 **Note the three sections**:
+
 1. **Goal** (above first `---`)
 2. **Result** (between first and second `---`)
 3. **Feedback** (below second `---`)
@@ -722,6 +739,7 @@ if __name__ == '__main__':
 ```
 
 **Architecture breakdown**:
+
 1. **Topic (`/cmd_vel`)**: Real-time velocity control (latency-critical)
 2. **Service (`/check_cargo`)**: Quick status check before starting
 3. **Action (`/navigate_to_goal`)**: Long navigation task with progress updates
@@ -735,6 +753,7 @@ if __name__ == '__main__':
 **Symptom**: `call_async()` never returns, or timeout error
 
 **Debug steps**:
+
 ```bash
 # Check if service exists
 ros2 service list | grep my_service
@@ -747,6 +766,7 @@ ros2 service call /my_service std_srvs/srv/Trigger
 ```
 
 **Common causes**:
+
 - Server node not running
 - Service name mismatch (typo, case-sensitive)
 - Server crashed during request processing
@@ -759,6 +779,7 @@ ros2 service call /my_service std_srvs/srv/Trigger
 **Cause**: Forgot to pass `feedback_callback` to `send_goal_async()`
 
 **Solution**:
+
 ```python
 # Wrong: No feedback callback
 goal_future = client.send_goal_async(goal_msg)
@@ -774,6 +795,7 @@ goal_future = client.send_goal_async(goal_msg, feedback_callback=self.feedback_c
 **Cause**: Server callback didn't return the response object
 
 **Solution**:
+
 ```python
 def my_service_callback(self, request, response):
     response.success = True
@@ -786,6 +808,7 @@ def my_service_callback(self, request, response):
 **Symptom**: `goal_handle.accepted` is `False`
 
 **Debug steps**:
+
 ```bash
 # Check action server status
 ros2 action info /my_action
@@ -795,6 +818,7 @@ ros2 interface show my_package/action/MyAction
 ```
 
 **Common causes**:
+
 - Action server busy with another goal (if not multi-goal)
 - Invalid goal parameters (type mismatch)
 - Server validation logic rejected goal
@@ -844,7 +868,7 @@ Ready to configure your nodes? Continue to **[Section 3: Parameters & Launch Fil
 
 ## Further Reading
 
-- **ROS 2 Services**: https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Services.html
-- **ROS 2 Actions**: https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Actions.html
-- **Custom Interfaces**: https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Custom-ROS2-Interfaces.html
-- **Action Design Patterns**: https://design.ros2.org/articles/actions.html
+- **ROS 2 Services**: &lt;https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Services.html&gt;
+- **ROS 2 Actions**: &lt;https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Actions.html&gt;
+- **Custom Interfaces**: &lt;https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Custom-ROS2-Interfaces.html&gt;
+- **Action Design Patterns**: &lt;https://design.ros2.org/articles/actions.html&gt;

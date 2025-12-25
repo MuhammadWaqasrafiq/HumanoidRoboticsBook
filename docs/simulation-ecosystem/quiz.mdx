@@ -33,6 +33,7 @@ D) PyBullet - lightweight Python library
 **Explanation**:
 
 **Why Ignition Gazebo?**
+
 - ✅ Works without dedicated GPU (can use integrated graphics)
 - ✅ Actively developed (Gazebo Classic is deprecated)
 - ✅ Good performance on moderate hardware (16 GB RAM sufficient)
@@ -40,6 +41,7 @@ D) PyBullet - lightweight Python library
 - ✅ Modern architecture with DART physics (good for humanoids)
 
 **Why NOT the others?**
+
 - **A (Gazebo Classic):** Deprecated, no longer maintained, migrate to Ignition instead
 - **C (Isaac Sim):** **Requires NVIDIA RTX GPU** - won't run on integrated graphics
 - **D (PyBullet):** Good option, but not covered in this textbook; Ignition has better ROS 2 integration
@@ -74,34 +76,41 @@ D) All engines perform equally for humanoids
 **Explanation**:
 
 **DART advantages for humanoids:**
+
 - ✅ **Excellent articulated body dynamics** - designed for robots with many joints
 - ✅ **Stable constraint solver** - handles complex kinematic chains reliably
 - ✅ **Accurate contact modeling** - doesn't let robots fall through floor
 - ✅ **Fast inverse dynamics** - efficient for walking/balancing algorithms
 
 **ODE (A) problems:**
+
 ```
 ❌ Poor contact dynamics - humanoids can fall through floor
 ❌ Constraint solver instability with 14+ joints
 ❌ No parallel computation
 ```
+
 **Verdict**: Avoid ODE for humanoids.
 
 **Bullet (C) limitations:**
+
 ```
 ⚠️ Contact friction less accurate than DART
 ⚠️ Articulated bodies can be unstable
 ✅ Good for rigid body dynamics (wheeled robots)
 ```
+
 **Verdict**: General-purpose, but DART is better for humanoids.
 
 **NVIDIA PhysX (not listed):**
 If you have NVIDIA GPU, PhysX in Isaac Sim is **even better** than DART:
+
 - GPU acceleration (10-100x faster)
 - Highly stable contact solver
 - Tensor API for RL training
 
 **Practical recommendation:**
+
 - **CPU simulation**: Use DART (Ignition Gazebo)
 - **GPU simulation**: Use PhysX (Isaac Sim)
 - **Avoid**: ODE for humanoids
@@ -128,12 +137,14 @@ D) 60% of CPU cores are being used
 **Explanation**:
 
 **Real-Time Factor (RTF) definition:**
+
 - **RTF = simulation seconds / real seconds**
 - RTF = 1.0 → Simulation matches real-time (perfect)
 - RTF = 2.0 → Simulation runs 2x faster (very good!)
 - **RTF = 0.6 → Simulation runs at 60% of real-time speed (too slow)**
 
 **Practical impact of RTF = 0.6:**
+
 ```python
 # To simulate 10 minutes of robot behavior:
 real_time_needed = 10 min / 0.6 = 16.67 minutes
@@ -141,17 +152,20 @@ real_time_needed = 10 min / 0.6 = 16.67 minutes
 ```
 
 **Why is RTF under 1.0 a problem?**
+
 - Algorithms expecting real-time data get outdated information
 - Control loops run slower than designed
 - Testing takes longer (inefficient development)
 
 **Causes of low RTF:**
+
 1. **CPU too slow** for physics complexity
 2. **Complex collision geometry** (high-poly meshes)
 3. **Too many contacts** (robot grasping many objects)
 4. **Rendering bottleneck** (4K resolution with effects)
 
 **Fixes:**
+
 ```bash
 # 1. Simplify collision geometry
 Use primitives (boxes, cylinders) instead of meshes
@@ -168,6 +182,7 @@ Lidar: 10 Hz instead of 40 Hz
 ```
 
 **Target RTF:**
+
 - **Minimum acceptable**: 1.0x (real-time)
 - **Good**: 1.5-3x (develop/test faster)
 - **Excellent**: 5-20x (GPU physics in Isaac Sim)
@@ -202,6 +217,7 @@ D) Lower system requirements
 | **RL training** | Slow | Fast (Isaac Gym) | **50-100x faster** |
 
 **Real-world example:**
+
 ```python
 # Training a humanoid to walk (10M timesteps)
 
@@ -217,16 +233,19 @@ D) Lower system requirements
 ```
 
 **Why is GPU so much faster?**
+
 - **Parallel computation**: GPU has thousands of cores vs CPU's 8-16 cores
 - **Tensor API**: Batch physics updates for multiple robots simultaneously
 - **Optimized for robotics**: PhysX 5 designed for articulated bodies
 
 **Why NOT the other options?**
+
 - **A (Accuracy)**: CPU and GPU physics have similar accuracy for most scenarios
 - **B (Rendering)**: GPU rendering is better, but that's separate from physics speed
 - **D (System requirements)**: GPU requires **more** hardware (RTX GPU + 32 GB RAM), not less
 
 **Trade-off:**
+
 ```
 CPU (DART):
 ✅ Works on any hardware
@@ -241,6 +260,7 @@ GPU (PhysX):
 ```
 
 **When GPU physics matters most:**
+
 1. **Reinforcement learning** - training needs millions of samples
 2. **Large-scale testing** - running 100+ robots in parallel
 3. **Real-time performance** - complex scene with many contacts
@@ -275,6 +295,7 @@ D) All simulators provide equally realistic camera data
    - Reduces sim-to-real gap for vision models
 
 2. **Built-in domain randomization**
+
    ```python
    # Isaac Sim can automatically randomize:
    - Lighting conditions (brightness, color temperature, direction)
@@ -303,6 +324,7 @@ D) All simulators provide equally realistic camera data
 | **Synthetic labels** | Basic | Basic | **Pixel-perfect** |
 
 **Real-world ML training example:**
+
 ```python
 # Goal: Train object detection model for humanoid to grasp objects
 
@@ -327,6 +349,7 @@ D) All simulators provide equally realistic camera data
 | Real-time object tracking for deployment | Isaac Sim (closest to real hardware) |
 
 **Sim-to-real gap:**
+
 ```
 Gazebo Classic rendering → Real camera
 Gap: Large (basic lighting doesn't match reality)
@@ -369,6 +392,7 @@ D) Switch to a different physics engine
 | 0.0001s (10 kHz) | 10,000 steps | Overkill | Same as 1 kHz but slower | Not needed |
 
 **Why fingers pass through objects at 0.01s:**
+
 ```
 Frame N:   Finger position: x = 0.00m
            Object position: x = 0.05m
@@ -382,6 +406,7 @@ Frame N+1 (0.01s later at high speed):
 ```
 
 **At 0.001s timestep:**
+
 ```
 Finger moves 0.8cm per timestep (10x smaller steps)
 → Physics engine catches collision at x = 0.05m
@@ -390,6 +415,7 @@ Finger moves 0.8cm per timestep (10x smaller steps)
 ```
 
 **Configuration example (Gazebo SDF):**
+
 ```xml
 <physics name="default_physics">
   <max_step_size>0.001</max_step_size>  <!-- 1 ms timestep -->
@@ -401,11 +427,13 @@ Finger moves 0.8cm per timestep (10x smaller steps)
 ```
 
 **Why NOT the other options?**
+
 - **A (Increase to 0.1s)**: Makes problem **worse** - even more object penetration
 - **C (Increase solver iterations)**: Helps with joint stability, but doesn't fix timestep-based penetration
 - **D (Switch engine)**: Timestep is more important than engine choice for this issue
 
 **Performance trade-off:**
+
 ```python
 # Timestep 0.01s: RTF = 1.5x (runs 50% faster than real-time)
 # Timestep 0.001s: RTF = 0.8x (runs 20% slower than real-time)
@@ -454,6 +482,7 @@ D) Run 50 separate simulator instances on different computers
 | 50 computers | ~10,000 steps/sec | 500 MB each | Very high (orchestration) |
 
 **Isaac Sim GPU physics advantage:**
+
 ```python
 # Isaac Sim Tensor API (GPU parallel)
 import isaac_gym
@@ -471,6 +500,7 @@ gym.simulate(envs)  # Processes 50 robots simultaneously
 ```
 
 **CPU simulation (Ignition Gazebo):**
+
 ```python
 # CPU must process each robot sequentially
 for robot in range(50):
@@ -483,6 +513,7 @@ for robot in range(50):
 ```
 
 **Real training time comparison:**
+
 ```python
 # RL training: Need 10 million environment steps
 
@@ -498,23 +529,27 @@ for robot in range(50):
 **Why NOT the other options?**
 
 **A (Gazebo Classic, 50 worlds):**
+
 - ❌ Deprecated simulator
 - ❌ High RAM overhead (separate processes)
 - ❌ No parallel physics (each world runs independently)
 - ❌ Complex orchestration (manage 50 separate processes)
 
 **B (Ignition Gazebo, 50 in 1 world):**
+
 - ✅ Better than separate worlds (shared rendering, one process)
 - ⚠️ CPU-bound - scales linearly (2x robots = 2x slower)
 - ⚠️ Not optimized for RL training (no Tensor API)
 
 **D (50 computers):**
+
 - ❌ Extremely complex setup (network, data sync)
 - ❌ High cost (50 machines)
 - ❌ Orchestration overhead
 - ✅ Only makes sense for very large scales (1000+ robots) if you already have cluster
 
 **Isaac Sim GPU scaling:**
+
 ```
 1 robot:   1000 Hz physics
 10 robots:  900 Hz physics per robot (minimal slowdown)
@@ -545,36 +580,44 @@ CPU equivalent (Ignition):
 ## Quiz Results Interpretation
 
 ### 6-7 Correct: Excellent! 🎉
+
 You have a strong understanding of simulation ecosystems and can make informed decisions about simulator selection and optimization.
 
 **Next steps:**
+
 - Set up Ignition Gazebo or Isaac Sim
 - Import your URDF humanoid from Chapter 04
 - Experiment with physics parameters
 - Proceed to Chapter 06 (Isaac Platform)
 
 ### 5 Correct: Good! 👍
+
 You understand core simulation concepts but may benefit from reviewing specific sections.
 
 **Review:**
+
 - Question 1-2: Simulator selection criteria
 - Question 3-4: Performance metrics (RTF, GPU vs CPU)
 - Question 5: Sensor realism and ML training
 - Question 6-7: Physics tuning and scalability
 
 ### 3-4 Correct: Needs Improvement 📚
+
 Review the chapter focusing on practical differences between simulators.
 
 **Action plan:**
+
 1. Re-read simulator comparison tables
 2. Understand RTF and timestep trade-offs
 3. Try both Ignition Gazebo and Isaac Sim (if you have GPU)
 4. Retake quiz after hands-on practice
 
 ### 0-2 Correct: Review Required ⚠️
+
 Revisit the entire chapter with focus on decision-making criteria.
 
 **Recommended approach:**
+
 1. Read Chapter 05 introduction carefully
 2. Study the decision tree (which simulator for which use case)
 3. Understand physics engine differences (ODE vs DART vs PhysX)
@@ -588,6 +631,7 @@ Revisit the entire chapter with focus on decision-making criteria.
 Ready to continue? Proceed to **[Chapter 06: Isaac Platform](../isaac-platform)** to dive deep into NVIDIA's robotics ecosystem.
 
 **What you'll learn:**
+
 - Isaac Sim detailed setup and configuration
 - Isaac ROS for accelerated perception
 - Isaac Gym for reinforcement learning
@@ -598,7 +642,7 @@ Ready to continue? Proceed to **[Chapter 06: Isaac Platform](../isaac-platform)*
 
 ## Review Resources
 
-- **Gazebo Tutorials**: https://gazebosim.org/docs/fortress/tutorials
-- **Isaac Sim Docs**: https://docs.omniverse.nvidia.com/isaacsim/latest/
+- **Gazebo Tutorials**: &lt;https://gazebosim.org/docs/fortress/tutorials&gt;
+- **Isaac Sim Docs**: &lt;https://docs.omniverse.nvidia.com/isaacsim/latest/&gt;
 - **Physics Engine Comparison**: See Chapter 05, Physics Engines Deep Dive section
-- **ROS 2 Gazebo Integration**: https://github.com/gazebosim/ros_gz
+- **ROS 2 Gazebo Integration**: &lt;https://github.com/gazebosim/ros_gz&gt;

@@ -16,6 +16,7 @@ This chapter explores why Physical AI represents the next frontier of artificial
 
 :::tip Learning Objectives
 By the end of this chapter, you will understand:
+
 - The fundamental difference between digital AI and Physical AI
 - Economic and technological drivers behind the humanoid robotics boom
 - Key enablers: Vision-Language-Action (VLA) models and sim-to-real transfer
@@ -102,6 +103,7 @@ VLA models are the "ChatGPT moment" for robotics. Just as large language models 
 **Solution**: Train in simulation (NVIDIA Isaac Sim, Gazebo) where thousands of virtual robots can learn in parallel, then transfer learned behaviors to real hardware.
 
 **Key techniques**:
+
 - **Domain randomization**: Vary lighting, textures, physics in simulation to generalize to real world
 - **Reality gap minimization**: High-fidelity physics engines (PhysX, MuJoCo) reduce simulation-reality mismatch
 - **Residual learning**: Fine-tune sim-trained policies with small amount of real-world data
@@ -126,6 +128,7 @@ VLA models are the "ChatGPT moment" for robotics. Just as large language models 
 **Breakthrough**: NVIDIA Isaac Sim leverages RTX GPUs to simulate physics, sensors, and rendering in real-time—or faster.
 
 **Capabilities**:
+
 - **Physics**: 10,000+ objects simulated in parallel
 - **Sensors**: Photorealistic cameras, LiDAR, depth sensors
 - **Speed**: 100x real-time with GPU acceleration
@@ -136,6 +139,7 @@ VLA models are the "ChatGPT moment" for robotics. Just as large language models 
 ### 5. Open-Source Robotics Ecosystem
 
 **ROS 2** (Robot Operating System) provides a mature, production-ready middleware for robotics:
+
 - **Communication**: Pub-sub messaging between nodes
 - **Libraries**: Motion planning (MoveIt 2), localization (SLAM), perception (OpenCV, PCL)
 - **Community**: 1000+ packages, 10,000+ contributors
@@ -168,15 +172,18 @@ Physical AI isn't just technologically feasible—it's economically inevitable. 
 ### 1. Labor Shortages in Key Industries
 
 **Manufacturing**:
+
 - US has 600,000+ unfilled manufacturing jobs (2024)
 - Japan projects 11 million worker shortage by 2030
 - China's working-age population shrinking 5M/year
 
 **Warehousing & Logistics**:
+
 - Amazon operates 750,000+ robots (2024) but still needs 1M+ human workers
 - DHL forecasts 15% workforce shortage by 2028
 
 **Healthcare**:
+
 - US needs 200,000 additional nurses by 2026
 - Elder care facing critical shortage (aging population)
 
@@ -218,6 +225,7 @@ Where will Physical AI create the most impact? Five domains are leading adoption
 ### 1. Manufacturing & Warehousing
 
 **Use cases**:
+
 - Assembly line tasks (pick-and-place, welding, inspection)
 - Warehouse picking and packing (Amazon, Ocado)
 - Quality control (visual inspection, defect detection)
@@ -232,6 +240,7 @@ Where will Physical AI create the most impact? Five domains are leading adoption
 ### 2. Healthcare & Elder Care
 
 **Use cases**:
+
 - Patient mobility assistance (lifting, walking support)
 - Medication delivery and monitoring
 - Companionship for elderly (social interaction)
@@ -247,6 +256,7 @@ Where will Physical AI create the most impact? Five domains are leading adoption
 ### 3. Household & Personal Assistance
 
 **Use cases**:
+
 - Cleaning and tidying (beyond Roomba—general-purpose)
 - Cooking and meal prep
 - Grocery shopping and errands
@@ -262,6 +272,7 @@ Where will Physical AI create the most impact? Five domains are leading adoption
 ### 4. Agriculture
 
 **Use cases**:
+
 - Crop monitoring and harvesting
 - Weeding and pest control (precision agriculture)
 - Livestock monitoring
@@ -276,6 +287,7 @@ Where will Physical AI create the most impact? Five domains are leading adoption
 ### 5. Hazardous Environments
 
 **Use cases**:
+
 - Disaster response (earthquake, fire, flood rescue)
 - Nuclear decommissioning
 - Deep-sea exploration
@@ -312,6 +324,7 @@ graph TB
 ```
 
 **Maturity vs Market Size Analysis:**
+
 - **Q1 Leaders** (Green): Manufacturing & Warehousing - High maturity, large market → mass deployment 2024-2026
 - **Q2 Emerging** (Gold): Healthcare, Agriculture, Elder Care → pilot programs 2025-2027
 - **Q3 R&D** (Blue): Hazardous environments → government-funded research
@@ -337,6 +350,7 @@ Why humanoids? Wouldn't specialized robots (wheeled, tracked, drone) be more eff
 ### The Cost of Specialization
 
 Specialized robots are optimized for one task:
+
 - Warehouse robot: Picking boxes from shelves
 - Lawn mower robot: Cutting grass
 - Window cleaning robot: Washing vertical surfaces
@@ -364,6 +378,7 @@ Physical AI is maturing, but significant challenges remain:
 **Current state**: Research robots fail every 10-100 hours.
 
 **Needed breakthroughs**:
+
 - Fault detection and graceful degradation
 - Human-aware motion planning (collision avoidance)
 - Formal verification of control policies
@@ -377,6 +392,7 @@ Physical AI is maturing, but significant challenges remain:
 **Current state**: Robot hands can grasp 80% of household objects, but delicate tasks (tying shoes, threading needles) remain difficult.
 
 **Needed breakthroughs**:
+
 - High-density tactile sensors (force, texture, temperature)
 - Compliant actuators (soft robotics)
 - Learned grasp policies (thousands of objects)
@@ -390,6 +406,7 @@ Physical AI is maturing, but significant challenges remain:
 **Current state**: VLA models handle 5-10 step tasks. Longer horizons fail.
 
 **Needed breakthroughs**:
+
 - Hierarchical task decomposition (LLM + VLA integration)
 - Error recovery (what to do when a step fails)
 - Memory and context (remember previous states)
@@ -403,6 +420,7 @@ Physical AI is maturing, but significant challenges remain:
 **Current state**: Electric motors 30-50% efficient. Batteries 150-250 Wh/kg.
 
 **Needed breakthroughs**:
+
 - Higher-density batteries (solid-state, lithium-metal)
 - More efficient actuators (series-elastic, quasi-direct-drive)
 - Intelligent power management (sleep modes, task prioritization)
@@ -416,6 +434,7 @@ Physical AI is maturing, but significant challenges remain:
 **Target**: $5K-$10K for mass-market adoption (compare to car prices).
 
 **Path to cost reduction**:
+
 - Manufacturing scale (10K+ units/year drives 40% cost down)
 - Component commoditization (motors, sensors become standardized)
 - Modular design (swap broken parts, not entire robot)
@@ -429,6 +448,7 @@ Physical AI is maturing, but significant challenges remain:
 Here's the projected timeline for Physical AI and humanoid robotics:
 
 ### 2024-2025: Foundation Year
+
 - ✅ OpenVLA, RT-2-X, Octo models released
 - ✅ Unitree G1 ($16K humanoid) ships
 - ✅ Figure partners with BMW for manufacturing trials
@@ -436,6 +456,7 @@ Here's the projected timeline for Physical AI and humanoid robotics:
 - ⏳ 1000+ ROS 2 + Isaac Sim developers active
 
 ### 2026-2027: Early Adoption
+
 - Manufacturing pilots: 10,000+ humanoids deployed
 - First home robot beta programs (1000+ households)
 - Safety certifications established (ISO, UL)
@@ -443,6 +464,7 @@ Here's the projected timeline for Physical AI and humanoid robotics:
 - 90%+ object manipulation success rate
 
 ### 2028-2029: Scale-Up
+
 - 100,000+ humanoids in warehouses and factories
 - Elder care robots in 10,000+ facilities
 - Agricultural humanoid trials (10+ countries)
@@ -450,6 +472,7 @@ Here's the projected timeline for Physical AI and humanoid robotics:
 - Long-horizon task planning (100+ steps)
 
 ### 2030+: Mass Market
+
 - 1M+ humanoids globally
 - Consumer home robots (vacuum + tidy + cook)
 - Autonomous construction sites
@@ -496,6 +519,7 @@ If you're reading this book, you're positioning yourself at the frontier of a tr
 ### 1. First-Mover Advantage
 
 Physical AI talent is scarce. Companies are hiring:
+
 - **Robotics engineers**: $120K-$200K starting salary
 - **VLA model specialists**: $150K-$250K
 - **Sim-to-real experts**: $140K-$220K
@@ -505,6 +529,7 @@ Physical AI talent is scarce. Companies are hiring:
 ### 2. Accessible Tools
 
 You don't need a $2M lab. This book teaches you to build Physical AI systems with:
+
 - **Laptop**: RTX 4070 Ti+ (12GB VRAM) - $700-$1000
 - **Software**: ROS 2 (free), Isaac Sim (free academic license), OpenVLA (open-source)
 - **Cloud alternative**: AWS/GCP GPU instances ($1-3/hour)
@@ -514,6 +539,7 @@ You don't need a $2M lab. This book teaches you to build Physical AI systems wit
 ### 3. Transferable Skills
 
 Physical AI combines:
+
 - **Machine learning**: PyTorch, Transformers, reinforcement learning
 - **Robotics**: Kinematics, dynamics, control theory
 - **Systems engineering**: ROS 2, simulation, distributed systems
@@ -524,6 +550,7 @@ Physical AI combines:
 ### 4. Ethical Imperative
 
 Physical AI will reshape labor markets, create new inequalities, and raise safety concerns. **The developers who build these systems have a responsibility** to:
+
 - Design for safety (humans must come first)
 - Consider job displacement (work with policymakers on retraining)
 - Ensure accessibility (prevent tech from widening inequality gaps)
@@ -538,28 +565,34 @@ Physical AI will reshape labor markets, create new inequalities, and raise safet
 This chapter established **why** Physical AI matters and **why now** is the inflection point. The rest of the book teaches you **how** to build these systems:
 
 **Part I: Foundation** (Chapters 2-3)
+
 - Chapter 2: Hardware requirements (GPU, workstation setup)
 - Chapter 3: ROS 2 fundamentals (nodes, topics, services)
 
 **Part II: Simulation & Modeling** (Chapters 4-6)
+
 - Chapter 4: URDF and digital twins
 - Chapter 5: Gazebo vs Isaac Sim
 - Chapter 6: NVIDIA Isaac platform deep dive
 
 **Part III: Core Robotics** (Chapters 7-9)
+
 - Chapter 7: Perception stack (vision, SLAM, depth)
 - Chapter 8: Bipedal locomotion (walking, balance)
 - Chapter 9: Dexterous manipulation (grasping, IK)
 
 **Part IV: Intelligence Layer** (Chapters 10-12)
+
 - Chapter 10: Vision-Language-Action models (OpenVLA, RT-2-X)
 - Chapter 11: Voice-to-action pipeline (Whisper + LLM + VLA)
 - Chapter 12: Sim-to-real transfer techniques
 
 **Part V: Integration** (Chapter 13)
+
 - Chapter 13: Capstone project—Autonomous Butler
 
 **Appendices**
+
 - A: Lab build guides (Economy/Mid/Premium tiers)
 - B: Troubleshooting Bible (100 common errors)
 - C: Future roadmap (2026-2030 predictions)
@@ -582,19 +615,22 @@ This chapter established **why** Physical AI matters and **why now** is the infl
 ## Further Reading
 
 **Academic Papers**:
+
 - "RT-2-X: Towards General-Purpose Robots via Open-Vocabulary Object Representations" (Google, 2023)
 - "OpenVLA: An Open-Source Vision-Language-Action Model" (Stanford, 2024)
 - "Octo: An Open-Source Generalist Robot Policy" (UC Berkeley, 2024)
 
 **Industry Reports**:
+
 - McKinsey: "The Future of Robotics: Humanoids in the Workplace" (2024)
 - Goldman Sachs: "Robotics Market Outlook 2030" (2024)
 - Boston Consulting Group: "The Economics of Humanoid Robots" (2024)
 
 **Blogs and Resources**:
-- NVIDIA Isaac Blog: https://developer.nvidia.com/isaac
-- ROS 2 Documentation: https://docs.ros.org/
-- Hugging Face Robotics: https://huggingface.co/spaces/lerobot
+
+- NVIDIA Isaac Blog: &lt;https://developer.nvidia.com/isaac&gt;
+- ROS 2 Documentation: &lt;https://docs.ros.org/&gt;
+- Hugging Face Robotics: &lt;https://huggingface.co/spaces/lerobot&gt;
 
 ---
 

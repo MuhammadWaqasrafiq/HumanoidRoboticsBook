@@ -15,6 +15,7 @@ Master the foundational URDF concepts needed to build any robot model. By the en
 ## What is URDF?
 
 **URDF (Unified Robot Description Format)** is an XML-based file format that describes:
+
 - **Kinematics**: How robot parts connect and move
 - **Dynamics**: Mass, inertia, friction properties
 - **Visual appearance**: Shapes, colors, meshes
@@ -46,6 +47,7 @@ Let's start with the simplest possible robot: a single box floating in space.
 ```
 
 **Key components:**
+
 1. `<?xml version="1.0"?>` - Required XML declaration
 2. `<robot name="...">` - Root element, contains entire robot
 3. `<link>` - Represents a rigid body
@@ -95,11 +97,13 @@ graph TB
 ```
 
 **URDF is a tree structure:**
+
 - **Root**: `<robot>` element
 - **Nodes**: `<link>` elements (rigid bodies)
 - **Edges**: `<joint>` elements (connections between links)
 
 **Important rules:**
+
 1. Every URDF has exactly **one root link** (no parents)
 2. All other links are connected via joints
 3. No cycles allowed (it's a tree, not a graph)
@@ -117,7 +121,7 @@ A **link** represents a part of your robot that doesn't bend or deform. Think of
   <visual>
     <origin xyz="0 0 0" rpy="0 0 0"/>  <!-- offset from link frame -->
     <geometry>
-      <box size="0.3 0.2 0.5"/>  <!-- 30cm × 20cm × 50cm -->
+      <box size="0.3 0.2 0.5"/>  <!-- 30cm ï¿½ 20cm ï¿½ 50cm -->
     </geometry>
     <material name="gray">
       <color rgba="0.5 0.5 0.5 1"/>
@@ -149,6 +153,7 @@ A **link** represents a part of your robot that doesn't bend or deform. Think of
 URDF supports five geometry primitives:
 
 #### 1. Box
+
 ```xml
 <geometry>
   <box size="x y z"/>  <!-- meters -->
@@ -156,6 +161,7 @@ URDF supports five geometry primitives:
 ```
 
 #### 2. Cylinder
+
 ```xml
 <geometry>
   <cylinder radius="0.05" length="0.3"/>  <!-- radius in meters, length along z-axis -->
@@ -163,6 +169,7 @@ URDF supports five geometry primitives:
 ```
 
 #### 3. Sphere
+
 ```xml
 <geometry>
   <sphere radius="0.1"/>  <!-- meters -->
@@ -170,6 +177,7 @@ URDF supports five geometry primitives:
 ```
 
 #### 4. Mesh (for complex shapes)
+
 ```xml
 <geometry>
   <mesh filename="package://my_package/meshes/hand.stl" scale="1.0 1.0 1.0"/>
@@ -177,11 +185,13 @@ URDF supports five geometry primitives:
 ```
 
 **Mesh file formats:**
+
 - `.stl` - Common for 3D printing, good for collision
 - `.dae` (Collada) - Supports colors and textures, good for visual
 - `.obj` - Wavefront format, widely supported
 
 #### 5. Capsule (ROS 2 Jazzy and newer)
+
 ```xml
 <geometry>
   <capsule radius="0.05" length="0.2"/>  <!-- cylinder with hemisphere endcaps -->
@@ -232,6 +242,7 @@ URDF supports five geometry primitives:
 ```
 
 **RGBA values:**
+
 - `r="1" g="0" b="0"` = pure red
 - `r="0" g="1" b="0"` = pure green
 - `r="0" g="0" b="1"` = pure blue
@@ -297,7 +308,7 @@ A **joint** defines how two links move relative to each other. Joints are the "h
 
   <!-- Joint limits -->
   <limit lower="-1.57" upper="1.57" effort="100" velocity="2.0"/>
-  <!--   -90° to +90°, 100 Nm torque, 2 rad/s max speed -->
+  <!--   -90ï¿½ to +90ï¿½, 100 Nm torque, 2 rad/s max speed -->
 
   <!-- Damping and friction (optional) -->
   <dynamics damping="0.5" friction="0.1"/>
@@ -330,11 +341,13 @@ The `<origin>` tag answers two questions:
 ```
 
 **Coordinate system:**
+
 - **x**: Forward (red axis)
 - **y**: Left (green axis)
 - **z**: Up (blue axis)
 
 **rpy (roll-pitch-yaw):**
+
 - **roll**: Rotation around x-axis (in radians)
 - **pitch**: Rotation around y-axis
 - **yaw**: Rotation around z-axis
@@ -347,7 +360,7 @@ The `<origin>` tag answers two questions:
   <child link="forearm"/>
   <origin xyz="0 0 -0.3" rpy="0 0 0"/>  <!-- 30cm down (negative z) -->
   <axis xyz="0 1 0"/>  <!-- rotate around y-axis (pitch) -->
-  <limit lower="0" upper="2.5" effort="50" velocity="2"/>  <!-- 0 to ~143° -->
+  <limit lower="0" upper="2.5" effort="50" velocity="2"/>  <!-- 0 to ~143ï¿½ -->
 </joint>
 ```
 
@@ -376,6 +389,7 @@ The `<axis>` tag specifies which direction the joint rotates around (for `revolu
 ```
 
 For a humanoid standing upright:
+
 - **Knee**: bends around y-axis (pitch)
 - **Hip yaw**: rotates around z-axis (yaw)
 - **Wrist**: twists around x-axis (roll)
@@ -473,7 +487,7 @@ Let's combine everything we've learned to build a simple robot arm.
     <child link="forearm"/>
     <origin xyz="0 0 0.3" rpy="0 0 0"/>  <!-- top of upper arm -->
     <axis xyz="0 1 0"/>  <!-- pitch rotation -->
-    <limit lower="0" upper="2.5" effort="5" velocity="1.0"/>  <!-- 0 to ~143° -->
+    <limit lower="0" upper="2.5" effort="5" velocity="1.0"/>  <!-- 0 to ~143ï¿½ -->
     <dynamics damping="0.3"/>
   </joint>
 
@@ -502,6 +516,7 @@ ros2 launch urdf_tutorial display.launch.py model:=simple_arm.urdf
 ```
 
 **What you'll see:**
+
 - Gray cylinder base
 - Blue upper arm
 - Green forearm
@@ -524,6 +539,7 @@ graph LR
 ```
 
 **Transform chain:**
+
 1. Start at parent link frame
 2. Apply joint's `<origin xyz rpy>` to get joint frame
 3. Child link frame = joint frame
@@ -543,8 +559,9 @@ forearm frame = (0, 0, 0.325) in world
 Forearm tip = (0, 0, 0.325 + 0.25) = (0, 0, 0.575) in world
 ```
 
-When `shoulder = 45°`:
-- Upper arm rotates 45° around y-axis
+When `shoulder = 45ï¿½`:
+
+- Upper arm rotates 45ï¿½ around y-axis
 - End-effector position changes based on forward kinematics
 
 **TF tree** (more in Section 3) shows these transforms in real-time.
@@ -556,9 +573,9 @@ For simulation, you need inertia values. Here are formulas for common shapes:
 ### Box (width w, depth d, height h, mass m)
 
 ```
-Ixx = (1/12) * m * (d² + h²)
-Iyy = (1/12) * m * (w² + h²)
-Izz = (1/12) * m * (w² + d²)
+Ixx = (1/12) * m * (dï¿½ + hï¿½)
+Iyy = (1/12) * m * (wï¿½ + hï¿½)
+Izz = (1/12) * m * (wï¿½ + dï¿½)
 Ixy = Ixz = Iyz = 0  (for symmetric boxes)
 ```
 
@@ -567,15 +584,15 @@ Ixy = Ixz = Iyz = 0  (for symmetric boxes)
 **Z-axis along cylinder length:**
 
 ```
-Ixx = Iyy = (1/12) * m * (3*r² + h²)
-Izz = (1/2) * m * r²
+Ixx = Iyy = (1/12) * m * (3*rï¿½ + hï¿½)
+Izz = (1/2) * m * rï¿½
 Ixy = Ixz = Iyz = 0
 ```
 
 ### Sphere (radius r, mass m)
 
 ```
-Ixx = Iyy = Izz = (2/5) * m * r²
+Ixx = Iyy = Izz = (2/5) * m * rï¿½
 Ixy = Ixz = Iyz = 0
 ```
 
@@ -671,6 +688,7 @@ For bilateral symmetry (left/right arms or legs), define one side then mirror:
 **Cause:** XML syntax error (unclosed tag, typo, etc.)
 
 **Fix:**
+
 ```bash
 check_urdf my_robot.urdf
 # Points to exact line number of error
@@ -713,6 +731,7 @@ urdf_to_graphviz my_robot.urdf
 **Cause:** Incorrect inertia values or colliding links at startup
 
 **Fix:**
+
 - Recalculate inertia using formulas above
 - Check for overlapping collision geometries in initial pose
 - Add damping to joints: `<dynamics damping="1.0"/>`
@@ -722,21 +741,25 @@ urdf_to_graphviz my_robot.urdf
 **Before moving to simulation:**
 
 1. **Validate XML**
+
    ```bash
    check_urdf my_robot.urdf
    ```
 
 2. **Visualize structure**
+
    ```bash
    urdf_to_graphviz my_robot.urdf
    ```
 
 3. **Test in rviz2**
+
    ```bash
    ros2 launch urdf_tutorial display.launch.py model:=my_robot.urdf
    ```
 
 4. **Check TF tree**
+
    ```bash
    ros2 run tf2_tools view_frames
    evince frames.pdf
@@ -752,6 +775,7 @@ urdf_to_graphviz my_robot.urdf
 ### Exercise 1: Build a 3-Link Arm
 
 Extend the 2-link arm to add a wrist joint:
+
 - Add `wrist` link (15cm long, radius 0.02m)
 - Add `wrist_pitch` joint connecting forearm to wrist
 - Joint limits: -1.57 to 1.57 rad
@@ -760,13 +784,15 @@ Extend the 2-link arm to add a wrist joint:
 ### Exercise 2: Add a Gripper
 
 Add a simple 2-finger gripper to the wrist:
+
 - Two prismatic joints (sliding fingers)
-- Each finger is a small box (0.08 × 0.02 × 0.01 m)
+- Each finger is a small box (0.08 ï¿½ 0.02 ï¿½ 0.01 m)
 - Slide range: 0 to 0.05 m (5cm)
 
 ### Exercise 3: Calculate Inertia
 
 Calculate exact inertia tensor for a cylinder with:
+
 - Radius: 0.04 m
 - Height: 0.25 m
 - Mass: 1.5 kg
@@ -776,6 +802,7 @@ Verify with online calculator.
 ## Summary
 
 **Key concepts:**
+
 - URDF uses XML to describe robot kinematics and dynamics
 - **Links** = rigid bodies with visual, collision, and inertial properties
 - **Joints** = connections that define how links move
@@ -784,6 +811,7 @@ Verify with online calculator.
 - Visual geometry can be detailed, collision should be simple
 
 **Next steps:**
+
 - In **[Section 2: Humanoid Modeling](./humanoid-modeling)**, we'll build a complete 15-link humanoid robot from scratch
 - You'll learn symmetry patterns, mass distribution, and realistic joint limits
 
@@ -791,7 +819,7 @@ Verify with online calculator.
 
 ## Additional Resources
 
-- **URDF XML Specification**: http://wiki.ros.org/urdf/XML
-- **URDF Tutorial (ROS 2)**: https://docs.ros.org/en/jazzy/Tutorials/Intermediate/URDF/URDF-Main.html
-- **Inertia Calculator**: https://amesweb.info/inertia/mass-moment-of-inertia-calculator.aspx
-- **Onshape to URDF**: https://github.com/Rhoban/onshape-to-robot (CAD to URDF converter)
+- **URDF XML Specification**: &lt;http://wiki.ros.org/urdf/XML&gt;
+- **URDF Tutorial (ROS 2)**: &lt;https://docs.ros.org/en/jazzy/Tutorials/Intermediate/URDF/URDF-Main.html&gt;
+- **Inertia Calculator**: &lt;https://amesweb.info/inertia/mass-moment-of-inertia-calculator.aspx&gt;
+- **Onshape to URDF**: &lt;https://github.com/Rhoban/onshape-to-robot&gt; (CAD to URDF converter)

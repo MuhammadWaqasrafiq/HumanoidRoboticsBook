@@ -10,6 +10,7 @@ description: Test your knowledge of NVIDIA Isaac Sim, GPU physics, and ROS 2 int
 Test your understanding of Isaac Sim, GPU-accelerated physics, and robotics simulation!
 
 :::info Quiz Instructions
+
 - Each question has one or more correct answers
 - Explanations are provided after each answer
 - Score 80% or higher to demonstrate mastery
@@ -28,6 +29,7 @@ Test your understanding of Isaac Sim, GPU-accelerated physics, and robotics simu
 ❌ **Incorrect**
 
 Isaac Sim requires NVIDIA RTX GPU with CUDA support. AMD GPUs are not supported because Isaac Sim relies on:
+
 - NVIDIA PhysX 5 (GPU physics)
 - NVIDIA RTX raytracing
 - CUDA tensor operations
@@ -41,14 +43,17 @@ Isaac Sim requires NVIDIA RTX GPU with CUDA support. AMD GPUs are not supported 
 ✅ **Correct!**
 
 RTX 2070 is the **minimum** GPU requirement for Isaac Sim. It provides:
+
 - CUDA 7.5+ compute capability
 - RTX raytracing cores
 - 8 GB VRAM (minimum)
 
 **Recommended:** RTX 4070 Ti or higher for:
+
 - Faster physics simulation
 - Higher resolution rendering
 - Larger batch sizes for RL training
+
 </details>
 
 <details>
@@ -57,6 +62,7 @@ RTX 2070 is the **minimum** GPU requirement for Isaac Sim. It provides:
 ❌ **Incorrect**
 
 Integrated graphics (Intel Iris, Intel UHD) are not supported. Isaac Sim requires:
+
 - Dedicated NVIDIA RTX GPU
 - 8+ GB VRAM
 - CUDA and RTX support
@@ -70,6 +76,7 @@ Integrated graphics (Intel Iris, Intel UHD) are not supported. Isaac Sim require
 ❌ **Incorrect**
 
 While GTX 1080 Ti has sufficient VRAM (11 GB), it lacks RTX cores required for:
+
 - Hardware-accelerated raytracing
 - AI-denoising
 - Tensor operations
@@ -89,6 +96,7 @@ While GTX 1080 Ti has sufficient VRAM (11 GB), it lacks RTX cores required for:
 ❌ **Incorrect**
 
 USD files are typically LARGER than URDF because they include:
+
 - Full geometry data (not just mesh references)
 - Material and shader definitions
 - Animation and physics data
@@ -103,12 +111,14 @@ USD files are typically LARGER than URDF because they include:
 ✅ **Correct!**
 
 USD's **layer composition** allows:
+
 - Base layer: Original robot definition
 - Override layers: Modifications (colors, physics, attachments)
 - Non-destructive: Changes don't modify original file
 - Version control: Track modifications separately
 
 **Example:**
+
 ```
 robot.usd           (base layer)
   + physics.usd     (physics overrides)
@@ -125,6 +135,7 @@ This enables team collaboration and A/B testing without file duplication.
 ❌ **Incorrect**
 
 USD is an **open-source** format (developed by Pixar) supported by:
+
 - Blender (USD import/export addon)
 - Maya, Houdini, 3ds Max (USD plugins)
 - Unreal Engine 5 (USD stage importer)
@@ -139,6 +150,7 @@ USD is an **open-source** format (developed by Pixar) supported by:
 ❌ **Incorrect**
 
 USD is a **scene description format**, not a middleware. It does NOT include:
+
 - Network communication protocols
 - ROS 2 message definitions
 - Topic publishers/subscribers
@@ -158,6 +170,7 @@ USD is a **scene description format**, not a middleware. It does NOT include:
 ❌ **Suboptimal**
 
 CPU physics is 10-100x SLOWER than GPU physics because:
+
 - Sequential processing (limited parallelism)
 - Memory transfers between CPU/GPU
 - No tensor API access
@@ -171,6 +184,7 @@ CPU physics is 10-100x SLOWER than GPU physics because:
 ✅ **Correct!**
 
 GPU physics (PhysX 5) enables:
+
 - **1000+ parallel environments** on single RTX 4090
 - Direct tensor API access (no CPU→GPU transfers)
 - 100-1000 FPS simulation speed
@@ -179,6 +193,7 @@ GPU physics (PhysX 5) enables:
 **Example:** Train humanoid walking in 30 minutes (vs. 48 hours on CPU)
 
 **Code:**
+
 ```python
 gym = gymapi.acquire_gym()
 sim_params = gymapi.SimParams()
@@ -188,6 +203,7 @@ sim_params.physx.use_gpu = True
 sim = gym.create_sim(compute_device=0, graphics_device=0,
                       type=gymapi.SIM_PHYSX, params=sim_params)
 ```
+
 </details>
 
 <details>
@@ -196,6 +212,7 @@ sim = gym.create_sim(compute_device=0, graphics_device=0,
 ❌ **Suboptimal**
 
 While GPU physics is enabled, only **4 environments** severely underutilizes GPU:
+
 - RTX 4090 can handle 1000+ environments
 - Low batch sizes reduce RL data efficiency
 - Wastes GPU memory and compute
@@ -209,6 +226,7 @@ While GPU physics is enabled, only **4 environments** severely underutilizes GPU
 ❌ **Impossible**
 
 CPU cannot handle 1024 parallel physics environments because:
+
 - Insufficient memory bandwidth
 - No parallel solver
 - Thread overhead
@@ -230,6 +248,7 @@ CPU cannot handle 1024 parallel physics environments because:
 `OnPlaybackTick` provides the **clock signal** to trigger publishing each frame, BUT it does NOT publish data itself.
 
 **Required components:**
+
 1. `OnPlaybackTick` → Clock source
 2. `ROS2PublishJointState` → Actual publisher
 3. `targetPrim` → Robot to publish
@@ -243,11 +262,13 @@ CPU cannot handle 1024 parallel physics environments because:
 ✅ **Correct!**
 
 `ROS2PublishJointState` is the **core publisher node** that:
+
 - Reads joint states from USD articulation
 - Converts to `sensor_msgs/JointState` message
 - Publishes to `/joint_states` topic
 
 **Required configuration:**
+
 ```python
 set_targets(
     prim=og.Controller.node("/ActionGraph/PublishJointState"),
@@ -267,6 +288,7 @@ set_targets(
 `ROS2Context` initializes the ROS 2 domain and node, BUT does NOT publish data.
 
 **What it does:**
+
 - Creates ROS 2 node (default: `isaac_sim_node`)
 - Sets ROS_DOMAIN_ID
 - Manages DDS communication
@@ -282,6 +304,7 @@ set_targets(
 `ArticulationController` is for **receiving** joint commands (subscriber), not publishing states.
 
 **Use case:**
+
 ```
 ROS 2 topic → ROS2SubscribeJointState → ArticulationController → Robot
 ```
@@ -301,6 +324,7 @@ ROS 2 topic → ROS2SubscribeJointState → ArticulationController → Robot
 ❌ **Extremely Inefficient**
 
 Manual labeling 10,000 images would take:
+
 - ~30 seconds per image
 - **Total: 83+ hours of human work**
 - High error rate (mislabeling)
@@ -315,12 +339,14 @@ Manual labeling 10,000 images would take:
 ✅ **Correct!**
 
 Omniverse Replicator provides:
+
 - **Automated rendering:** 10,000 images in 30-60 minutes
 - **Perfect labels:** Pixel-perfect segmentation, bounding boxes
 - **Domain randomization:** Lighting, textures, poses, backgrounds
 - **Multiple modalities:** RGB, depth, normals, instance segmentation
 
 **Code example:**
+
 ```python
 import omni.replicator.core as rep
 
@@ -350,6 +376,7 @@ with rep.trigger.on_frame(num_frames=10000):
 ❌ **Inefficient**
 
 ROS bag recording provides:
+
 - **Real images:** But limited to actual robot states
 - **No labels:** Must manually annotate 10,000 images
 - **No randomization:** Limited scene diversity
@@ -364,6 +391,7 @@ ROS bag recording provides:
 ❌ **Partially Inefficient**
 
 While this captures images, it lacks:
+
 - **No automatic labels:** Must manually annotate
 - **No domain randomization:** Same scene repeatedly
 - **No semantic segmentation:** Missing YOLOv8 ground truth
@@ -383,6 +411,7 @@ While this captures images, it lacks:
 ⚠️ **Moderate Impact**
 
 Lowering resolution helps rendering speed but:
+
 - **Impact:** 10 FPS → 15-20 FPS (50-100% improvement)
 - **Limitation:** Physics still runs at same rate
 - **Trade-off:** Harder to visualize details
@@ -396,25 +425,30 @@ Lowering resolution helps rendering speed but:
 ✅ **Correct - Biggest Impact!**
 
 GPU physics provides:
+
 - **10-100x speedup** over CPU physics
 - **Impact:** 10 FPS → 100+ FPS (900%+ improvement)
 - **Enables:** Parallel environments, tensor API
 - **No trade-off:** Same accuracy as CPU
 
 **Code:**
+
 ```python
 sim_params.use_gpu_pipeline = True
 sim_params.physx.use_gpu = True
 ```
 
 **Benchmark:**
+
 - CPU: 10 FPS (1 environment)
 - GPU: 1000 FPS (100 environments in parallel)
 
 **Why it works:**
+
 - PhysX 5 GPU solver parallelizes constraints
 - Direct tensor operations (no CPU↔GPU transfers)
 - Broadphase and narrowphase on GPU
+
 </details>
 
 <details>
@@ -423,6 +457,7 @@ sim_params.physx.use_gpu = True
 ⚠️ **Small Impact**
 
 Disabling raytracing features helps rendering but:
+
 - **Impact:** 10 FPS → 12-15 FPS (20-50% improvement)
 - **Limitation:** Physics unaffected
 - **Trade-off:** Less realistic visualization
@@ -436,11 +471,13 @@ Disabling raytracing features helps rendering but:
 ❌ **Dangerous**
 
 Lowering substeps speeds up simulation BUT:
+
 - **Impact:** 10 FPS → 15-20 FPS
 - **Major trade-off:** Physics instability
 - **Consequences:** Robot vibrations, penetrations, explosions
 
 **Only reduce substeps if:**
+
 - Simple scenes (no complex contacts)
 - Slow-moving objects
 - Willing to sacrifice accuracy
@@ -460,6 +497,7 @@ Lowering substeps speeds up simulation BUT:
 ✅ **Correct!**
 
 `fix_base=True` creates a **fixed-base robot** where:
+
 - Base link is **immovable** (infinite mass)
 - Joints still articulate normally
 - **Use case:** Robot arms, fixed humanoid torso
@@ -467,6 +505,7 @@ Lowering substeps speeds up simulation BUT:
 **Example:** UR5 robot arm mounted on table
 
 **Code:**
+
 ```python
 import_config = {
     "fix_base": True,  # Base fixed to world
@@ -484,6 +523,7 @@ import_config = {
 `fix_base=True` only fixes the **base link**, not joints.
 
 **Still articulate:**
+
 - All revolute/prismatic joints work normally
 - Joint controllers apply torques
 - Articulation API fully functional
@@ -497,6 +537,7 @@ import_config = {
 ⚠️ **Partially Correct**
 
 The **base link** has infinite mass (immovable), BUT:
+
 - Other links have normal masses (from URDF `<inertial>` tags)
 - Joints still have mass/inertia
 - Only base is infinite mass
@@ -510,13 +551,16 @@ The **base link** has infinite mass (immovable), BUT:
 ❌ **Incorrect**
 
 `fix_base=True` **prevents** falling through ground because:
+
 - Base is fixed at import position
 - Gravity doesn't affect base
 - Robot remains stationary (unless joints move)
 
 **Falling happens when:**
+
 - `fix_base=False` and no ground plane
 - `fix_base=False` and unstable initial pose
+
 </details>
 
 ---
@@ -524,6 +568,7 @@ The **base link** has infinite mass (immovable), BUT:
 ## Score Interpretation
 
 **Calculate your score:**
+
 - 7/7 correct: 🏆 **Expert** - Ready for advanced Isaac Sim development
 - 5-6/7 correct: ✅ **Proficient** - Good understanding, minor gaps
 - 3-4/7 correct: ⚠️ **Developing** - Review key concepts (GPU physics, USD, ROS 2)
@@ -558,6 +603,7 @@ After completing this quiz:
 
 :::tip Practice Challenge
 **Build a working simulation:**
+
 1. Import your humanoid URDF into Isaac Sim
 2. Enable GPU physics
 3. Set up ROS 2 bridge to publish joint states

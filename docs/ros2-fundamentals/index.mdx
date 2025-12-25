@@ -21,6 +21,7 @@ By the end of this chapter, you will be able to:
 
 :::tip Prerequisites
 Before starting this chapter, ensure you have:
+
 - Completed Chapter 02 (hardware setup or cloud instance)
 - Ubuntu 22.04 with ROS 2 Jazzy installed
 - Basic Python knowledge (functions, classes, imports)
@@ -50,6 +51,7 @@ Before starting this chapter, ensure you have:
 | **Lifecycle management** | Manual | Managed nodes |
 
 **For Physical AI**: ROS 2 is mandatory because:
+
 - **Real-time**: Humanoid balance control requires 1000 Hz control loops
 - **Reliability**: Production robots can't tolerate single-point failures (ROS 1 master node)
 - **Security**: Commercial deployments need encrypted communication
@@ -113,11 +115,13 @@ This chapter is divided into 4 sections:
 4. **[Debugging Tools](./debugging-tools)** - rqt, rviz2, ros2 CLI commands
 
 Each section includes:
+
 - Conceptual explanation with diagrams
 - Hands-on Python code examples
 - Common pitfalls and troubleshooting tips
 
 :::note Estimated Time
+
 - **Reading**: 2-3 hours for all 4 sections
 - **Coding exercises**: 3-4 hours to complete all examples
 - **Total**: 5-7 hours to master ROS 2 fundamentals
@@ -142,6 +146,7 @@ ros2 run demo_nodes_cpp talker
 ```
 
 **Expected output:**
+
 ```
 [INFO] [talker]: Publishing: 'Hello World: 1'
 [INFO] [talker]: Publishing: 'Hello World: 2'
@@ -157,6 +162,7 @@ ros2 run demo_nodes_py listener
 ```
 
 **Expected output:**
+
 ```
 [INFO] [listener]: I heard: [Hello World: 1]
 [INFO] [listener]: I heard: [Hello World: 2]
@@ -165,6 +171,7 @@ ros2 run demo_nodes_py listener
 ```
 
 **What just happened?**
+
 1. `talker` node publishes messages to `/chatter` topic
 2. `listener` node subscribes to `/chatter` topic
 3. ROS 2 middleware (DDS) delivers messages automatically
@@ -206,11 +213,13 @@ If any command fails, revisit **Chapter 02 - Appendix A: Lab Build Guides** for 
 Ready to dive deeper? Start with **[Section 1: Nodes & Topics](./nodes-topics)** to learn the foundation of ROS 2 communication.
 
 Prefer a different learning path?
+
 - **Hands-on learner**: Jump to code examples in each section
 - **Visual learner**: Focus on Mermaid diagrams and ros2 CLI visualization
 - **System designer**: Read about architecture patterns in Services & Actions section
 
 :::tip Quick Navigation
+
 - **Next**: [Nodes & Topics](./nodes-topics) - Publisher/subscriber pattern
 - **Skip ahead**: [Debugging Tools](./debugging-tools) - Troubleshooting ROS 2 issues
 - **Related**: Chapter 04 (URDF modeling) builds on ROS 2 fundamentals
@@ -220,7 +229,7 @@ Prefer a different learning path?
 
 ## Further Reading
 
-- **Official ROS 2 Documentation**: https://docs.ros.org/en/jazzy/
-- **ROS 2 Tutorials**: https://docs.ros.org/en/jazzy/Tutorials.html
-- **DDS Specification**: https://www.omg.org/spec/DDS/ (for advanced users)
-- **Fast DDS Documentation**: https://fast-dds.docs.eprosima.com/ (default ROS 2 middleware)
+- **Official ROS 2 Documentation**: &lt;https://docs.ros.org/en/jazzy/&gt;
+- **ROS 2 Tutorials**: &lt;https://docs.ros.org/en/jazzy/Tutorials.html&gt;
+- **DDS Specification**: &lt;https://www.omg.org/spec/DDS/&gt; (for advanced users)
+- **Fast DDS Documentation**: &lt;https://fast-dds.docs.eprosima.com/&gt; (default ROS 2 middleware)

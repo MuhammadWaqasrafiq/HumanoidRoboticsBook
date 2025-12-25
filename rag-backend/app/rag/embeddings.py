@@ -1,67 +1,46 @@
-import google.generativeai as genai
+import httpx
 from app.config import settings
 
-# Configure the Gemini API key
-genai.configure(api_key=settings.GOOGLE_API_KEY)
-
 class GeminiEmbedding:
-    """
-    A class to generate embeddings using the Gemini API.
-    """
-    def __init__(self, model_name: str = settings.EMBEDDING_MODEL):
-        """
-        Initializes the GeminiEmbedding instance.
+    def __init__(self):
+        self.api_key = settings.GOOGLE_API_KEY
+        # Model name bina 'models/' prefix ke rakhein
+        self.model_name = "text-embedding-004" 
+        self.base_url = "https://generativelanguage.googleapis.com/v1beta"
 
-        Args:
-            model_name: The name of the embedding model to use.
-        """
-        self.model_name = model_name
+    async def embed_documents(self, texts: list[str]):
+        url = f"{self.base_url}/models/{self.model_name}:batchEmbedContents?key={self.api_key}"
+        
+        requests = []
+        for text in texts:
+            requests.append({
+                "model": f"models/{self.model_name}",
+                "content": {"parts": [{"text": text}]},
+                "task_type": "RETRIEVAL_DOCUMENT"
+            })
+        
+        payload = {"requests": requests}
 
-    def get_embedding(self, text: str):
-        """
-        Generates an embedding for the given text.
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url, json=payload, timeout=60.0)
+            if response.status_code != 200:
+                print(f"Embedding Error: {response.text}")
+                response.raise_for_status()
+            
+            data = response.json()
+            return [item["values"] for item in data["embeddings"]]
 
-        Args:
-            text: The text to generate an embedding for.
+    async def embed_query(self, text: str):
+        url = f"{self.base_url}/models/{self.model_name}:embedContent?key={self.api_key}"
+        
+        payload = {
+            "model": f"models/{self.model_name}",
+            "content": {"parts": [{"text": text}]},
+            "task_type": "RETRIEVAL_QUERY"
+        }
 
-        Returns:
-            The generated embedding.
-        """
-        try:
-            return genai.embed_content(
-                model=self.model_name,
-                content=text,
-                task_type="retrieval_document"
-            )["embedding"]
-        except Exception as e:
-            print(f"An error occurred while generating embedding: {e}")
-            return None
-
-    def get_embeddings(self, texts: list[str]):
-        """
-        Generates embeddings for a list of texts.
-
-        Args:
-            texts: The list of texts to generate embeddings for.
-
-        Returns:
-            A list of generated embeddings.
-        """
-        try:
-            # The Gemini API can handle batching of texts.
-            result = genai.embed_content(
-                model=self.model_name,
-                content=texts,
-                task_type="retrieval_document"
-            )
-            return result['embedding']
-        except Exception as e:
-            print(f"An error occurred while generating embeddings: {e}")
-            return None
-
-def get_embedding_client() -> GeminiEmbedding:
-    """
-    Returns a GeminiEmbedding instance.
-    This function can be used for dependency injection in FastAPI.
-    """
-    return GeminiEmbedding()
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url, json=payload, timeout=60.0)
+            response.raise_for_status()
+            data = response.json()
+            return data["embedding"]["values"]
